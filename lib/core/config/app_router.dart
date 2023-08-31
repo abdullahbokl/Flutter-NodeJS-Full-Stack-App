@@ -8,7 +8,6 @@ import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/jobs/presentation/pages/job_page.dart';
 import '../../features/on_boarding/presentation/manager/on_boarding_provider.dart';
 import '../../features/on_boarding/presentation/on_boarding_screen.dart';
-import '../../features/profile/presentation/manager/edit_profile_provider.dart';
 import '../../features/profile/presentation/pages/edit_profile_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/search/presentation/pages/search_page.dart';
@@ -54,13 +53,17 @@ class AppRouter {
               child: const RegisterPage(),
             ),
           );
+        case home:
+          return MaterialPageRoute(
+            builder: (_) => const HomePage(),
+          );
         case profile:
           return MaterialPageRoute(
             builder: (_) => const ProfilePage(),
           );
-        case home:
+        case editProfile:
           return MaterialPageRoute(
-            builder: (_) => const HomePage(),
+            builder: (_) => const EditProfilePage(),
           );
         case search:
           return MaterialPageRoute(
@@ -73,13 +76,6 @@ class AppRouter {
         case drawer:
           return MaterialPageRoute(
             builder: (_) => const DrawerScreen(),
-          );
-        case editProfile:
-          return MaterialPageRoute(
-            builder: (_) => ChangeNotifierProvider(
-              create: (BuildContext context) => EditProfileProvider(),
-              child: const EditProfilePage(),
-            ),
           );
       }
       cnt++;

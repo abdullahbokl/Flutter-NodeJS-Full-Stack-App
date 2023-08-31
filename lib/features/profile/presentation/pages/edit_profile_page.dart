@@ -54,8 +54,8 @@ class EditProfilePage extends StatelessWidget {
                         const HeightSpacer(size: 10),
                         Form(
                           key: editProfileProvider.profileSkillsFormKey,
-                          child: Column(
-                            children: const [
+                          child: const Column(
+                            children: [
                               SkillsListView(),
                               HeightSpacer(size: 10),
                               AddSkillButton(),

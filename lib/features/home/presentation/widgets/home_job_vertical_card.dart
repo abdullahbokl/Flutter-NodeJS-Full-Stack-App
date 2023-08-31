@@ -2,20 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 
-import '../../../generated/assets.dart';
-import '../../utils/app_colors.dart';
-import '../../utils/app_constants.dart';
-import 'app_style.dart';
-import 'reusable_text.dart';
-import 'salary_widget.dart';
-import 'width_spacer.dart';
+import '../../../../core/common/models/job_model.dart';
+import '../../../../core/common/widgets/app_style.dart';
+import '../../../../core/common/widgets/reusable_text.dart';
+import '../../../../core/common/widgets/salary_widget.dart';
+import '../../../../core/common/widgets/width_spacer.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_constants.dart';
 
-class VerticalTile extends StatelessWidget {
-  const VerticalTile({
+class HomeJobVerticalCard extends StatelessWidget {
+  const HomeJobVerticalCard({
     super.key,
     this.onTap,
+    required this.job,
   });
 
+  final JobModel job;
   final VoidCallback? onTap;
 
   @override
@@ -34,8 +36,8 @@ class VerticalTile extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const CircleAvatar(
-                  backgroundImage: AssetImage(Assets.imagesSlack),
+                CircleAvatar(
+                  backgroundImage: NetworkImage(job.imageUrl),
                   backgroundColor: AppColors.lightGrey,
                   radius: 30,
                 ),
@@ -44,13 +46,13 @@ class VerticalTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ReusableText(
-                      text: 'Slack',
+                      text: job.company,
                       style: appStyle(20, AppColors.dark, FontWeight.w600),
                     ),
                     SizedBox(
                       width: AppConstants.width * 0.5,
                       child: ReusableText(
-                        text: 'Full Stack Flutter Developer',
+                        text: job.title,
                         style:
                             appStyle(20, AppColors.darkGrey, FontWeight.w600),
                       ),
@@ -67,7 +69,7 @@ class VerticalTile extends StatelessWidget {
               padding: EdgeInsets.only(left: 12.w),
               child: SalaryWidget(
                 salary: SalaryModel(
-                  amount: '15',
+                  amount: job.salary,
                   salaryType: SalaryType.perMonth,
                 ),
               ),

@@ -14,6 +14,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Provider.of<ProfileProvider>(context, listen: false).getUserProfile();
+
     return Scaffold(
       appBar: customAppBar(
         leading: Padding(

@@ -29,6 +29,19 @@ class AppStrings {
   static const String userIsAgent = 'isAgent';
   static const String userBio = 'bio';
 
+// job
+
+  static const String jobTitle = 'title';
+  static const String jobDescription = 'description';
+  static const String jobLocation = 'location';
+  static const String jobSalary = 'salary';
+  static const String jobCompany = 'company';
+  static const String jobPeriod = 'period';
+  static const String jobContract = 'contract';
+  static const String jobRequirements = 'requirements';
+  static const String jobImageUrl = 'imageUrl';
+  static const String jobAgentId = 'agentId';
+
   // image Model
   static const String imageModelUrl = 'url';
   static const String imageModelUploadedAt = 'uploadedAt';

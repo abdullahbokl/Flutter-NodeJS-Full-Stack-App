@@ -94,6 +94,8 @@ class Assets {
       'lib/features/bookmarks/presentation/manager/bookmark_provider.dart';
   static const String managerEditProfileProvider =
       'lib/features/profile/presentation/manager/edit_profile_provider.dart';
+  static const String managerHomeProvider =
+      'lib/features/home/presentation/manager/home_provider.dart';
   static const String managerJobsProvider =
       'lib/features/jobs/presentation/manager/jobs_provider.dart';
   static const String managerOnBoardingProvider =
@@ -110,6 +112,7 @@ class Assets {
   static const String modelsExports = 'lib/models/exports.dart';
   static const String modelsImageModel =
       'lib/core/common/models/image_model.dart';
+  static const String modelsJobModel = 'lib/core/common/models/job_model.dart';
   static const String modelsLoginModel =
       'lib/features/auth/data/models/login_model.dart';
   static const String modelsRegisterModel =
@@ -151,10 +154,10 @@ class Assets {
       'lib/features/search/presentation/pages/search_page.dart';
   static const String presentationOnBoardingScreen =
       'lib/features/on_boarding/presentation/on_boarding_screen.dart';
-  static const String profileContactsData =
-      'lib/features/profile/presentation/widgets/profile/profile_contacts_data.dart';
   static const String profileProfileBio =
       'lib/features/profile/presentation/widgets/profile/profile_bio.dart';
+  static const String profileProfileContactsData =
+      'lib/features/profile/presentation/widgets/profile/profile_contacts_data.dart';
   static const String profileProfilePageBody =
       'lib/features/profile/presentation/widgets/profile/profile_page_body.dart';
   static const String profileProfilePhoneNumber =
@@ -218,10 +221,16 @@ class Assets {
       'lib/core/common/widgets/heading_widget.dart';
   static const String widgetsHeightSpacer =
       'lib/core/common/widgets/height_spacer.dart';
+  static const String widgetsHomePageBody =
+      'lib/features/home/presentation/widgets/home_page_body.dart';
+  static const String widgetsHomeRecentJobsListView =
+      'lib/features/home/presentation/widgets/home_recent_jobs_list_view.dart';
+  static const String widgetsHorizontalListShimmer =
+      'lib/core/common/widgets/horizontal_list_shimmer.dart';
   static const String widgetsHorizontalShimmer =
       'lib/features/jobs/presentation/widgets/horizontal_shimmer.dart';
   static const String widgetsHorizontalTile =
-      'lib/core/common/widgets/horizontal_tile.dart';
+      'lib/features/home/presentation/widgets/home_job_horizontal_card.dart';
   static const String widgetsJobSkillsListView =
       'lib/features/jobs/presentation/widgets/job_skills_list_view.dart';
   static const String widgetsJobSummaryCard =
@@ -233,7 +242,7 @@ class Assets {
   static const String widgetsOnBoardingPageView =
       'lib/features/on_boarding/presentation/widgets/on_boarding_page_view.dart';
   static const String widgetsPopularJobsListView =
-      'lib/features/home/presentation/widgets/popular_jobs_list_view.dart';
+      'lib/features/home/presentation/widgets/home_popular_jobs_list_view.dart';
   static const String widgetsProfileUserInfoCardShimmer =
       'lib/features/profile/presentation/widgets/profile_user_info_card_shimmer.dart';
   static const String widgetsReusableText =
@@ -244,10 +253,12 @@ class Assets {
   static const String widgetsSignOutAllDevicesButton =
       'lib/features/device_manager/presentation/widgets/sign_out_all_devices_button.dart';
   static const String widgetsSkelton = 'lib/core/common/widgets/skelton.dart';
+  static const String widgetsUserAvatarImage =
+      'lib/core/common/widgets/user_avatar_image.dart';
   static const String widgetsVerticalShimmer =
       'lib/core/common/widgets/vertical_shimmer.dart';
   static const String widgetsVerticalTile =
-      'lib/core/common/widgets/vertical_tile.dart';
+      'lib/features/home/presentation/widgets/home_job_vertical_card.dart';
   static const String widgetsWidthSpacer =
       'lib/core/common/widgets/width_spacer.dart';
 }
