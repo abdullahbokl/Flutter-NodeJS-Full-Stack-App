@@ -3,21 +3,23 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/common/widgets/app_style.dart';
 import '../../../../core/utils/app_colors.dart';
-import '../../../../core/utils/app_constants.dart';
 
 class JobSkillsListView extends StatelessWidget {
   const JobSkillsListView({
     super.key,
+    required this.requirements,
   });
+
+  final List<String> requirements;
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: AppConstants.requirements.length,
+      itemCount: requirements.length,
       itemBuilder: (context, index) {
-        final req = AppConstants.requirements[index];
+        final req = requirements[index];
         return Text(
           '• $req\n',
           textAlign: TextAlign.justify,

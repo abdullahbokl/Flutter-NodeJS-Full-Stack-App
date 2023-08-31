@@ -11,6 +11,7 @@ import '../../features/on_boarding/presentation/on_boarding_screen.dart';
 import '../../features/profile/presentation/pages/edit_profile_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/search/presentation/pages/search_page.dart';
+import '../common/models/job_model.dart';
 import '../common/widgets/drawer/drawer_screen.dart';
 import 'redirects.dart';
 
@@ -71,7 +72,7 @@ class AppRouter {
           );
         case jobPage:
           return MaterialPageRoute(
-            builder: (_) => const JobPage(title: 'title', id: 'id'),
+            builder: (_) => JobDetailsPage(job: settings.arguments as JobModel),
           );
         case drawer:
           return MaterialPageRoute(

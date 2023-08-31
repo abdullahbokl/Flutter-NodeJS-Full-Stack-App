@@ -26,7 +26,11 @@ class HomeRecentJobsListView extends StatelessWidget {
             return HomeJobVerticalCard(
               job: jobsProvider.jobs[index],
               onTap: () {
-                Navigator.pushNamed(context, AppRouter.jobPage);
+                Navigator.pushNamed(
+                  context,
+                  AppRouter.jobPage,
+                  arguments: jobsProvider.jobs[index],
+                );
               },
             );
           },

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_vector_icons/flutter_vector_icons.dart';
+import 'package:jobhub_flutter/core/common/models/job_model.dart';
 
 import '../../../../core/common/widgets/app_bar.dart';
 import '../../../../core/common/widgets/app_style.dart';
@@ -13,15 +13,13 @@ import '../../../../core/utils/app_constants.dart';
 import '../widgets/job_skills_list_view.dart';
 import '../widgets/job_summary_card.dart';
 
-class JobPage extends StatelessWidget {
-  const JobPage({
+class JobDetailsPage extends StatelessWidget {
+  const JobDetailsPage({
     super.key,
-    required this.title,
-    required this.id,
+    required this.job,
   });
 
-  final String title;
-  final String id;
+  final JobModel job;
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +29,12 @@ class JobPage extends StatelessWidget {
           onTap: () => Navigator.pop(context),
           child: const Icon(CupertinoIcons.arrow_left),
         ),
-        title: title,
+        title: job.title,
         actions: const [
-          Icon(Entypo.bookmarks),
+          Padding(
+            padding: EdgeInsets.only(right: 10),
+            child: Icon(CupertinoIcons.bookmark, color: AppColors.orange),
+          ),
         ],
       ),
       body: Padding(
@@ -45,7 +46,7 @@ class JobPage extends StatelessWidget {
               children: [
                 const HeightSpacer(size: 30),
                 // summary
-                const JobSummaryCard(),
+                JobSummaryCard(job: job),
                 const HeightSpacer(size: 20),
                 // job description
                 ReusableText(
@@ -54,7 +55,7 @@ class JobPage extends StatelessWidget {
                 ),
                 const HeightSpacer(size: 10),
                 Text(
-                  AppConstants.desc,
+                  job.description,
                   textAlign: TextAlign.justify,
                   maxLines: 8,
                   style: appStyle(16, AppColors.darkGrey, FontWeight.normal),
@@ -66,7 +67,7 @@ class JobPage extends StatelessWidget {
                   style: appStyle(22, AppColors.dark, FontWeight.w600),
                 ),
                 const HeightSpacer(size: 10),
-                const JobSkillsListView(),
+                JobSkillsListView(requirements: job.requirements),
                 const HeightSpacer(size: 50),
               ],
             ),

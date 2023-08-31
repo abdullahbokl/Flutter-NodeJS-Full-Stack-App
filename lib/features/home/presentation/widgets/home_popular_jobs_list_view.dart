@@ -25,7 +25,11 @@ class HomePopularJobsListView extends StatelessWidget {
             itemBuilder: (context, index) => HomeJobHorizontalCard(
               job: jobsProvider.jobs[index],
               onTap: () {
-                Navigator.pushNamed(context, AppRouter.jobPage);
+                Navigator.pushNamed(
+                  context,
+                  AppRouter.jobPage,
+                  arguments: jobsProvider.jobs[index],
+                );
               },
             ),
           );
