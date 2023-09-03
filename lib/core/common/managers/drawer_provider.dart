@@ -31,7 +31,7 @@ class DrawerProvider extends ChangeNotifier {
     const DrawerItemParams(
       text: 'Bookmarks',
       icon: Icons.bookmarks_outlined,
-      page: BookMarksPage(),
+      page: BookmarksPage(),
     ),
     const DrawerItemParams(
       text: 'Device Manager',

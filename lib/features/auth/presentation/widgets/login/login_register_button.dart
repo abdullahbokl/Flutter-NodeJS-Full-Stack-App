@@ -26,7 +26,7 @@ class LoginRegisterButton extends StatelessWidget {
         ),
         const WidthSpacer(size: 5),
         GestureDetector(
-          onTap: () => Navigator.pushNamed(context, AppRouter.register),
+          onTap: () => Navigator.pushNamed(context, AppRouter.registerPage),
           child: ReusableText(
             text: 'Sign Up',
             style: appStyle(

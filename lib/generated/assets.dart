@@ -2,25 +2,13 @@
 class Assets {
   Assets._();
 
-  static const String authProfileModel =
-      'lib/models/response/auth/profile_model.dart';
-  static const String authProfileUpdateModel =
-      'lib/models/request/auth/profile_update_model.dart';
   static const String authRepoAuthRepo =
       'lib/features/auth/data/repositories/auth_repo/auth_repo.dart';
   static const String authRepoAuthRepoImpl =
       'lib/features/auth/data/repositories/auth_repo/auth_repo_impl.dart';
-  static const String authSignupModel =
-      'lib/models/request/auth/signup_model.dart';
-  static const String bookmarksBookmarksModel =
-      'lib/models/request/bookmarks/bookmarks_model.dart';
   static const String configAppRouter = 'lib/core/config/app_router.dart';
   static const String configAppSetup = 'lib/core/config/app_setup.dart';
   static const String configRedirects = 'lib/core/config/redirects.dart';
-  static const String customErrorWidgetCustomErrorWidget =
-      'lib/core/errors/custom_error_widget/custom_error_widget.dart';
-  static const String customErrorWidgetErrorWidgetClass =
-      'lib/core/errors/custom_error_widget/error_widget_class.dart';
   static const String drawerDrawerIcon =
       'lib/core/common/widgets/drawer/drawer_icon.dart';
   static const String drawerDrawerItem =
@@ -42,14 +30,10 @@ class Assets {
   static const String errorsServerErrorHandler =
       'lib/core/errors/server_error_handler.dart';
   static const String generatedAssets = 'lib/generated/assets.dart';
-  static const String helpersAuthHelper =
-      'lib/core/services/helpers/auth_helper.dart';
   static const String helpersBookHelper =
       'lib/core/services/helpers/book_helper.dart';
   static const String helpersChatHelper =
       'lib/core/services/helpers/chat_helper.dart';
-  static const String helpersJobsHelper =
-      'lib/core/services/helpers/jobs_helper.dart';
   static const String iconsBehance = 'assets/icons/behance.svg';
   static const String iconsEg = 'assets/icons/eg.svg';
   static const String iconsFacebookCircled =
@@ -70,10 +54,6 @@ class Assets {
   static const String imagesProfile = 'assets/images/profile.webp';
   static const String imagesSlack = 'assets/images/slack.png';
   static const String imagesUser = 'assets/images/user.png';
-  static const String jobsCreateJob = 'lib/models/request/jobs/create_job.dart';
-  static const String jobsGetJob = 'lib/models/response/jobs/get_job.dart';
-  static const String jobsJobsResponse =
-      'lib/models/response/jobs/jobs_response.dart';
   static const String jsonChatList = 'assets/json/chatList.json';
   static const String jsonConversation = 'assets/json/conversation.json';
   static const String libMain = 'lib/main.dart';
@@ -96,6 +76,8 @@ class Assets {
       'lib/features/profile/presentation/manager/edit_profile_provider.dart';
   static const String managerHomeProvider =
       'lib/features/home/presentation/manager/home_provider.dart';
+  static const String managerJobDetailsProvider =
+      'lib/features/jobs/presentation/manager/job_details_provider.dart';
   static const String managerJobsProvider =
       'lib/features/jobs/presentation/manager/jobs_provider.dart';
   static const String managerOnBoardingProvider =
@@ -108,8 +90,8 @@ class Assets {
       'lib/core/common/managers/drawer_provider.dart';
   static const String managersImageHandlerProvider =
       'lib/core/common/managers/image_handler_provider.dart';
-  static const String modelsBookmarkRes = 'lib/models/bookmark_res.dart';
-  static const String modelsExports = 'lib/models/exports.dart';
+  static const String modelsBookmarkModel =
+      'lib/features/bookmarks/data/models/bookmark_model.dart';
   static const String modelsImageModel =
       'lib/core/common/models/image_model.dart';
   static const String modelsJobModel = 'lib/core/common/models/job_model.dart';
@@ -117,7 +99,6 @@ class Assets {
       'lib/features/auth/data/models/login_model.dart';
   static const String modelsRegisterModel =
       'lib/features/auth/data/models/register_model.dart';
-  static const String modelsSearch = 'lib/models/search.dart';
   static const String modelsUserModel =
       'lib/core/common/models/user_model.dart';
   static const String pagesBookmarksPage =
@@ -130,10 +111,10 @@ class Assets {
       'lib/features/profile/presentation/pages/edit_profile_page.dart';
   static const String pagesHomePage =
       'lib/features/home/presentation/pages/home_page.dart';
-  static const String pagesJobPage =
-      'lib/features/jobs/presentation/pages/job_page.dart';
-  static const String pagesJobsList =
-      'lib/features/jobs/presentation/pages/jobs_list.dart';
+  static const String pagesJobDetailsPage =
+      'lib/features/jobs/presentation/pages/job_details_page.dart';
+  static const String pagesJobsListPage =
+      'lib/features/jobs/presentation/pages/jobs_list_page.dart';
   static const String pagesLoginPage =
       'lib/features/auth/presentation/pages/login_page.dart';
   static const String pagesOnBoardingScreenBody =
@@ -146,8 +127,6 @@ class Assets {
       'lib/features/on_boarding/presentation/pages/page_two.dart';
   static const String pagesProfilePage =
       'lib/features/profile/presentation/pages/profile_page.dart';
-  static const String pagesRecentList =
-      'lib/features/jobs/presentation/pages/recent_list.dart';
   static const String pagesRegisterPage =
       'lib/features/auth/presentation/pages/register_page.dart';
   static const String pagesSearchPage =
@@ -180,6 +159,18 @@ class Assets {
       'lib/features/auth/presentation/widgets/register/register_page_body.dart';
   static const String registerRegisterProvider =
       'lib/features/auth/presentation/manager/register/register_provider.dart';
+  static const String repositoriesBookmarksRepo =
+      'lib/features/bookmarks/data/repositories/bookmarks_repo.dart';
+  static const String repositoriesBookmarksRepoImpl =
+      'lib/features/bookmarks/data/repositories/bookmarks_repo_impl.dart';
+  static const String repositoriesJobsRepo =
+      'lib/features/jobs/data/repositories/jobs_repo.dart';
+  static const String repositoriesJobsRepoImpl =
+      'lib/features/jobs/data/repositories/jobs_repo_impl.dart';
+  static const String repositoriesSearchRepo =
+      'lib/features/search/data/repositories/search_repo.dart';
+  static const String repositoriesSearchRepoImpl =
+      'lib/features/search/data/repositories/search_repo_impl.dart';
   static const String servicesApiServices =
       'lib/core/services/api_services.dart';
   static const String servicesLogger = 'lib/core/services/logger.dart';
@@ -195,12 +186,18 @@ class Assets {
   static const String widgetsAppBar = 'lib/core/common/widgets/app_bar.dart';
   static const String widgetsAppStyle =
       'lib/core/common/widgets/app_style.dart';
+  static const String widgetsBackHomeButton =
+      'lib/core/common/widgets/back_home_button.dart';
   static const String widgetsBookmarkWidget =
       'lib/features/bookmarks/presentation/widgets/bookmark_widget.dart';
   static const String widgetsChats =
       'lib/features/chat/presentation/widgets/chats.dart';
+  static const String widgetsCustomBackButton =
+      'lib/core/common/widgets/custom_back_button.dart';
   static const String widgetsCustomBtn =
       'lib/core/common/widgets/custom_btn.dart';
+  static const String widgetsCustomCircleButton =
+      'lib/features/home/presentation/widgets/custom_circle_button.dart';
   static const String widgetsCustomField =
       'lib/features/search/presentation/widgets/custom_field.dart';
   static const String widgetsCustomLoader =
@@ -209,6 +206,8 @@ class Assets {
       'lib/core/common/widgets/custom_outline_btn.dart';
   static const String widgetsCustomPasswordIcon =
       'lib/core/common/widgets/custom_password_icon.dart';
+  static const String widgetsCustomSearchField =
+      'lib/features/search/presentation/widgets/custom_search_field.dart';
   static const String widgetsCustomSearchWidget =
       'lib/core/common/widgets/custom_search_widget.dart';
   static const String widgetsCustomTextField =
@@ -221,18 +220,24 @@ class Assets {
       'lib/core/common/widgets/heading_widget.dart';
   static const String widgetsHeightSpacer =
       'lib/core/common/widgets/height_spacer.dart';
+  static const String widgetsHomeJobHorizontalCard =
+      'lib/features/home/presentation/widgets/home_job_horizontal_card.dart';
+  static const String widgetsHomeJobVerticalCard =
+      'lib/features/home/presentation/widgets/home_job_vertical_card.dart';
   static const String widgetsHomePageBody =
       'lib/features/home/presentation/widgets/home_page_body.dart';
+  static const String widgetsHomePopularJobsListView =
+      'lib/features/home/presentation/widgets/home_popular_jobs_list_view.dart';
   static const String widgetsHomeRecentJobsListView =
       'lib/features/home/presentation/widgets/home_recent_jobs_list_view.dart';
   static const String widgetsHorizontalListShimmer =
       'lib/core/common/widgets/horizontal_list_shimmer.dart';
   static const String widgetsHorizontalShimmer =
       'lib/features/jobs/presentation/widgets/horizontal_shimmer.dart';
-  static const String widgetsHorizontalTile =
-      'lib/features/home/presentation/widgets/home_job_horizontal_card.dart';
-  static const String widgetsJobSkillsListView =
-      'lib/features/jobs/presentation/widgets/job_skills_list_view.dart';
+  static const String widgetsJobDetailsBody =
+      'lib/features/jobs/presentation/widgets/job_details_body.dart';
+  static const String widgetsJobRequirementsListView =
+      'lib/features/jobs/presentation/widgets/job_requirements_list_view.dart';
   static const String widgetsJobSummaryCard =
       'lib/features/jobs/presentation/widgets/job_summary_card.dart';
   static const String widgetsJobTile =
@@ -241,24 +246,23 @@ class Assets {
       'lib/features/on_boarding/presentation/widgets/on_boarding_buttons.dart';
   static const String widgetsOnBoardingPageView =
       'lib/features/on_boarding/presentation/widgets/on_boarding_page_view.dart';
-  static const String widgetsPopularJobsListView =
-      'lib/features/home/presentation/widgets/home_popular_jobs_list_view.dart';
   static const String widgetsProfileUserInfoCardShimmer =
       'lib/features/profile/presentation/widgets/profile_user_info_card_shimmer.dart';
   static const String widgetsReusableText =
       'lib/core/common/widgets/reusable_text.dart';
   static const String widgetsSalaryWidget =
       'lib/core/common/widgets/salary_widget.dart';
-  static const String widgetsShimmer = 'lib/core/common/widgets/shimmer.dart';
+  static const String widgetsSearchNoDataFound =
+      'lib/features/search/presentation/widgets/search_no_data_found.dart';
+  static const String widgetsSearchResultList =
+      'lib/features/search/presentation/widgets/search_result_list.dart';
   static const String widgetsSignOutAllDevicesButton =
       'lib/features/device_manager/presentation/widgets/sign_out_all_devices_button.dart';
-  static const String widgetsSkelton = 'lib/core/common/widgets/skelton.dart';
+  static const String widgetsSkeleton = 'lib/core/common/widgets/skeleton.dart';
   static const String widgetsUserAvatarImage =
       'lib/core/common/widgets/user_avatar_image.dart';
-  static const String widgetsVerticalShimmer =
-      'lib/core/common/widgets/vertical_shimmer.dart';
-  static const String widgetsVerticalTile =
-      'lib/features/home/presentation/widgets/home_job_vertical_card.dart';
+  static const String widgetsVerticalListShimmer =
+      'lib/core/common/widgets/vertical_list_shimmer.dart';
   static const String widgetsWidthSpacer =
       'lib/core/common/widgets/width_spacer.dart';
 }

@@ -26,7 +26,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => EditProfileProvider()),
         ChangeNotifierProvider(create: (context) => SearchProvider()),
         ChangeNotifierProvider(create: (context) => JobsProvider()),
-        ChangeNotifierProvider(create: (context) => BookMarkNotifier()),
+        ChangeNotifierProvider(create: (context) => BookMarkProvider()),
         ChangeNotifierProvider(create: (context) => ImageHandlerProvider()),
         ChangeNotifierProvider(create: (context) => ProfileProvider()),
       ],

@@ -1,13 +1,13 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:jobhub_flutter/features/jobs/data/repositories/jobs_repo_impl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../features/auth/data/repositories/auth_repo/auth_repo.dart';
 import '../../features/auth/data/repositories/auth_repo/auth_repo_impl.dart';
-import '../../features/auth/data/repositories/user_repo/user_repo.dart';
 import '../../features/auth/data/repositories/user_repo/user_repo_impl.dart';
+import '../../features/bookmarks/data/repositories/bookmarks_repo_impl.dart';
+import '../../features/search/data/repositories/search_repo_impl.dart';
 import '../services/api_services.dart';
 import '../services/logger.dart';
 import '../utils/app_constants.dart';
@@ -26,19 +26,21 @@ class AppSetup {
     getIt.registerLazySingleton<ApiServices>(() => ApiServices(getIt<Dio>()));
 
     // repositories
-    getIt.registerLazySingleton<AuthRepo>(
+    getIt.registerLazySingleton<AuthRepositoryImpl>(
         () => AuthRepositoryImpl(getIt<ApiServices>()));
-    getIt.registerLazySingleton<UserRepo>(
+    getIt.registerLazySingleton<UserRepoImpl>(
         () => UserRepoImpl(getIt<ApiServices>()));
+    getIt.registerLazySingleton<SearchRepoImpl>(
+        () => SearchRepoImpl(getIt<ApiServices>()));
+    getIt.registerLazySingleton<JobsRepoImpl>(
+        () => JobsRepoImpl(getIt<ApiServices>()));
+    getIt.registerLazySingleton<BookmarksRepoImpl>(
+        () => BookmarksRepoImpl(getIt<ApiServices>()));
 
     await getIt.allReady().then((_) {
-      debugPrint("All dependencies are ready");
+      _logEvent("All dependencies are ready");
     }).catchError((e) {
-      Logger.logEvent(
-        className: "ServiceLocator",
-        event: "Error",
-        methodName: "setupServiceLocator",
-      );
+      _logEvent("Error");
     });
   }
 
@@ -65,4 +67,12 @@ _handleUserToken() async {
       AppConstants.userToken = "";
     }
   }
+}
+
+_logEvent(String message) {
+  return Logger.logEvent(
+    className: "ServiceLocator",
+    event: message,
+    methodName: "setupServiceLocator",
+  );
 }

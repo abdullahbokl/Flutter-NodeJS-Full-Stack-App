@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../utils/app_constants.dart';
-import 'skelton.dart';
+import 'skeleton.dart';
 
 class HorizontalListShimmer extends StatelessWidget {
   const HorizontalListShimmer({super.key});

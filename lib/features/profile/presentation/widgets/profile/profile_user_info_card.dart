@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
@@ -10,10 +9,22 @@ import '../../../../../core/common/widgets/width_spacer.dart';
 import '../../../../../core/config/app_router.dart';
 import '../../../../../core/utils/app_colors.dart';
 import '../../../../../core/utils/app_constants.dart';
+import '../../../../../core/utils/app_strings.dart';
+import '../../../../../generated/assets.dart';
 import '../../manager/profile_provider.dart';
 
 class ProfileUserInfoCard extends StatelessWidget {
   const ProfileUserInfoCard({super.key});
+
+  _getUserAvatar(BuildContext context) {
+    final profileProvider =
+        Provider.of<ProfileProvider>(context, listen: false);
+    if (profileProvider.user == null) {
+      return const AssetImage(Assets.imagesUser);
+    } else {
+      return NetworkImage(profileProvider.user?.profilePic.last ?? '');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,17 +34,15 @@ class ProfileUserInfoCard extends StatelessWidget {
       color: AppColors.light,
       child: Consumer<ProfileProvider>(
         builder: (context, profileProvider, child) {
-          final images = profileProvider.user?.profilePic ?? [];
           return Row(
             children: [
               ClipOval(
-                child: CachedNetworkImage(
-                  fit: BoxFit.cover,
-                  width: 80.r,
-                  height: 80.r,
-                  imageUrl: images.isNotEmpty
-                      ? images.first
-                      : 'https://faraitltd.com/wp-content/uploads/2023/02/Screenshot_7.jpg',
+                child: Hero(
+                  tag: AppStrings.heroTagAvatarImage,
+                  child: CircleAvatar(
+                    radius: 40,
+                    backgroundImage: _getUserAvatar(context),
+                  ),
                 ),
               ),
               const WidthSpacer(size: 10),
@@ -67,8 +76,8 @@ class ProfileUserInfoCard extends StatelessWidget {
               GestureDetector(
                 onTap: () async {
                   ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                  final result =
-                      await Navigator.pushNamed(context, AppRouter.editProfile);
+                  final result = await Navigator.pushNamed(
+                      context, AppRouter.editProfilePage);
                   if (result != null) {
                     Future.delayed(const Duration(milliseconds: 50), () {
                       AppConstants.showSnackBar(

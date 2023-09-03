@@ -12,12 +12,13 @@ class Redirect {
     if (routeName == AppRouter.onBoarding) {
       routeName = (prefs.getBool(AppStrings.prefsIsFirstTime) ?? true)
           ? AppRouter.onBoarding
-          : AppRouter.login;
+          : AppRouter.loginPage;
     }
 
-    if (routeName == AppRouter.login) {
-      routeName =
-          (AppConstants.userToken.isEmpty) ? AppRouter.login : AppRouter.drawer;
+    if (routeName == AppRouter.loginPage) {
+      routeName = (AppConstants.userToken.isEmpty)
+          ? AppRouter.loginPage
+          : AppRouter.drawer;
     }
 
     return routeName;

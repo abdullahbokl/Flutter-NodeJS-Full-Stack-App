@@ -59,7 +59,7 @@ class PageThree extends StatelessWidget {
                 children: [
                   CustomOutlineBtn(
                     onTap: () => Navigator.pushReplacementNamed(
-                        context, AppRouter.login),
+                        context, AppRouter.loginPage),
                     text: 'Login',
                     width: AppConstants.width * 0.4,
                     height: AppConstants.height * 0.06,
@@ -68,8 +68,9 @@ class PageThree extends StatelessWidget {
                   ),
                   CustomOutlineBtn(
                     onTap: () {
-                      Navigator.pushReplacementNamed(context, AppRouter.login);
-                      Navigator.pushNamed(context, AppRouter.register);
+                      Navigator.pushReplacementNamed(
+                          context, AppRouter.loginPage);
+                      Navigator.pushNamed(context, AppRouter.registerPage);
                     },
                     text: 'Sign Up',
                     width: AppConstants.width * 0.4,

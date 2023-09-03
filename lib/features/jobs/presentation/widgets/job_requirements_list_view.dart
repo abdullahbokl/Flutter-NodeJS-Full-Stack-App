@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import '../../../../core/common/widgets/app_style.dart';
 import '../../../../core/utils/app_colors.dart';
 
-class JobSkillsListView extends StatelessWidget {
-  const JobSkillsListView({
+class JobRequirementsListView extends StatelessWidget {
+  const JobRequirementsListView({
     super.key,
     required this.requirements,
   });

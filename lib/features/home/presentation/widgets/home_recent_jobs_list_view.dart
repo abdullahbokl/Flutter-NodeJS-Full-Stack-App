@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/common/widgets/vertical_shimmer.dart';
+import '../../../../core/common/widgets/vertical_list_shimmer.dart';
 import '../../../../core/config/app_router.dart';
 import '../../../jobs/presentation/manager/jobs_provider.dart';
 import 'home_job_vertical_card.dart';
@@ -16,7 +16,7 @@ class HomeRecentJobsListView extends StatelessWidget {
     return Consumer<JobsProvider>(
       builder: (context, jobsProvider, child) {
         if (jobsProvider.isLoading) {
-          const VerticalShimmer();
+          return const VerticalListShimmer();
         }
         return ListView.separated(
           physics: const NeverScrollableScrollPhysics(),
@@ -28,7 +28,7 @@ class HomeRecentJobsListView extends StatelessWidget {
               onTap: () {
                 Navigator.pushNamed(
                   context,
-                  AppRouter.jobPage,
+                  AppRouter.jobDetailsPage,
                   arguments: jobsProvider.jobs[index],
                 );
               },

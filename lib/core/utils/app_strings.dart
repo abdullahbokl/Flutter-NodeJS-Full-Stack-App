@@ -28,9 +28,10 @@ class AppStrings {
   static const String userIsAdmin = 'isAdmin';
   static const String userIsAgent = 'isAgent';
   static const String userBio = 'bio';
+  static const String userBookmarks = 'bookmarks';
 
 // job
-
+  static const String jobId = 'id';
   static const String jobTitle = 'title';
   static const String jobDescription = 'description';
   static const String jobLocation = 'location';
@@ -42,7 +43,14 @@ class AppStrings {
   static const String jobImageUrl = 'imageUrl';
   static const String jobAgentId = 'agentId';
 
+  // bookmark
+  static const String bookmarkJobId = 'jobId';
+  static const String bookmarkCreatedAt = 'createdAt';
+
   // image Model
   static const String imageModelUrl = 'url';
   static const String imageModelUploadedAt = 'uploadedAt';
+
+  // Hero Tags
+  static const String heroTagAvatarImage = 'avatarImage';
 }

@@ -1,6 +1,7 @@
 import '../../utils/app_strings.dart';
 
 class JobModel {
+  String id;
   String title;
   String description;
   String location;
@@ -13,6 +14,7 @@ class JobModel {
   String agentId;
 
   JobModel({
+    required this.id,
     required this.title,
     required this.description,
     required this.location,
@@ -27,6 +29,7 @@ class JobModel {
 
   factory JobModel.fromMap(Map<String, dynamic> json) {
     return JobModel(
+      id: json[AppStrings.jobId],
       title: json[AppStrings.jobTitle],
       description: json[AppStrings.jobDescription],
       location: json[AppStrings.jobLocation],
@@ -41,6 +44,7 @@ class JobModel {
   }
 
   Map<String, dynamic> toMap() => {
+        AppStrings.jobId: id,
         AppStrings.jobTitle: title,
         AppStrings.jobDescription: description,
         AppStrings.jobLocation: location,

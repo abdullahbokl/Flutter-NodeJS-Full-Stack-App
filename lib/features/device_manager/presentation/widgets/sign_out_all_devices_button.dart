@@ -24,7 +24,7 @@ class SignOutAllDevicesButton extends StatelessWidget {
           drawerProvider.currentIndex = 0;
           // todo : sign out all devices
           Navigator.pushNamedAndRemoveUntil(
-              context, AppRouter.login, (route) => false);
+              context, AppRouter.loginPage, (route) => false);
         },
         child: Align(
           alignment: Alignment.bottomCenter,

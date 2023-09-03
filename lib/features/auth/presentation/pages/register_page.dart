@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/common/widgets/app_bar.dart';
+import '../../../../core/common/widgets/custom_back_button.dart';
 import '../widgets/register/register_page_body.dart';
 
 class RegisterPage extends StatelessWidget {
@@ -11,10 +12,7 @@ class RegisterPage extends StatelessWidget {
     return Scaffold(
       appBar: customAppBar(
         title: 'Register',
-        leading: GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: const Icon(Icons.arrow_back),
-        ),
+        leading: const CustomBackButton(),
       ),
       body: const RegisterPageBody(),
     );

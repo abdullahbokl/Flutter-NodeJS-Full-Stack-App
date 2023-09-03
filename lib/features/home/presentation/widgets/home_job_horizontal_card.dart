@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 
 import '../../../../core/common/models/job_model.dart';
 import '../../../../core/common/widgets/app_style.dart';
@@ -10,6 +9,7 @@ import '../../../../core/common/widgets/salary_widget.dart';
 import '../../../../core/common/widgets/width_spacer.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_constants.dart';
+import 'custom_circle_button.dart';
 
 class HomeJobHorizontalCard extends StatelessWidget {
   const HomeJobHorizontalCard({
@@ -50,7 +50,7 @@ class HomeJobHorizontalCard extends StatelessWidget {
                 const HeightSpacer(size: 15),
                 ReusableText(
                   text: job.title,
-                  style: appStyle(20, AppColors.dark, FontWeight.w600),
+                  style: appStyle(20, AppColors.darkBlue, FontWeight.w600),
                 ),
                 ReusableText(
                   text: job.location,
@@ -65,9 +65,7 @@ class HomeJobHorizontalCard extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
-                    const CircleAvatar(
-                      child: Icon(Ionicons.chevron_forward),
-                    ),
+                    const CustomCircleButton(),
                   ],
                 ),
               ],

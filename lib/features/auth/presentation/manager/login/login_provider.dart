@@ -43,7 +43,6 @@ class LoginProvider extends ChangeNotifier {
 
   set isLoading(bool value) {
     _isLoading = value;
-    notifyListeners();
   }
 
   // methods
@@ -71,7 +70,8 @@ class LoginProvider extends ChangeNotifier {
 
   _handleNextRoute(String? fullName) {
     // if fullName that means user is logging in for the first time
-    _nextRoute = fullName == null ? AppRouter.editProfile : AppRouter.drawer;
+    _nextRoute =
+        fullName == null ? AppRouter.editProfilePage : AppRouter.drawer;
   }
 
   @override

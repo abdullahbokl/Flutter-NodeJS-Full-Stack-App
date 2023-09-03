@@ -27,7 +27,7 @@ class HomePopularJobsListView extends StatelessWidget {
               onTap: () {
                 Navigator.pushNamed(
                   context,
-                  AppRouter.jobPage,
+                  AppRouter.jobDetailsPage,
                   arguments: jobsProvider.jobs[index],
                 );
               },

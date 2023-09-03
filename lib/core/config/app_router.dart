@@ -5,7 +5,9 @@ import '../../features/auth/presentation/manager/register/register_provider.dart
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
-import '../../features/jobs/presentation/pages/job_page.dart';
+import '../../features/jobs/presentation/manager/job_details_provider.dart';
+import '../../features/jobs/presentation/pages/job_details_page.dart';
+import '../../features/jobs/presentation/pages/jobs_list_page.dart';
 import '../../features/on_boarding/presentation/manager/on_boarding_provider.dart';
 import '../../features/on_boarding/presentation/on_boarding_screen.dart';
 import '../../features/profile/presentation/pages/edit_profile_page.dart';
@@ -17,14 +19,15 @@ import 'redirects.dart';
 
 class AppRouter {
   static const String onBoarding = '/onBoarding';
-  static const String login = '/login';
-  static const String register = '/register';
-  static const String profile = '/profile';
-  static const String home = '/home';
-  static const String search = '/search';
-  static const String jobPage = '/jobPage';
   static const String drawer = '/drawer';
-  static const String editProfile = '/editProfile';
+  static const String loginPage = '/login';
+  static const String registerPage = '/registerPage';
+  static const String profilePage = '/profilePage';
+  static const String homePage = '/homePage';
+  static const String searchPage = '/searchPage';
+  static const String jobsListPage = '/jobsListPage';
+  static const String jobDetailsPage = '/jobDetailsPage';
+  static const String editProfilePage = '/editProfilePage';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     int cnt = 0;
@@ -43,36 +46,43 @@ class AppRouter {
               child: const OnBoardingScreen(),
             ),
           );
-        case login:
+        case loginPage:
           return MaterialPageRoute(
             builder: (_) => const LoginPage(),
           );
-        case register:
+        case registerPage:
           return MaterialPageRoute(
             builder: (_) => ChangeNotifierProvider<RegisterProvider>(
               create: (BuildContext context) => RegisterProvider(),
               child: const RegisterPage(),
             ),
           );
-        case home:
+        case homePage:
           return MaterialPageRoute(
             builder: (_) => const HomePage(),
           );
-        case profile:
+        case profilePage:
           return MaterialPageRoute(
             builder: (_) => const ProfilePage(),
           );
-        case editProfile:
+        case editProfilePage:
           return MaterialPageRoute(
             builder: (_) => const EditProfilePage(),
           );
-        case search:
+        case searchPage:
           return MaterialPageRoute(
             builder: (_) => const SearchPage(),
           );
-        case jobPage:
+        case jobsListPage:
           return MaterialPageRoute(
-            builder: (_) => JobDetailsPage(job: settings.arguments as JobModel),
+            builder: (_) => JobsListPage(title: settings.arguments as String),
+          );
+        case jobDetailsPage:
+          return MaterialPageRoute(
+            builder: (_) => ChangeNotifierProvider<JobDetailsProvider>(
+              create: (BuildContext context) => JobDetailsProvider(),
+              child: JobDetailsPage(job: settings.arguments as JobModel),
+            ),
           );
         case drawer:
           return MaterialPageRoute(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../../core/common/widgets/height_spacer.dart';
-import '../../../../core/common/widgets/skelton.dart';
+import '../../../../core/common/widgets/skeleton.dart';
 import '../../../../core/common/widgets/width_spacer.dart';
 
 class ProfileUserInfoCardShimmer extends StatelessWidget {

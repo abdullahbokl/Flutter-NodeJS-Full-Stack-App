@@ -4,7 +4,7 @@ import '../../../../../core/services/logger.dart';
 import '../../../../../core/utils/app_strings.dart';
 import 'user_repo.dart';
 
-class UserRepoImpl extends UserRepo {
+class UserRepoImpl implements UserRepo {
   final ApiServices _apiServices;
 
   UserRepoImpl(this._apiServices);

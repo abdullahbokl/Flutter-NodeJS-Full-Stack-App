@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_vector_icons/flutter_vector_icons.dart';
+import 'package:jobhub_flutter/features/search/presentation/widgets/search_no_data_found.dart';
+import 'package:jobhub_flutter/features/search/presentation/widgets/search_result_list.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/common/widgets/app_style.dart';
-import '../../../../core/common/widgets/reusable_text.dart';
+import '../../../../core/common/widgets/vertical_list_shimmer.dart';
 import '../../../../core/utils/app_colors.dart';
-import '../../../../generated/assets.dart';
 import '../manager/search_provider.dart';
-import '../widgets/custom_field.dart';
+import '../widgets/custom_search_field.dart';
 
 class SearchPage extends StatelessWidget {
   const SearchPage({super.key});
@@ -19,31 +18,21 @@ class SearchPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.orange,
         iconTheme: const IconThemeData(color: AppColors.light),
-        title: Consumer<SearchProvider>(
-          builder: (context, searchProvider, child) {
-            return CustomField(
-              hintText: 'Search for jobs',
-              controller: searchProvider.searchController,
-              suffixIcon: GestureDetector(
-                onTap: () {},
-                child: const Icon(AntDesign.search1),
-              ),
-            );
-          },
-        ),
+        title: const CustomSearchField(),
         elevation: 0,
       ),
       body: Padding(
         padding: EdgeInsets.all(20.h),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(Assets.imagesOptimizedSearch),
-            ReusableText(
-              text: 'Start searching for jobs',
-              style: appStyle(24, AppColors.dark, FontWeight.bold),
-            ),
-          ],
+        child: Consumer<SearchProvider>(
+          builder: (context, searchProvider, child) {
+            if (searchProvider.isLoading) {
+              return const VerticalListShimmer();
+            } else if (searchProvider.jobs.isNotEmpty) {
+              return const SearchResultList();
+            } else {
+              return const SearchNoDataFound();
+            }
+          },
         ),
       ),
     );
