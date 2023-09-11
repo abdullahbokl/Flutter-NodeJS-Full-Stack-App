@@ -72,6 +72,8 @@ class Assets {
       'lib/features/auth/presentation/widgets/login/login_register_button.dart';
   static const String managerBookmarkProvider =
       'lib/features/bookmarks/presentation/manager/bookmark_provider.dart';
+  static const String managerChatProvider =
+      'lib/features/chat/presentation/manager/chat_provider.dart';
   static const String managerEditProfileProvider =
       'lib/features/profile/presentation/manager/edit_profile_provider.dart';
   static const String managerHomeProvider =
@@ -92,19 +94,25 @@ class Assets {
       'lib/core/common/managers/image_handler_provider.dart';
   static const String modelsBookmarkModel =
       'lib/features/bookmarks/data/models/bookmark_model.dart';
+  static const String modelsChatModel =
+      'lib/features/chat/data/models/chat_model.dart';
   static const String modelsImageModel =
       'lib/core/common/models/image_model.dart';
   static const String modelsJobModel = 'lib/core/common/models/job_model.dart';
   static const String modelsLoginModel =
       'lib/features/auth/data/models/login_model.dart';
+  static const String modelsMessageModel =
+      'lib/features/chat/data/models/message_model.dart';
   static const String modelsRegisterModel =
       'lib/features/auth/data/models/register_model.dart';
   static const String modelsUserModel =
       'lib/core/common/models/user_model.dart';
   static const String pagesBookmarksPage =
       'lib/features/bookmarks/presentation/pages/bookmarks_page.dart';
-  static const String pagesChatpage =
-      'lib/features/chat/presentation/pages/chatpage.dart';
+  static const String pagesChatsPage =
+      'lib/features/chat/presentation/pages/chats_page.dart';
+  static const String pagesConversationPage =
+      'lib/features/chat/presentation/pages/conversation_page.dart';
   static const String pagesDevicesManagerPage =
       'lib/features/device_manager/presentation/pages/devices_manager_page.dart';
   static const String pagesEditProfilePage =
@@ -137,6 +145,8 @@ class Assets {
       'lib/features/profile/presentation/widgets/profile/profile_bio.dart';
   static const String profileProfileContactsData =
       'lib/features/profile/presentation/widgets/profile/profile_contacts_data.dart';
+  static const String profileProfileLogoutButton =
+      'lib/features/profile/presentation/widgets/profile/profile_logout_button.dart';
   static const String profileProfilePageBody =
       'lib/features/profile/presentation/widgets/profile/profile_page_body.dart';
   static const String profileProfilePhoneNumber =
@@ -163,6 +173,10 @@ class Assets {
       'lib/features/bookmarks/data/repositories/bookmarks_repo.dart';
   static const String repositoriesBookmarksRepoImpl =
       'lib/features/bookmarks/data/repositories/bookmarks_repo_impl.dart';
+  static const String repositoriesChatRepo =
+      'lib/features/chat/data/repositories/chat_repo.dart';
+  static const String repositoriesChatRepoImpl =
+      'lib/features/chat/data/repositories/chat_repo_impl.dart';
   static const String repositoriesJobsRepo =
       'lib/features/jobs/data/repositories/jobs_repo.dart';
   static const String repositoriesJobsRepoImpl =
@@ -190,12 +204,16 @@ class Assets {
       'lib/core/common/widgets/back_home_button.dart';
   static const String widgetsBookmarkWidget =
       'lib/features/bookmarks/presentation/widgets/bookmark_widget.dart';
-  static const String widgetsChats =
-      'lib/features/chat/presentation/widgets/chats.dart';
+  static const String widgetsChatsListView =
+      'lib/features/chat/presentation/widgets/chats_list_view.dart';
+  static const String widgetsConversationPageBody =
+      'lib/features/chat/presentation/widgets/conversation_page_body.dart';
   static const String widgetsCustomBackButton =
       'lib/core/common/widgets/custom_back_button.dart';
   static const String widgetsCustomBtn =
       'lib/core/common/widgets/custom_btn.dart';
+  static const String widgetsCustomChatCard =
+      'lib/features/chat/presentation/widgets/custom_chat_card.dart';
   static const String widgetsCustomCircleButton =
       'lib/features/home/presentation/widgets/custom_circle_button.dart';
   static const String widgetsCustomField =
@@ -242,10 +260,18 @@ class Assets {
       'lib/features/jobs/presentation/widgets/job_summary_card.dart';
   static const String widgetsJobTile =
       'lib/features/jobs/presentation/widgets/job_tile.dart';
+  static const String widgetsMessageInput =
+      'lib/features/chat/presentation/widgets/message_input.dart';
+  static const String widgetsMessagesList =
+      'lib/features/chat/presentation/widgets/messages_list.dart';
+  static const String widgetsNoChatsWidget =
+      'lib/features/chat/presentation/widgets/no_chats_widget.dart';
   static const String widgetsOnBoardingButtons =
       'lib/features/on_boarding/presentation/widgets/on_boarding_buttons.dart';
   static const String widgetsOnBoardingPageView =
       'lib/features/on_boarding/presentation/widgets/on_boarding_page_view.dart';
+  static const String widgetsProfileUserImage =
+      'lib/features/profile/presentation/widgets/profile_user_image.dart';
   static const String widgetsProfileUserInfoCardShimmer =
       'lib/features/profile/presentation/widgets/profile_user_info_card_shimmer.dart';
   static const String widgetsReusableText =

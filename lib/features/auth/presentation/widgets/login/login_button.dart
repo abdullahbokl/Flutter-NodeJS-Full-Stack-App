@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../core/common/widgets/custom_btn.dart';
-import '../../../../../core/utils/app_constants.dart';
 import '../../manager/login/login_provider.dart';
 
 class LoginButton extends StatelessWidget {
@@ -16,22 +15,7 @@ class LoginButton extends StatelessWidget {
           text: 'Login',
           onTap: () async {
             if (loginProvider.loginFormKey.currentState!.validate()) {
-              loginProvider.isLoading = true;
-              try {
-                await loginProvider.userLogin();
-                if (context.mounted) {
-                  Navigator.of(context)
-                      .pushReplacementNamed(loginProvider.nextRoute);
-                }
-              } catch (e) {
-                if (context.mounted) {
-                  AppConstants.showSnackBar(
-                    context: context,
-                    message: e.toString(),
-                  );
-                }
-              }
-              loginProvider.isLoading = false;
+              await loginProvider.userLogin(context);
             }
           },
           isLoading: loginProvider.isLoading,

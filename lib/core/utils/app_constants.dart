@@ -1,12 +1,13 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:provider/provider.dart';
 
+import '../../features/profile/presentation/manager/profile_provider.dart';
+import '../../generated/assets.dart';
 import '../common/widgets/app_style.dart';
 import '../common/widgets/reusable_text.dart';
 import 'app_colors.dart';
-import 'app_strings.dart';
 
 class AppConstants {
   static double height = 812.h;
@@ -37,8 +38,18 @@ class AppConstants {
   // User
   static String userToken = "";
 
-  static getCurrentUserId() async {
-    return await JwtDecoder.decode(AppConstants.userToken)[AppStrings.userId];
+  static String userId = "";
+
+  static getCurrentUserImage(BuildContext context) {
+    final profileProvider =
+        Provider.of<ProfileProvider>(context, listen: false);
+    final images = profileProvider.user?.profilePic;
+
+    if (images == null || images.isEmpty) {
+      return const AssetImage(Assets.imagesUser);
+    } else {
+      return NetworkImage(profileProvider.user?.profilePic.last ?? '');
+    }
   }
 
   /// Show snack bar

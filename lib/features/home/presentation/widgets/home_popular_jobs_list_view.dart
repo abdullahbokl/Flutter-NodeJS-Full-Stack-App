@@ -16,23 +16,22 @@ class HomePopularJobsListView extends StatelessWidget {
       height: AppConstants.height * 0.25,
       child: Consumer<JobsProvider>(
         builder: (context, jobsProvider, child) {
-          if (jobsProvider.isLoading) {
-            return const HorizontalListShimmer();
-          }
-          return ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: jobsProvider.jobs.length,
-            itemBuilder: (context, index) => HomeJobHorizontalCard(
-              job: jobsProvider.jobs[index],
-              onTap: () {
-                Navigator.pushNamed(
-                  context,
-                  AppRouter.jobDetailsPage,
-                  arguments: jobsProvider.jobs[index],
+          return jobsProvider.isLoading
+              ? const HorizontalListShimmer()
+              : ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: jobsProvider.jobs.length,
+                  itemBuilder: (context, index) => HomeJobHorizontalCard(
+                    job: jobsProvider.jobs[index],
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        AppRouter.jobDetailsPage,
+                        arguments: jobsProvider.jobs[index],
+                      );
+                    },
+                  ),
                 );
-              },
-            ),
-          );
         },
       ),
     );

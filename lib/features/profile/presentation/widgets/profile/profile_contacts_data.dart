@@ -10,8 +10,8 @@ import '../../../../../core/utils/app_constants.dart';
 import '../../manager/profile_provider.dart';
 import 'profile_phone_number.dart';
 
-class ProfileContactsData extends StatelessWidget {
-  const ProfileContactsData({super.key});
+class ProfileContactDetails extends StatelessWidget {
+  const ProfileContactDetails({super.key});
 
   @override
   Widget build(BuildContext context) {

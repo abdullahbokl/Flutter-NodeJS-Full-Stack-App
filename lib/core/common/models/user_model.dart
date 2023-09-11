@@ -1,6 +1,7 @@
 import '../../utils/app_strings.dart';
 
 class UserModel {
+  final String id;
   final String email;
   final String userName;
   final String? fullName;
@@ -13,6 +14,7 @@ class UserModel {
   final String? bio;
 
   UserModel({
+    required this.id,
     required this.email,
     required this.userName,
     this.fullName,
@@ -28,6 +30,7 @@ class UserModel {
   // copy with
   factory UserModel.copyWith(
     UserModel user, {
+    String? id,
     String? email,
     String? userName,
     String? fullName,
@@ -40,6 +43,7 @@ class UserModel {
     String? bio,
   }) {
     return UserModel(
+      id: id ?? user.id,
       email: email ?? user.email,
       userName: userName ?? user.userName,
       fullName: fullName ?? user.fullName,
@@ -55,6 +59,7 @@ class UserModel {
 
   Map<String, dynamic> toMap() {
     return {
+      AppStrings.userId: id,
       AppStrings.userEmail: email,
       AppStrings.userUserName: userName,
       AppStrings.userFullName: fullName,
@@ -81,6 +86,7 @@ class UserModel {
     }
 
     return UserModel(
+      id: map[AppStrings.userId],
       email: map[AppStrings.userEmail],
       userName: map[AppStrings.userUserName],
       fullName: map[AppStrings.userFullName],

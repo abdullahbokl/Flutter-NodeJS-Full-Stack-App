@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/common/models/user_model.dart';
 import '../../../../../core/config/app_setup.dart';
-import '../../../../../core/services/logger.dart';
+import '../../../../../core/utils/app_constants.dart';
 import '../../../data/models/register_model.dart';
-import '../../../data/repositories/auth_repo/auth_repo.dart';
+import '../../../data/repositories/auth_repo/auth_repo_impl.dart';
 
 class RegisterProvider extends ChangeNotifier {
   // variables
-  final _authRepo = getIt<AuthRepo>();
+  final _authRepo = getIt<AuthRepoImpl>();
   bool _isObscureText = true;
   bool _firstTime = false;
   bool _isLoading = false;
@@ -44,34 +43,30 @@ class RegisterProvider extends ChangeNotifier {
   }
 
 // methods
-  register() async {
+  register(BuildContext context) async {
+    isLoading = true;
     if (signupFormKey.currentState!.validate()) {
       try {
-        final userJson = await _authRepo.register(
+        await _authRepo.register(
           registerModel: RegisterModel(
             userName: userNameController.text,
             email: emailController.text,
             password: passwordController.text,
           ),
         );
-        if (userJson != null) {
-          final UserModel user = UserModel.fromMap(userJson);
-          _userRegisterLogger("User registered successfully with id: $user");
+        if (context.mounted) {
+          Navigator.of(context).pop();
         }
       } catch (error) {
-        _userRegisterLogger("Error registering user: $error");
-
-        rethrow;
+        if (context.mounted) {
+          AppConstants.showSnackBar(
+            context: context,
+            message: error.toString(),
+          );
+        }
       }
     }
-  }
-
-  _userRegisterLogger(String event) {
-    Logger.logEvent(
-      className: "RegisterProvider",
-      event: event,
-      methodName: "register",
-    );
+    isLoading = false;
   }
 
   @override

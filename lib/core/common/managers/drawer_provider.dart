@@ -3,7 +3,7 @@ import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 
 import '../../../features/bookmarks/presentation/pages/bookmarks_page.dart';
-import '../../../features/chat/presentation/pages/chatpage.dart';
+import '../../../features/chat/presentation/pages/chats_page.dart';
 import '../../../features/device_manager/presentation/pages/devices_manager_page.dart';
 import '../../../features/home/presentation/pages/home_page.dart';
 import '../../../features/profile/presentation/pages/profile_page.dart';
@@ -54,5 +54,12 @@ class DrawerProvider extends ChangeNotifier {
   set currentIndex(int newIndex) {
     _currentIndex = newIndex;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    Logger.logEvent(
+        className: 'DrawerProvider', event: 'DrawerProvider disposed');
+    super.dispose();
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jobhub_flutter/features/chat/presentation/manager/chat_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'core/common/managers/drawer_provider.dart';
@@ -29,6 +30,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => BookMarkProvider()),
         ChangeNotifierProvider(create: (context) => ImageHandlerProvider()),
         ChangeNotifierProvider(create: (context) => ProfileProvider()),
+        ChangeNotifierProvider(create: (context) => ChatProvider()),
       ],
       child: const MyApp(),
     ),

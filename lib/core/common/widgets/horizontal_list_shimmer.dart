@@ -8,15 +8,16 @@ class HorizontalListShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return ListView.separated(
       shrinkWrap: true,
       itemCount: 3,
       scrollDirection: Axis.horizontal,
       itemBuilder: (context, index) {
         return Skeleton(
-          width: AppConstants.width * 0.7,
+          width: AppConstants.width * 0.6,
         );
       },
+      separatorBuilder: (context, index) => const VerticalDivider(),
     );
   }
 }

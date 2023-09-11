@@ -6,6 +6,7 @@ import '../../manager/profile_provider.dart';
 import '../profile_user_info_card_shimmer.dart';
 import 'profile_bio.dart';
 import 'profile_contacts_data.dart';
+import 'profile_logout_button.dart';
 import 'profile_skills_card.dart';
 import 'profile_user_info_card.dart';
 
@@ -27,13 +28,16 @@ class ProfilePageBody extends StatelessWidget {
                   ProfileUserInfoCard(),
                   HeightSpacer(size: 30),
                   // contact
-                  ProfileContactsData(),
+                  ProfileContactDetails(),
                   HeightSpacer(size: 30),
                   // bio
                   ProfileBio(),
                   HeightSpacer(size: 30),
                   // skills
                   ProfileSkillsCard(),
+                  HeightSpacer(size: 30),
+                  // logout button
+                  LogOutButton(),
                   HeightSpacer(size: 30),
                 ],
               );

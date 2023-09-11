@@ -45,7 +45,7 @@ class BookMarkProvider extends ChangeNotifier {
   _bookmarksProviderLogger(String event) {
     return Logger.logEvent(
       className: "BookMarkNotifier",
-      event: "BookMarkNotifier initialized",
+      event: event,
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:jobhub_flutter/core/utils/app_constants.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../core/utils/app_colors.dart';
@@ -25,16 +26,23 @@ class UserImage extends StatelessWidget {
                 imageSource: ImageSource.gallery,
               );
             },
-            child: CircleAvatar(
-              radius: 80.r,
-              backgroundColor: AppColors.lightBlue,
-              backgroundImage: imageHandler.profilePic != null
-                  ? FileImage(imageHandler.profilePic!)
-                  : Image.network(profileProvider.user!.profilePic.last).image,
-              child: imageHandler.profilePic == null
-                  ? const Center(
-                      child: Icon(Icons.photo_filter_rounded, size: 50))
-                  : null,
+            child: Consumer<ProfileProvider>(
+              builder: (context, profileProvider, child) {
+                var image = AppConstants.getCurrentUserImage(context);
+                if (imageHandler.profilePic != null) {
+                  image = FileImage(imageHandler.profilePic!);
+                }
+
+                return CircleAvatar(
+                  radius: 80.r,
+                  backgroundColor: AppColors.lightBlue,
+                  backgroundImage: image,
+                  child: imageHandler.profilePic == null
+                      ? const Center(
+                          child: Icon(Icons.photo_filter_rounded, size: 50))
+                      : null,
+                );
+              },
             ),
           );
         },

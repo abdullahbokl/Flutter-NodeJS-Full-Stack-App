@@ -33,14 +33,14 @@ class _ServerErrorHandler extends Failure {
   }
 
   factory _ServerErrorHandler.fromResponse(int statusCode, dynamic response) {
-    if (statusCode == 400 || statusCode == 401 || statusCode == 403) {
-      return _ServerErrorHandler(response['message']);
-    } else if (statusCode == 404) {
+    if (statusCode == 404) {
       if (response['message'] != null) {
         return _ServerErrorHandler(response['message']);
       }
       return _ServerErrorHandler(
           'Your request was not found, please try later');
+    } else if (statusCode < 500) {
+      return _ServerErrorHandler(response['message']);
     } else if (statusCode == 500) {
       return _ServerErrorHandler(
           'There is a problem with server, please try later');

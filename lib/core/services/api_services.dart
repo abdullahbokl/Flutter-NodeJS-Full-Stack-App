@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 
 import '../errors/server_error_handler.dart';
-import '../utils/app_constants.dart';
 
 class ApiServices {
   final Dio _dio;
@@ -18,12 +17,6 @@ class ApiServices {
       final response = await _dio.get(
         endPoint,
         queryParameters: queryParameters,
-        options: Options(
-          contentType: "application/json",
-          headers: {
-            "x-access-token": "Bearer ${AppConstants.userToken}",
-          },
-        ),
       );
       return response.data;
     } catch (e) {
@@ -39,12 +32,6 @@ class ApiServices {
       final response = await _dio.post(
         endPoint,
         data: data,
-        options: Options(
-          contentType: "application/json",
-          headers: {
-            "x-access-token": "Bearer ${AppConstants.userToken}",
-          },
-        ),
       );
       return response.data;
     } catch (e) {
@@ -60,12 +47,6 @@ class ApiServices {
       final response = await _dio.put(
         endPoint,
         data: data,
-        options: Options(
-          contentType: "application/json",
-          headers: {
-            "x-access-token": "Bearer ${AppConstants.userToken}",
-          },
-        ),
       );
       return response.data;
     } catch (e) {
@@ -79,12 +60,6 @@ class ApiServices {
     try {
       final response = await _dio.delete(
         endPoint,
-        options: Options(
-          contentType: "application/json",
-          headers: {
-            "x-access-token": "Bearer ${AppConstants.userToken}",
-          },
-        ),
       );
       return response.data;
     } catch (e) {
@@ -109,9 +84,6 @@ class ApiServices {
         data: handledData,
         options: Options(
           contentType: "multipart/form-data",
-          headers: {
-            "x-access-token": "Bearer ${AppConstants.userToken}",
-          },
         ),
       );
       return response.data;

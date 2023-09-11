@@ -26,14 +26,8 @@ class LoginForm extends StatelessWidget {
               children: [
                 CustomTextField(
                   controller: loginProvider.emailController,
-                  hintText: 'Email',
+                  hintText: 'Email Or User Name',
                   keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (!DataValidator.isValidEmail(value!)) {
-                      return 'Please enter a valid email';
-                    }
-                    return null;
-                  },
                 ),
                 const HeightSpacer(size: 20),
                 CustomTextField(
@@ -42,9 +36,8 @@ class LoginForm extends StatelessWidget {
                   keyboardType: TextInputType.visiblePassword,
                   obscureText: loginProvider.obscureText,
                   validator: (value) {
-                    if (!DataValidator.isValidPassword(value!)) {
-                      return 'Password must be at least 6 characters long';
-                    }
+                    final errors = DataValidator.validatePassword(value!);
+                    if (errors.isNotEmpty) return errors.join('\n');
                     return null;
                   },
                   suffixIcon: GestureDetector(

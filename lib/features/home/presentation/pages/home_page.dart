@@ -8,12 +8,24 @@ import '../../../../core/common/widgets/user_avatar_image.dart';
 import '../manager/home_provider.dart';
 import '../widgets/home_page_body.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    Future.delayed(Duration.zero, () {
+      Provider.of<HomeProvider>(context, listen: false).loadData(context);
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    Provider.of<HomeProvider>(context, listen: false).loadData(context);
     return Scaffold(
       appBar: customAppBar(
         leading: Padding(

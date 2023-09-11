@@ -8,13 +8,25 @@ import '../manager/profile_provider.dart';
 import '../widgets/profile/profile_page_body.dart';
 
 //
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    Provider.of<ProfileProvider>(context, listen: false).getUserProfile();
+  State<ProfilePage> createState() => _ProfilePageState();
+}
 
+class _ProfilePageState extends State<ProfilePage> {
+  @override
+  void initState() {
+    Future.delayed(Duration.zero, () {
+      Provider.of<ProfileProvider>(context, listen: false).getUserProfile();
+    });
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: customAppBar(
         leading: Padding(

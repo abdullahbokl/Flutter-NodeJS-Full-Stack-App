@@ -6,11 +6,12 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/common/managers/image_handler_provider.dart';
 import '../../../../core/common/models/user_model.dart';
+import '../../../../core/config/app_router.dart';
 import '../../../../core/config/app_setup.dart';
 import '../../../../core/services/logger.dart';
 import '../../../../core/utils/app_constants.dart';
 import '../../../../core/utils/app_strings.dart';
-import '../../../auth/data/repositories/user_repo/user_repo.dart';
+import '../../../auth/data/repositories/user_repo/user_repo_impl.dart';
 
 class EditProfileProvider extends ChangeNotifier {
   EditProfileProvider() {
@@ -18,7 +19,7 @@ class EditProfileProvider extends ChangeNotifier {
         className: 'ProfileSetupProvider', event: 'Provider Created');
   }
 
-  late UserModel user;
+  UserModel? user;
 
   // form
   final profileSetupFormKey = GlobalKey<FormState>();
@@ -30,13 +31,17 @@ class EditProfileProvider extends ChangeNotifier {
   final TextEditingController bioController = TextEditingController();
 
   // variables
+
   bool _isLoading = false;
-  final _userRepo = getIt<UserRepo>();
+  bool _isUpdating = false;
+  final _userRepo = getIt<UserRepoImpl>();
   final _skillsControllers = [TextEditingController()];
   File? _profilePic;
 
   // getters
   bool get isLoading => _isLoading;
+
+  bool get isUpdating => _isUpdating;
 
   List<TextEditingController> get skillsControllers => _skillsControllers;
 
@@ -49,6 +54,11 @@ class EditProfileProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  set isUpdating(bool value) {
+    _isUpdating = value;
+    notifyListeners();
+  }
+
   set profilePic(File? value) {
     _profilePic = value;
     notifyListeners();
@@ -56,17 +66,20 @@ class EditProfileProvider extends ChangeNotifier {
 
   // methods
 
-  loadData(UserModel user) {
-    this.user = user;
-    fullNameController.text = user.fullName!;
-    phoneController.text = user.phone!;
-    locationController.text = user.location!;
-    bioController.text = user.bio!;
-    _skillsControllers.clear();
-    for (var skill in user.skills) {
-      _skillsControllers.add(TextEditingController(text: skill));
+  loadData(UserModel? user) {
+    isLoading = true;
+    if (user != null) {
+      this.user = user;
+      fullNameController.text = user.fullName!;
+      phoneController.text = user.phone!;
+      locationController.text = user.location!;
+      bioController.text = user.bio!;
+      _skillsControllers.clear();
+      for (var skill in user.skills) {
+        _skillsControllers.add(TextEditingController(text: skill));
+      }
     }
-    notifyListeners();
+    isLoading = false;
   }
 
   addSkillController() {
@@ -100,13 +113,33 @@ class EditProfileProvider extends ChangeNotifier {
   }
 
   Future<void> updateUserProfile(BuildContext context) async {
-    final newUserData = await _newDataMap();
-    final userJson = await _userRepo.updateUser(newUserData: newUserData);
-    if (userJson != null) {
-      AppConstants.userToken = userJson[AppStrings.userToken];
-      // final UserModel user = UserModel.fromMap(userJson);
-      notifyListeners();
+    isUpdating = true;
+    try {
+      final nextRoute = _handleNextRoute(user?.fullName, context);
+      final newUserData = await _newDataMap();
+      final userJson = await _userRepo.updateUser(newUserData: newUserData);
+      if (userJson != null) {
+        AppConstants.userToken = userJson[AppStrings.userToken];
+        // final UserModel user = UserModel.fromMap(userJson);
+        notifyListeners();
+        if (context.mounted) {
+          Navigator.of(context).pushReplacementNamed(nextRoute);
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        AppConstants.showSnackBar(
+          context: context,
+          message: e.toString(),
+        );
+      }
     }
+    isUpdating = false;
+  }
+
+  _handleNextRoute(String? fullName, BuildContext context) {
+    // if fullName that means user is logging in for the first time
+    return fullName == null ? AppRouter.drawer : AppRouter.profilePage;
   }
 
   Future<Map<String, dynamic>> _newDataMap() async {

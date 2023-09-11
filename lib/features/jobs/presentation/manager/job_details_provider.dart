@@ -44,7 +44,7 @@ class JobDetailsProvider extends ChangeNotifier {
 
   // methods
   checkIfJobIsBookmarked(String id) async {
-    final userId = await AppConstants.getCurrentUserId();
+    final userId = AppConstants.userId;
     final userData = await _apiServices
         .get(endPoint: "${AppStrings.apiUsersUrl}/$userId")
         .timeout(const Duration(seconds: 10));

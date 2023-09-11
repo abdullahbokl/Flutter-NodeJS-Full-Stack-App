@@ -1,14 +1,17 @@
 class AppStrings {
   // API
   static const String apiBaseUrl = 'http://10.0.2.2:7000/api';
-  static const String apiLoginUrl = "$apiBaseUrl/login";
-  static const String apiRegisterUrl = "$apiBaseUrl/register";
-  static const String apiUsersUrl = "$apiBaseUrl/users";
-  static const String apiJobs = "$apiBaseUrl/jobs";
-  static const String apiSearch = "$apiBaseUrl/jobs/search";
-  static const String apiProfileUrl = "$apiBaseUrl/users";
-  static const String apiBookmarkUrl = "$apiBaseUrl/bookmarks";
-  static const String apiUploadImageUrl = "$apiBaseUrl/images";
+  static const String apiLoginUrl = "/login";
+  static const String apiRegisterUrl = "/register";
+  static const String apiUsersUrl = "/users";
+  static const String apiJobs = "/jobs";
+  static const String apiSearch = "/jobs/search";
+  static const String apiProfileUrl = "/users";
+  static const String apiBookmarkUrl = "/bookmarks";
+  static const String apiUploadImageUrl = "/images";
+  static const String apiChatsUrl = "/chats";
+  static const String apiMessagesUrl = "/messages";
+  static const String apiHeadersToken = "x-access-token";
 
   // shared preferences
   static const String prefsIsFirstTime = 'isFirstTime';
@@ -46,6 +49,26 @@ class AppStrings {
   // bookmark
   static const String bookmarkJobId = 'jobId';
   static const String bookmarkCreatedAt = 'createdAt';
+
+  // chat
+  static const String chatId = 'id';
+  static const String chatName = 'chatName';
+  static const String chatIsGroupChat = 'isGroupChat';
+  static const String chatUsers = 'users';
+  static const String chatGroupAdmin = 'groupAdmin';
+  static const String chatCreatedAt = 'createdAt';
+  static const String chatUpdatedAt = 'updatedAt';
+  static const String chatLatestMessage = 'latestMessage';
+
+  // message
+  static const String messageId = 'id';
+  static const String messageSender = 'sender';
+  static const String messageContent = 'content';
+  static const String messageReceiver = 'receiver';
+  static const String messageChat = 'chat';
+  static const String messageReadBy = 'readBy';
+  static const String messageCreatedAt = 'createdAt';
+  static const String messageUpdatedAt = 'updatedAt';
 
   // image Model
   static const String imageModelUrl = 'url';

@@ -10,29 +10,31 @@ class SkillsListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final editProfileProvider =
-        Provider.of<EditProfileProvider>(context, listen: false);
-    return ListView.separated(
-      padding: EdgeInsets.zero,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: editProfileProvider.skillsControllers.length,
-      itemBuilder: (context, index) {
-        return CustomTextField(
-          controller: editProfileProvider.skillsControllers[index],
-          hintText: "Professional Skill",
-          keyboardType: TextInputType.text,
-          validator: (value) {
-            if (value!.trim().isEmpty) {
-              editProfileProvider.skillsControllers[index].clear();
-              return "Please enter a skill";
-            }
-            return null;
+    return Consumer<EditProfileProvider>(
+      builder: (context, editProfileProvider, child) {
+        return ListView.separated(
+          padding: EdgeInsets.zero,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: editProfileProvider.skillsControllers.length,
+          itemBuilder: (context, index) {
+            return CustomTextField(
+              controller: editProfileProvider.skillsControllers[index],
+              hintText: "Professional Skill",
+              keyboardType: TextInputType.text,
+              validator: (value) {
+                if (value!.trim().isEmpty) {
+                  editProfileProvider.skillsControllers[index].clear();
+                  return "Please enter a skill";
+                }
+                return null;
+              },
+            );
+          },
+          separatorBuilder: (context, index) {
+            return const HeightSpacer(size: 10);
           },
         );
-      },
-      separatorBuilder: (context, index) {
-        return const HeightSpacer(size: 10);
       },
     );
   }

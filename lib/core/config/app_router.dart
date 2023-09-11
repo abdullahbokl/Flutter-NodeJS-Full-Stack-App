@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../features/auth/presentation/manager/register/register_provider.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
+import '../../features/chat/presentation/pages/conversation_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/jobs/presentation/manager/job_details_provider.dart';
 import '../../features/jobs/presentation/pages/job_details_page.dart';
@@ -28,6 +29,7 @@ class AppRouter {
   static const String jobsListPage = '/jobsListPage';
   static const String jobDetailsPage = '/jobDetailsPage';
   static const String editProfilePage = '/editProfilePage';
+  static const String conversationPage = '/conversationPage';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     int cnt = 0;
@@ -83,6 +85,10 @@ class AppRouter {
               create: (BuildContext context) => JobDetailsProvider(),
               child: JobDetailsPage(job: settings.arguments as JobModel),
             ),
+          );
+        case conversationPage:
+          return MaterialPageRoute(
+            builder: (_) => const ConversationPage(),
           );
         case drawer:
           return MaterialPageRoute(
