@@ -11,11 +11,11 @@ class ChatsListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ChatProvider>(
-      builder: (context, chatProvider, child) {
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ListView.builder(
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Consumer<ChatProvider>(
+        builder: (context, chatProvider, child) {
+          return ListView.builder(
             itemCount: chatProvider.chats.length,
             itemBuilder: (context, index) {
               final receiver = chatProvider.chats[index].users.firstWhere(
@@ -32,9 +32,9 @@ class ChatsListView extends StatelessWidget {
                     receiver: receiver,
                   ));
             },
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

@@ -63,7 +63,9 @@ class AppSetup {
     // prefs.clear();
     _handleUserToken();
 
-    await _handleUserId();
+    if (AppConstants.userToken != "") {
+      await _handleUserId();
+    }
 
     Logger.logEvent(
       className: "",

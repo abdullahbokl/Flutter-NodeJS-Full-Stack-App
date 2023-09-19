@@ -21,6 +21,7 @@ class _ChatsPageState extends State<ChatsPage> {
     super.initState();
     Future.delayed(Duration.zero, () {
       Provider.of<ChatProvider>(context, listen: false).getAllChats();
+      Provider.of<ChatProvider>(context, listen: false).socketConnect();
     });
   }
 

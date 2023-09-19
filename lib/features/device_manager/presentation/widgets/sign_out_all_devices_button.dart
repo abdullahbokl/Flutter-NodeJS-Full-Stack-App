@@ -32,7 +32,7 @@ class SignOutAllDevicesButton extends StatelessWidget {
             text: 'Sign Out All Devices',
             style: appStyle(
               16,
-              AppColors.orange,
+              AppColors.lightGreen,
               FontWeight.w600,
             ),
           ),

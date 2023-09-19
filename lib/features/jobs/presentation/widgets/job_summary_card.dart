@@ -50,7 +50,7 @@ class JobSummaryCard extends StatelessWidget {
                   height: AppConstants.height * 0.04,
                   text: job.period,
                   color: AppColors.light,
-                  textAndBorderColor: AppColors.orange,
+                  textAndBorderColor: AppColors.lightGreen,
                 ),
                 SalaryWidget(
                   salary: SalaryModel(

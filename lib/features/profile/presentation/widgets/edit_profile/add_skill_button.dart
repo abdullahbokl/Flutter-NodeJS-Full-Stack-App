@@ -14,7 +14,7 @@ class AddSkillButton extends StatelessWidget {
     return Align(
       alignment: Alignment.centerRight,
       child: FloatingActionButton(
-        backgroundColor: AppColors.orange,
+        backgroundColor: AppColors.lightGreen,
         child: const Icon(Icons.add, color: AppColors.light),
         onPressed: () {
           if (!editProfileProvider.profileSkillsFormKey.currentState!

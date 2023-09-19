@@ -25,7 +25,7 @@ class HeadingWidget extends StatelessWidget {
           onTap: onTap,
           child: ReusableText(
             text: 'View all',
-            style: appStyle(18, AppColors.orange, FontWeight.w500),
+            style: appStyle(18, AppColors.lightGreen, FontWeight.w500),
           ),
         ),
       ],

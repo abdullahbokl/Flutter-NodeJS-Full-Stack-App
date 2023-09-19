@@ -25,11 +25,11 @@ class CustomSearchWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Icon(Feather.search, color: AppColors.orange, size: 20.h),
+              Icon(Feather.search, color: AppColors.lightGreen, size: 20.h),
               const WidthSpacer(size: 20),
               ReusableText(
                 text: 'Search for jobs',
-                style: appStyle(18, AppColors.orange, FontWeight.w500),
+                style: appStyle(18, AppColors.lightGreen, FontWeight.w500),
               ),
               const Spacer(),
               Icon(FontAwesome.sliders, color: AppColors.darkGrey, size: 20.h),

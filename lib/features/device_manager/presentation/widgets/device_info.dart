@@ -64,7 +64,7 @@ class DeviceInfo extends StatelessWidget {
               color: AppColors.light,
               height: AppConstants.height * 0.05,
               width: AppConstants.width * 0.3,
-              textAndBorderColor: AppColors.orange,
+              textAndBorderColor: AppColors.lightGreen,
             ),
           ],
         ),

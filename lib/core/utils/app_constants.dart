@@ -66,7 +66,7 @@ class AppConstants {
             text: message,
             style: appStyle(
               16,
-              isSuccess ? Colors.green : AppColors.orange,
+              isSuccess ? Colors.green : AppColors.lightGreen,
               FontWeight.w600,
             ),
           ),

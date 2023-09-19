@@ -31,6 +31,7 @@ class MessageModel {
   }
 
   factory MessageModel.fromMap(Map<String, dynamic> map) {
+    print(map);
     return MessageModel(
       id: map[AppStrings.messageId],
       sender: UserModel.fromMap(map[AppStrings.messageSender]),

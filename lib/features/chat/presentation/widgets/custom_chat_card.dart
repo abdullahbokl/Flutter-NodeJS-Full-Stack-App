@@ -25,7 +25,7 @@ class CustomChatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: AppColors.orange.withOpacity(0.1),
+        color: AppColors.lightGreen.withOpacity(0.1),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
@@ -49,7 +49,7 @@ class CustomChatCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 5),
                 ReusableText(
-                  text: chat.latestMessage.content,
+                  text: chat.latestMessage!.content,
                   style: appStyle(
                     14,
                     AppColors.darkBlue,
@@ -65,7 +65,7 @@ class CustomChatCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ReusableText(
-                  text: chatProvider.messageTime(chat.latestMessage.createdAt),
+                  text: chatProvider.messageTime(chat.latestMessage!.createdAt),
                   style: appStyle(
                     14,
                     AppColors.darkBlue,

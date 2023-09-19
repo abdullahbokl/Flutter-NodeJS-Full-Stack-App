@@ -4,6 +4,8 @@ import '../models/message_model.dart';
 abstract class ChatRepo {
   Future<List<ChatModel>> getAllChats();
 
+  Future<ChatModel> createChat(String receiverId);
+
   Future<List<MessageModel>> getMessages(String chatId);
 
   Future<void> sendMessage({

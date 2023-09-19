@@ -7,7 +7,7 @@ class ChatModel {
   String chatName;
   bool isGroupChat;
   List<UserModel> users;
-  MessageModel latestMessage;
+  MessageModel? latestMessage;
   UserModel? groupAdmin;
 
   ChatModel({
@@ -15,18 +15,18 @@ class ChatModel {
     required this.chatName,
     this.isGroupChat = false,
     this.users = const [],
-    required this.latestMessage,
+    this.latestMessage,
     this.groupAdmin,
   });
 
   Map<String, dynamic> toMap() {
+    final users = this.users.map((user) => user.toMap()).toList();
     return {
+      AppStrings.chatLatestMessage: latestMessage?.toMap(),
       AppStrings.chatId: id,
       AppStrings.chatName: chatName,
       AppStrings.chatIsGroupChat: isGroupChat,
-      AppStrings.chatUsers:
-          List<UserModel>.from(users.map((user) => user.toMap())),
-      AppStrings.chatLatestMessage: latestMessage.toMap(),
+      AppStrings.chatUsers: users,
       AppStrings.chatGroupAdmin: groupAdmin?.toMap(),
     };
   }
@@ -38,7 +38,9 @@ class ChatModel {
       isGroupChat: map[AppStrings.chatIsGroupChat],
       users: List<UserModel>.from(
           map[AppStrings.chatUsers].map((user) => UserModel.fromMap(user))),
-      latestMessage: MessageModel.fromMap(map[AppStrings.chatLatestMessage]),
+      latestMessage: map[AppStrings.chatLatestMessage] != null
+          ? MessageModel.fromMap(map[AppStrings.chatLatestMessage])
+          : null,
       groupAdmin: map[AppStrings.chatGroupAdmin] != null
           ? UserModel.fromMap(map[AppStrings.chatGroupAdmin])
           : null,

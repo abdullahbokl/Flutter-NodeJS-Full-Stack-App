@@ -33,6 +33,13 @@ class MessageInput extends StatelessWidget {
                   ),
                 ),
               ),
+              onChanged: (value) {
+                if (value != "") {
+                  // todo: typing
+                } else {
+                  // todo: not typing
+                }
+              },
             ),
           ),
           IconButton(

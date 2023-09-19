@@ -39,8 +39,9 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   logout(BuildContext context) {
+    // user data
     AppConstants.userToken = '';
-    // Navigator.popUntil(context, (route) => route.isFirst);
+    AppConstants.userId = '';
     Navigator.pushReplacementNamed(context, AppRouter.loginPage);
     // shared preferences
     final prefs = getIt<SharedPreferences>();

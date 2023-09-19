@@ -16,7 +16,7 @@ class SearchPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.orange,
+        backgroundColor: AppColors.lightGreen,
         iconTheme: const IconThemeData(color: AppColors.light),
         title: const CustomSearchField(),
         elevation: 0,

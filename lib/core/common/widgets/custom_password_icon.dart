@@ -19,7 +19,7 @@ class CustomPasswordIcon extends StatelessWidget {
           )
         : const Icon(
             Icons.visibility,
-            color: AppColors.orange,
+            color: AppColors.lightGreen,
           );
   }
 }

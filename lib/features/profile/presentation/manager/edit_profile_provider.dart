@@ -123,7 +123,11 @@ class EditProfileProvider extends ChangeNotifier {
         // final UserModel user = UserModel.fromMap(userJson);
         notifyListeners();
         if (context.mounted) {
-          Navigator.of(context).pushReplacementNamed(nextRoute);
+          if (nextRoute != AppRouter.profilePage) {
+            Navigator.of(context).pop();
+          } else {
+            Navigator.of(context).pushReplacementNamed(nextRoute);
+          }
         }
       }
     } catch (e) {

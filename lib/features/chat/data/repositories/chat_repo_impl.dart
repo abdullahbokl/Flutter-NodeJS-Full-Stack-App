@@ -61,7 +61,7 @@ class ChatRepoImpl extends ChatRepo {
     required String receiverId,
   }) async {
     try {
-      final message = await _apiService.post(
+      final messageData = await _apiService.post(
         endPoint: AppStrings.apiMessagesUrl,
         data: {
           AppStrings.chatId: chatId,
@@ -69,12 +69,34 @@ class ChatRepoImpl extends ChatRepo {
           AppStrings.messageReceiver: receiverId,
         },
       );
+      MessageModel message = MessageModel.fromMap(messageData);
       return message;
     } catch (e) {
       Logger.logEvent(
         className: "ChatRepoImpl",
         event: handleServerError(e),
         methodName: "sendMessage",
+      );
+      throw handleServerError(e);
+    }
+  }
+
+  @override
+  Future<ChatModel> createChat(String receiverId) async {
+    try {
+      final chatData = await _apiService.post(
+        endPoint: AppStrings.apiChatsUrl,
+        data: {
+          'receiverId': receiverId,
+        },
+      );
+      final ChatModel chat = ChatModel.fromMap(chatData);
+      return chat;
+    } catch (e) {
+      Logger.logEvent(
+        className: "ChatRepoImpl",
+        event: handleServerError(e),
+        methodName: "createChat",
       );
       throw handleServerError(e);
     }

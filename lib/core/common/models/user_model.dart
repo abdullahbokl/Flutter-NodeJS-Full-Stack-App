@@ -75,9 +75,11 @@ class UserModel {
 
   factory UserModel.fromMap(dynamic map) {
     final List<String> profilePic = [];
-    for (final pic in map[AppStrings.userProfilePic]) {
-      // final newImage = ImageModel.fromMap(pic);
-      profilePic.add(pic['url']);
+    if (map[AppStrings.userProfilePic] != null) {
+      for (final pic in map[AppStrings.userProfilePic]) {
+        // final newImage = ImageModel.fromMap(pic);
+        profilePic.add(pic['url']);
+      }
     }
 
     final List<String> skills = [];

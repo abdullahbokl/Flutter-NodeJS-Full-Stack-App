@@ -36,9 +36,10 @@ class JobDetailsProvider extends ChangeNotifier {
 
   Widget getBookmarkIcon() {
     if (_isBookmarked) {
-      return const Icon(CupertinoIcons.bookmark_fill, color: AppColors.orange);
+      return const Icon(CupertinoIcons.bookmark_fill,
+          color: AppColors.lightGreen);
     } else {
-      return const Icon(CupertinoIcons.bookmark, color: AppColors.orange);
+      return const Icon(CupertinoIcons.bookmark, color: AppColors.lightGreen);
     }
   }
 

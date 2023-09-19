@@ -14,6 +14,8 @@ class DrawerScreen extends StatelessWidget {
     return Consumer<DrawerProvider>(
       builder: (context, drawerProvider, child) {
         return ZoomDrawer(
+          menuScreenOverlayColor: AppColors.lightGreen,
+          drawerShadowsBackgroundColor: AppColors.lightGreen,
           controller: drawerProvider.drawerController,
           menuScreen: const DrawerScreenBody(),
           mainScreen: currentScreen(context),
