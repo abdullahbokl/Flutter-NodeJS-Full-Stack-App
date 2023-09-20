@@ -2,7 +2,7 @@ import '../../utils/app_strings.dart';
 
 class ImageModel {
   final String url;
-  final DateTime createdAt;
+  final String createdAt;
 
   ImageModel({
     required this.url,
