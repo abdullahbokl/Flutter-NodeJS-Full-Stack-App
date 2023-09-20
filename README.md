@@ -1,16 +1,37 @@
-# jobhub_flutter
+# Job-Hub App
 
-A new Flutter project.
+Job-Hub is a comprehensive full-stack Flutter application that leverages the power of Flutter, Node.js, Express, and MongoDB to provide users with a seamless and feature-rich experience. It caters to various user needs and offers a wide range of functionalities to enhance their overall experience.
 
-## Getting Started
+## Demo Video
 
-This project is a starting point for a Flutter application.
+[Watch Demo Video](https://drive.google.com/drive/u/1/folders/1xToa3ONJUH2h8uxAHu-DuVAtT_Bc4CTX)
 
-A few resources to get you started if this is your first Flutter project:
+## Features
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- **Splash Screen**
+  
+- **Authentication and Authorization**
+  
+- **Input Validation**
+  
+- **First Login Profile Setup**
+  
+- **Profile Customization**
+  
+- **Real-time Chat**
+  
+- **Home Screen**
+  
+- **Bookmarking**
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Technologies Used
+
+- Flutter
+- Node.js
+- Express
+- MongoDB
+
+## Architecture
+
+- **Architecture**: MVVM (Model-View-ViewModel)
+- **State Management**: Provider
