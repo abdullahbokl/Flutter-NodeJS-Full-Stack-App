@@ -1,6 +1,6 @@
 # Job-Hub App
 
-Job-Hub is a comprehensive full-stack Flutter application that leverages the power of Flutter, Node.js, Express, and MongoDB to provide users with a seamless and feature-rich experience. It caters to various user needs and offers a wide range of functionalities to enhance their overall experience.
+Job-Hub is a comprehensive full-stack Flutter application that leverages the power of Flutter, Node.js, Express, and MongoDB.
 
 ## Demo Video
 
