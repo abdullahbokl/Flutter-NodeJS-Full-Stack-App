@@ -4,7 +4,7 @@ Job-Hub is a comprehensive full-stack Flutter application that leverages the pow
 
 ## Demo Video
 
-[Watch Demo Video](https://drive.google.com/drive/u/1/folders/1xToa3ONJUH2h8uxAHu-DuVAtT_Bc4CTX)
+[Watch Demo Video](https://drive.google.com/file/d/1FzZiJvblUbaJRt4G9fTcz6Ioz0WWRTxG/view?usp=sharing)
 
 ## Features
 
