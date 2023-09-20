@@ -35,3 +35,6 @@ Job-Hub is a comprehensive full-stack Flutter application that leverages the pow
 
 - **Architecture**: MVVM (Model-View-ViewModel)
 - **State Management**: Provider
+
+## Backend
+https://github.com/abdullahbokl/boklo_jobhub_backend
