@@ -1,4 +1,4 @@
-class DataValidator {
+abstract class DataValidator {
   // email validation
 
   static bool isValidEmail(data) {

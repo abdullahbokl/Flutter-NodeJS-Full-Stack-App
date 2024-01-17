@@ -2,39 +2,40 @@
 
 Job-Hub is a comprehensive full-stack Flutter application that leverages the power of Flutter, Node.js, Express, and MongoDB.
 
-## Demo Video
+## 📹 Video Demo : [Flutter Job-Hub App](https://drive.google.com/file/d/1FzZiJvblUbaJRt4G9fTcz6Ioz0WWRTxG/view?usp=drive_link)
 
-[Watch Demo Video](https://drive.google.com/file/d/1FzZiJvblUbaJRt4G9fTcz6Ioz0WWRTxG/view?usp=sharing)
+## ✨ Features :
 
-## Features
+- ✨ Splash screen with our unique app logo.
+- 🔒 Secure authentication and user registration.
+- 🛡️ Robust input validation for data accuracy.
+- 🔄 First login profile setup to get you started.
+- 📷 Upload your profile picture.
+- 💼 Specify your skills and additional profile details.
+- 💬 Real-time chat using sockets for seamless communication.
+- 🏡 Home screen with recent and popular job listings.
+- 📌 Bookmark your favorite jobs for easy access.
 
-- **Splash Screen**
-  
-- **Authentication and Authorization**
-  
-- **Input Validation**
-  
-- **First Login Profile Setup**
-  
-- **Profile Customization**
-  
-- **Real-time Chat**
-  
-- **Home Screen**
-  
-- **Bookmarking**
+## Technologies Used:
 
-## Technologies Used
+- 📱 Flutter
+- 🌐 Node.js
+- 🚀 Express
+- 🗄️ MongoDB
+- 📦 Socket.io
+- 📦 JWT
+- 📦 Bcrypt
+- 📦 Multer
 
-- Flutter
-- Node.js
-- Express
-- MongoDB
+## 🏗️ Architecture: MVVM
+## 🔄 State Management: Provider
 
-## Architecture
+## 📦 Backend : [NodeJS Job-Hub App](https://github.com/abdullahbokl/boklo_jobhub_backend)
 
-- **Architecture**: MVVM (Model-View-ViewModel)
-- **State Management**: Provider
+## 📸 Screenshots :
 
-## Backend
-https://github.com/abdullahbokl/boklo_jobhub_backend
+<img src="assets/screenshots/image1.png" width="250"> <img src="assets/screenshots/image2.png" width="250"> <img src="assets/screenshots/image3.png" width="250">
+<img src="assets/screenshots/image4.png" width="250"> <img src="assets/screenshots/image5.png" width="250"> <img src="assets/screenshots/image6.png" width="250">
+<img src="assets/screenshots/image7.png" width="250"> <img src="assets/screenshots/image8.png" width="250"> <img src="assets/screenshots/image9.png" width="250">
+<img src="assets/screenshots/image10.png" width="250"> <img src="assets/screenshots/image11.png" width="250"> <img src="assets/screenshots/image12.png" width="250">
+

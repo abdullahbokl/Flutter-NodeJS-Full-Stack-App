@@ -32,7 +32,13 @@ class AppSetup {
         headers: {
           AppStrings.apiHeadersToken: "Bearer ${AppConstants.userToken}",
         },
-      )),
+      ))
+        ..interceptors.add(
+          LogInterceptor(
+            request: true,
+            requestBody: true,
+          ),
+        ),
     );
     getIt.registerLazySingleton<ApiServices>(() => ApiServices(getIt<Dio>()));
 
