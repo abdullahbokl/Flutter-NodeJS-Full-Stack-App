@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 import '../../../../core/common/models/user_model.dart';
+import '../../../../core/config/app_config.dart';
 import '../../../../core/config/app_setup.dart';
 import '../../../../core/services/logger.dart';
-import '../../../../core/utils/app_strings.dart';
+import '../../../../core/utils/app_session.dart';
 import '../../data/models/chat_model.dart';
 import '../../data/models/message_model.dart';
 import '../../data/repositories/chat_repo_impl.dart';
@@ -128,15 +129,15 @@ class ChatProvider extends ChangeNotifier {
 
   socketConnect() {
     final socket = IO.io(
-      'http://10.0.2.2:7000',
+      AppConfig.instance.socketUrl,
       IO.OptionBuilder()
-          .setTransports(['websocket']) // for Flutter or Dart VM
-          .disableAutoConnect() // disable auto-connection
+          .setTransports(['websocket'])
+          .disableAutoConnect()
+          .setAuth({'token': AppSession.token}) // JWT auth — replaces setup event
           .build(),
     );
     this.socket = socket;
 
-    socket.emit('setup', AppStrings.userId);
     socket.connect();
     socket.onConnect((_) {
       _chatProviderLogger("Socket connected");
@@ -151,7 +152,6 @@ class ChatProvider extends ChangeNotifier {
         _chatProviderLogger("Stop typing...");
         isTyping = false;
       });
-
       socket.on('join-chat', (chatId) {
         _chatProviderLogger("Joined chat");
         isJoined = true;

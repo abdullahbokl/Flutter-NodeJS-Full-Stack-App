@@ -11,7 +11,7 @@ class AppStrings {
   static const String apiUploadImageUrl = "/images";
   static const String apiChatsUrl = "/chats";
   static const String apiMessagesUrl = "/messages";
-  static const String apiHeadersToken = "x-access-token";
+  static const String apiHeadersToken = "Authorization";
 
   // shared preferences
   static const String prefsIsFirstTime = 'isFirstTime';

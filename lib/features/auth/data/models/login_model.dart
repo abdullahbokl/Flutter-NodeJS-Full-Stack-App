@@ -1,19 +1,23 @@
 class LoginModel {
+  final String? email;
+  final String? userName;
+  final String password;
+
   LoginModel({
-    required this.email,
+    this.email,
+    this.userName,
     required this.password,
   });
 
-  final String email;
-  final String password;
-
-  factory LoginModel.fromMap(dynamic json) => LoginModel(
+  factory LoginModel.fromMap(Map<String, dynamic> json) => LoginModel(
         email: json["email"],
+        userName: json["userName"],
         password: json["password"],
       );
 
   Map<String, dynamic> toMap() => {
-        "email": email,
+        if (email != null) "email": email,
+        if (userName != null) "userName": userName,
         "password": password,
       };
 }

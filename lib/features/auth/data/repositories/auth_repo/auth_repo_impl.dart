@@ -1,6 +1,10 @@
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../../../../core/config/app_setup.dart';
 import '../../../../../core/errors/server_error_handler.dart';
 import '../../../../../core/services/api_services.dart';
 import '../../../../../core/services/logger.dart';
+import '../../../../../core/utils/app_session.dart';
 import '../../../../../core/utils/app_strings.dart';
 import '../../models/login_model.dart';
 import '../../models/register_model.dart';
@@ -42,16 +46,20 @@ class AuthRepoImpl implements AuthRepo {
   }
 
   @override
-  Future<void> forgetPassword(String email) {
-    throw UnimplementedError();
+  Future<void> logout() async {
+    AppSession.clearSession();
+    final prefs = getIt<SharedPreferences>();
+    await prefs.remove(AppStrings.userToken);
+    _loginLogger("User logged out");
   }
 
   @override
-  Future<void> logout() {
-    throw UnimplementedError();
+  Future<void> forgetPassword(String email) {
+    // TODO: implement when backend supports password reset endpoint
+    throw UnimplementedError('forgetPassword not yet supported by the backend');
   }
 
-  _registerLogger(String event) {
+  void _registerLogger(String event) {
     Logger.logEvent(
       className: "AuthRepositoryImpl",
       event: event,
@@ -67,3 +75,5 @@ class AuthRepoImpl implements AuthRepo {
     );
   }
 }
+
+

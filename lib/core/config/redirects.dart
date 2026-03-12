@@ -5,6 +5,7 @@ import '../utils/app_strings.dart';
 import 'app_router.dart';
 import 'app_setup.dart';
 
+/// Kept for legacy compatibility; no longer called in the new router.
 class Redirect {
   static String middleware(String routeName) {
     final prefs = getIt<SharedPreferences>();
