@@ -54,6 +54,21 @@ class ApiServices {
     }
   }
 
+  Future<dynamic> patch({
+    required String endPoint,
+    required dynamic data,
+  }) async {
+    try {
+      final response = await _dio.patch(
+        endPoint,
+        data: data,
+      );
+      return response.data;
+    } catch (e) {
+      throw handleServerError(e);
+    }
+  }
+
   Future<dynamic> delete({
     required String endPoint,
   }) async {

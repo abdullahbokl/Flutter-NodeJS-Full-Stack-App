@@ -6,6 +6,7 @@ import '../../../../core/utils/app_session.dart';
 import '../../data/models/message_model.dart';
 import '../../domain/usecases/get_messages_usecase.dart';
 import '../../domain/usecases/send_message_usecase.dart';
+import 'chat_sync_service.dart';
 
 /// Extends SuccessState to carry a transient send-error without wiping the list.
 class MessagesSendError extends SuccessState<List<MessageModel>> {
@@ -16,12 +17,15 @@ class MessagesSendError extends SuccessState<List<MessageModel>> {
 class MessagesCubit extends Cubit<BaseState<List<MessageModel>>> {
   final GetMessagesUseCase _getMessagesUseCase;
   final SendMessageUseCase _sendMessageUseCase;
+  final ChatSyncService _chatSyncService;
 
   MessagesCubit({
     required GetMessagesUseCase getMessages,
     required SendMessageUseCase sendMessageUseCase,
+    required ChatSyncService chatSyncService,
   })  : _getMessagesUseCase = getMessages,
         _sendMessageUseCase = sendMessageUseCase,
+        _chatSyncService = chatSyncService,
         super(const InitialState());
 
   io.Socket? _socket;
@@ -56,6 +60,7 @@ class MessagesCubit extends Cubit<BaseState<List<MessageModel>>> {
       },
       (message) {
         _appendMessage(message);
+        _chatSyncService.publish(ChatSyncEvent(chatId: chatId, message: message));
         _socket?.emit('new-message', {
           ...message.toMap(),
           'chat': {'id': chatId},
@@ -84,6 +89,7 @@ class MessagesCubit extends Cubit<BaseState<List<MessageModel>>> {
       _socket!.on('message-received', (data) {
         final msg = MessageModel.fromMap(Map<String, dynamic>.from(data));
         _appendMessage(msg);
+        _chatSyncService.publish(ChatSyncEvent(chatId: chatId, message: msg));
       });
       _socket!.on('typing', (_) {
         _isTyping = true;
@@ -127,4 +133,3 @@ class MessagesCubit extends Cubit<BaseState<List<MessageModel>>> {
     return super.close();
   }
 }
-

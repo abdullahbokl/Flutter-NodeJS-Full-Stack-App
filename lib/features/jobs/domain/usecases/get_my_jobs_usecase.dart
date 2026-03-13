@@ -12,7 +12,7 @@ class GetMyJobsUseCase implements UseCase<List<JobEntity>, NoParams> {
   @override
   Future<Either<Failure, List<JobEntity>>> call(NoParams params) async {
     try {
-      final jobs = await _repo.getMyJobs();
+      final jobs = await _repo.getMyJobs(includeArchived: true);
       return Right(jobs);
     } catch (e) {
       return Left(ServerFailure(e.toString()));

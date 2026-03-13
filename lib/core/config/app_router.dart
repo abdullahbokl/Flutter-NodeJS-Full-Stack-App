@@ -7,6 +7,9 @@ import '../../features/auth/domain/entities/user_role.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/auth/presentation/pages/role_selection_page.dart';
+import '../../features/applications/presentation/bloc/application_action_cubit.dart';
+import '../../features/applications/presentation/bloc/my_applications_cubit.dart';
+import '../../features/applications/presentation/bloc/received_applications_cubit.dart';
 import '../../features/bookmarks/presentation/pages/bookmarks_page.dart';
 import '../../features/chat/data/models/chat_model.dart';
 import '../../features/chat/presentation/pages/chat_list_page.dart';
@@ -16,6 +19,7 @@ import '../../features/home/presentation/pages/company_applications_page.dart';
 import '../../features/home/presentation/pages/my_applications_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/jobs/domain/entities/job_entity.dart';
+import '../../features/jobs/presentation/bloc/manage_job_action_cubit.dart';
 import '../../features/jobs/presentation/bloc/manage_jobs_cubit.dart';
 import '../../features/jobs/presentation/bloc/post_job_cubit.dart';
 import '../../features/jobs/presentation/pages/job_details_page.dart';
@@ -135,8 +139,15 @@ final GoRouter appRouter = GoRouter(
         ),
         GoRoute(
           path: AppRouter.manageJobsPage,
-          builder: (ctx, state) => BlocProvider<ManageJobsCubit>(
-            create: (_) => getIt<ManageJobsCubit>()..loadMyJobs(),
+          builder: (ctx, state) => MultiBlocProvider(
+            providers: [
+              BlocProvider<ManageJobsCubit>(
+                create: (_) => getIt<ManageJobsCubit>()..loadMyJobs(),
+              ),
+              BlocProvider<ManageJobActionCubit>(
+                create: (_) => getIt<ManageJobActionCubit>(),
+              ),
+            ],
             child: const JobsListPage(
               title: 'My Posted Jobs',
               isMine: true,
@@ -145,11 +156,24 @@ final GoRouter appRouter = GoRouter(
         ),
         GoRoute(
           path: AppRouter.companyApplicationsPage,
-          builder: (_, __) => const CompanyApplicationsPage(),
+          builder: (_, __) => MultiBlocProvider(
+            providers: [
+              BlocProvider<ReceivedApplicationsCubit>(
+                create: (_) => getIt<ReceivedApplicationsCubit>()..loadApplications(),
+              ),
+              BlocProvider<ApplicationActionCubit>(
+                create: (_) => getIt<ApplicationActionCubit>(),
+              ),
+            ],
+            child: const CompanyApplicationsPage(),
+          ),
         ),
         GoRoute(
           path: AppRouter.myApplicationsPage,
-          builder: (_, __) => const MyApplicationsPage(),
+          builder: (_, __) => BlocProvider<MyApplicationsCubit>(
+            create: (_) => getIt<MyApplicationsCubit>()..loadApplications(),
+            child: const MyApplicationsPage(),
+          ),
         ),
       ],
     ),
@@ -180,7 +204,7 @@ final GoRouter appRouter = GoRouter(
       path: AppRouter.postJobPage,
       builder: (ctx, state) => BlocProvider<PostJobCubit>(
         create: (_) => getIt<PostJobCubit>(),
-        child: const PostJobPage(),
+        child: PostJobPage(job: state.extra as JobEntity?),
       ),
     ),
 
@@ -201,4 +225,3 @@ final GoRouter appRouter = GoRouter(
     body: Center(child: Text('Page not found: ${state.error}')),
   ),
 );
-

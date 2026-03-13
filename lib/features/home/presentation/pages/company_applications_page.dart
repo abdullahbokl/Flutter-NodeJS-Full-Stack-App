@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/common/base_state.dart';
+import '../../../../core/common/widgets/bloc_state_widget.dart';
 import '../../../../core/config/app_setup.dart';
-import '../../../../core/services/api_services.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/utils/api_endpoints.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_snackbars.dart';
-import '../../../chat/data/models/chat_model.dart';
+import '../../../applications/data/models/job_application_model.dart';
+import '../../../applications/domain/entities/application_status.dart';
+import '../../../applications/presentation/bloc/application_action_cubit.dart';
+import '../../../applications/presentation/bloc/received_applications_cubit.dart';
+import '../../../applications/presentation/widgets/application_status_chip.dart';
 import '../../../chat/presentation/bloc/chat_cubit.dart';
 
 class CompanyApplicationsPage extends StatefulWidget {
@@ -18,56 +23,13 @@ class CompanyApplicationsPage extends StatefulWidget {
 }
 
 class _CompanyApplicationsPageState extends State<CompanyApplicationsPage> {
-  bool _isLoading = true;
-  List<_ReceivedApplication> _applications = const [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadApplications();
-  }
-
-  Future<void> _loadApplications() async {
-    setState(() => _isLoading = true);
-    try {
-      final data = await getIt<ApiServices>().get(
-        endPoint: '${ApiEndpoints.applications}/received',
-      );
-      final list = data is Map ? data['data'] : data;
-      if (list is List) {
-        _applications = list
-            .map((e) => _ReceivedApplication.fromMap(Map<String, dynamic>.from(e)))
-            .toList();
-      } else {
-        _applications = const [];
-      }
-    } catch (e) {
-      if (mounted) {
-        AppSnackBars.showError(context, e.toString());
-      }
-      _applications = const [];
-    }
-    if (!mounted) return;
-    setState(() => _isLoading = false);
-  }
-
-  Future<void> _messageApplicant(_ReceivedApplication app) async {
-    ChatModel? chat;
-
-    try {
-      chat = await _findExistingApplicationChat(app);
-    } catch (_) {
-      // Fallback to create/access flow below.
-    }
-
-    if (chat == null) {
-      final chatCubit = getIt<ChatCubit>();
-      chat = await chatCubit.createOrGetChat(
-        app.applicant.id,
-        jobId: app.job.id,
-      );
-      await chatCubit.close();
-    }
+  Future<void> _messageApplicant(JobApplicationModel app) async {
+    final chatCubit = getIt<ChatCubit>();
+    final chat = await chatCubit.createOrGetChat(
+      app.applicant?.id ?? '',
+      jobId: app.job.id,
+    );
+    await chatCubit.close();
 
     if (!mounted) return;
 
@@ -79,25 +41,6 @@ class _CompanyApplicationsPageState extends State<CompanyApplicationsPage> {
     context.push('/chat/${chat.id}', extra: chat);
   }
 
-  Future<ChatModel?> _findExistingApplicationChat(
-    _ReceivedApplication app,
-  ) async {
-    final raw = await getIt<ApiServices>().get(endPoint: ApiEndpoints.chats);
-    final list = raw is Map ? raw['data'] : raw;
-    if (list is! List) return null;
-
-    for (final item in list) {
-      final chat = ChatModel.fromMap(Map<String, dynamic>.from(item));
-      final hasApplicant = chat.users.any((u) => u.id == app.applicant.id);
-      final sameJob = chat.jobId != null && chat.jobId == app.job.id;
-      if (hasApplicant && sameJob) {
-        return chat;
-      }
-    }
-
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,21 +48,25 @@ class _CompanyApplicationsPageState extends State<CompanyApplicationsPage> {
         title: const Text('Applications'),
         actions: [
           IconButton(
-            onPressed: _loadApplications,
+            onPressed: () =>
+                context.read<ReceivedApplicationsCubit>().loadApplications(),
             icon: const Icon(Icons.refresh_rounded),
           ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _applications.isEmpty
-              ? const Center(child: Text('No applications yet'))
-              : ListView.separated(
+      body: BlocBuilder<ReceivedApplicationsCubit, BaseState<List<JobApplicationModel>>>(
+        builder: (context, state) => BlocStateWidget<List<JobApplicationModel>>(
+          state: state,
+          emptyTitle: 'No applications yet',
+          emptySubtitle: 'New candidates will appear here',
+          emptyIcon: Icons.inbox_outlined,
+          onRetry: () => context.read<ReceivedApplicationsCubit>().loadApplications(),
+          onSuccess: (applications) => ListView.separated(
                   padding: const EdgeInsets.all(AppSpacing.md),
-                  itemCount: _applications.length,
+                  itemCount: applications.length,
                   separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
                   itemBuilder: (context, index) {
-                    final app = _applications[index];
+                    final app = applications[index];
                     return Card(
                       child: Padding(
                         padding: const EdgeInsets.all(AppSpacing.md),
@@ -137,12 +84,12 @@ class _CompanyApplicationsPageState extends State<CompanyApplicationsPage> {
                                     ),
                                   ),
                                 ),
-                                _StatusChip(status: app.status),
+                                ApplicationStatusChip(status: app.status),
                               ],
                             ),
                             const SizedBox(height: 6),
                             Text(
-                              'Applicant: ${app.applicant.displayName}',
+                              'Applicant: ${app.applicant?.displayName ?? 'Applicant'}',
                               style: const TextStyle(
                                 color: AppColors.textSecondary,
                               ),
@@ -165,10 +112,23 @@ class _CompanyApplicationsPageState extends State<CompanyApplicationsPage> {
                             const SizedBox(height: AppSpacing.sm),
                             Align(
                               alignment: Alignment.centerRight,
-                              child: OutlinedButton.icon(
-                                onPressed: () => _messageApplicant(app),
-                                icon: const Icon(Icons.chat_bubble_outline),
-                                label: const Text('Message'),
+                              child: Wrap(
+                                spacing: AppSpacing.sm,
+                                runSpacing: AppSpacing.sm,
+                                alignment: WrapAlignment.end,
+                                children: [
+                                  _StatusMenu(
+                                    application: app,
+                                    onUpdated: () => context
+                                        .read<ReceivedApplicationsCubit>()
+                                        .loadApplications(),
+                                  ),
+                                  OutlinedButton.icon(
+                                    onPressed: () => _messageApplicant(app),
+                                    icon: const Icon(Icons.chat_bubble_outline),
+                                    label: const Text('Message'),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
@@ -177,128 +137,71 @@ class _CompanyApplicationsPageState extends State<CompanyApplicationsPage> {
                     );
                   },
                 ),
+        ),
+      ),
     );
   }
 }
 
-class _StatusChip extends StatelessWidget {
-  final String status;
-  const _StatusChip({required this.status});
+class _StatusMenu extends StatefulWidget {
+  final JobApplicationModel application;
+  final VoidCallback onUpdated;
+
+  const _StatusMenu({
+    required this.application,
+    required this.onUpdated,
+  });
+
+  @override
+  State<_StatusMenu> createState() => _StatusMenuState();
+}
+
+class _StatusMenuState extends State<_StatusMenu> {
+  bool _updating = false;
 
   @override
   Widget build(BuildContext context) {
-    Color color;
-    switch (status) {
-      case 'accepted':
-        color = Colors.green;
-        break;
-      case 'rejected':
-        color = Colors.red;
-        break;
-      case 'reviewed':
-        color = Colors.orange;
-        break;
-      default:
-        color = AppColors.primary;
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        status,
-        style: TextStyle(color: color, fontWeight: FontWeight.w600),
-      ),
-    );
-  }
-}
-
-class _ReceivedApplication {
-  final String id;
-  final String status;
-  final String coverLetter;
-  final _Applicant applicant;
-  final _Job job;
-
-  const _ReceivedApplication({
-    required this.id,
-    required this.status,
-    required this.coverLetter,
-    required this.applicant,
-    required this.job,
-  });
-
-  factory _ReceivedApplication.fromMap(Map<String, dynamic> map) {
-    return _ReceivedApplication(
-      id: (map['id'] ?? map['_id'] ?? '').toString(),
-      status: (map['status'] ?? 'pending').toString(),
-      coverLetter: (map['coverLetter'] ?? '').toString(),
-      applicant: _Applicant.fromMap(
-        map['applicantId'] is Map
-            ? Map<String, dynamic>.from(map['applicantId'])
-            : <String, dynamic>{},
-      ),
-      job: _Job.fromMap(
-        map['jobId'] is Map
-            ? Map<String, dynamic>.from(map['jobId'])
-            : <String, dynamic>{},
+    return PopupMenuButton<String>(
+      enabled: !_updating,
+      onSelected: (status) async {
+        setState(() => _updating = true);
+        final actionCubit = context.read<ApplicationActionCubit>();
+        final updated = await actionCubit.updateStatus(
+          applicationId: widget.application.id,
+          status: status,
+        );
+        if (!context.mounted) return;
+        setState(() => _updating = false);
+        if (updated == null) {
+          final state = actionCubit.state;
+          final message = state is ErrorState<JobApplicationModel>
+              ? state.message
+              : 'Failed to update status';
+          AppSnackBars.showError(context, message);
+          return;
+        }
+        AppSnackBars.showSuccess(context, 'Application status updated');
+        widget.onUpdated();
+      },
+      itemBuilder: (_) => ApplicationStatus.flow
+          .map(
+            (status) => PopupMenuItem<String>(
+              value: status,
+              child: Text(ApplicationStatus.label(status)),
+            ),
+          )
+          .toList(),
+      child: OutlinedButton.icon(
+        onPressed: null,
+        icon: _updating
+            ? const SizedBox(
+                height: 14,
+                width: 14,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : const Icon(Icons.swap_horiz_rounded),
+        label: const Text('Update Status'),
       ),
     );
   }
 }
-
-class _Applicant {
-  final String id;
-  final String fullName;
-  final String userName;
-
-  const _Applicant({
-    required this.id,
-    required this.fullName,
-    required this.userName,
-  });
-
-  String get displayName {
-    final name = fullName.trim();
-    if (name.isNotEmpty) return name;
-    final user = userName.trim();
-    if (user.isNotEmpty) return user;
-    return 'Applicant';
-  }
-
-  factory _Applicant.fromMap(Map<String, dynamic> map) {
-    return _Applicant(
-      id: (map['id'] ?? map['_id'] ?? '').toString(),
-      fullName: (map['fullName'] ?? '').toString(),
-      userName: (map['userName'] ?? '').toString(),
-    );
-  }
-}
-
-class _Job {
-  final String id;
-  final String title;
-  final String company;
-  final String location;
-
-  const _Job({
-    required this.id,
-    required this.title,
-    required this.company,
-    required this.location,
-  });
-
-  factory _Job.fromMap(Map<String, dynamic> map) {
-    return _Job(
-      id: (map['id'] ?? map['_id'] ?? '').toString(),
-      title: (map['title'] ?? '').toString(),
-      company: (map['company'] ?? '').toString(),
-      location: (map['location'] ?? '').toString(),
-    );
-  }
-}
-
-

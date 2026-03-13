@@ -12,6 +12,7 @@ import '../../../../core/common/widgets/status_badge.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/app_colors.dart';
+import '../../../jobs/domain/entities/job_filter_params.dart';
 import '../bloc/search_cubit.dart';
 
 class SearchPage extends StatelessWidget {
@@ -35,6 +36,7 @@ class _SearchView extends StatefulWidget {
 class _SearchViewState extends State<_SearchView> {
   final _controller = TextEditingController();
   final _focus = FocusNode();
+  JobFilterParams _filters = const JobFilterParams();
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +84,23 @@ class _SearchViewState extends State<_SearchView> {
               filled: true,
             ),
           ),
+        ),
+        const SizedBox(width: AppSpacing.xs),
+        IconButton(
+          icon: const Icon(Icons.tune_rounded),
+          onPressed: () async {
+            final filters = await showModalBottomSheet<JobFilterParams>(
+              context: context,
+              isScrollControlled: true,
+              builder: (_) => _FiltersSheet(initialFilters: _filters),
+            );
+            if (filters == null) return;
+            setState(() {
+              _filters = filters.copyWith(query: _controller.text.trim());
+            });
+            if (!context.mounted) return;
+            await context.read<SearchCubit>().applyFilters(_filters);
+          },
         ),
       ]),
     );
@@ -177,5 +196,124 @@ class _EmptySearch extends StatelessWidget {
             fontWeight: FontWeight.w500, color: AppColors.textSecondary)),
       ]),
     );
+  }
+}
+
+class _FiltersSheet extends StatefulWidget {
+  final JobFilterParams initialFilters;
+
+  const _FiltersSheet({required this.initialFilters});
+
+  @override
+  State<_FiltersSheet> createState() => _FiltersSheetState();
+}
+
+class _FiltersSheetState extends State<_FiltersSheet> {
+  late final TextEditingController _locationController;
+  late final TextEditingController _minSalaryController;
+  late final TextEditingController _maxSalaryController;
+  late String _contract;
+
+  @override
+  void initState() {
+    super.initState();
+    _locationController =
+        TextEditingController(text: widget.initialFilters.location ?? '');
+    _minSalaryController =
+        TextEditingController(text: widget.initialFilters.minSalary ?? '');
+    _maxSalaryController =
+        TextEditingController(text: widget.initialFilters.maxSalary ?? '');
+    _contract = widget.initialFilters.contract ?? '';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        left: AppSpacing.lg,
+        right: AppSpacing.lg,
+        top: AppSpacing.lg,
+        bottom: MediaQuery.of(context).viewInsets.bottom + AppSpacing.lg,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Filter Jobs',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          TextField(
+            controller: _locationController,
+            decoration: const InputDecoration(labelText: 'Location'),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          DropdownButtonFormField<String>(
+            initialValue: _contract.isEmpty ? null : _contract,
+            items: const [
+              DropdownMenuItem(value: 'permanent', child: Text('Permanent')),
+              DropdownMenuItem(value: 'temporary', child: Text('Temporary')),
+              DropdownMenuItem(value: 'freelance', child: Text('Freelance')),
+            ],
+            onChanged: (value) => setState(() => _contract = value ?? ''),
+            decoration: const InputDecoration(labelText: 'Contract Type'),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _minSalaryController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: 'Min Salary'),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: TextField(
+                  controller: _maxSalaryController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: 'Max Salary'),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          Row(
+            children: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(const JobFilterParams()),
+                child: const Text('Reset'),
+              ),
+              const Spacer(),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop(
+                    widget.initialFilters.copyWith(
+                      location: _locationController.text.trim(),
+                      contract: _contract,
+                      minSalary: _minSalaryController.text.trim(),
+                      maxSalary: _maxSalaryController.text.trim(),
+                    ),
+                  );
+                },
+                child: const Text('Apply'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _locationController.dispose();
+    _minSalaryController.dispose();
+    _maxSalaryController.dispose();
+    super.dispose();
   }
 }

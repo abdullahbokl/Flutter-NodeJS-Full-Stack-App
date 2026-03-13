@@ -14,6 +14,7 @@ class JobModel extends JobEntity {
     required super.requirements,
     super.imageUrl,
     required super.agentId,
+    super.isArchived = false,
   });
 
   factory JobModel.fromMap(Map<String, dynamic> json) {
@@ -29,6 +30,7 @@ class JobModel extends JobEntity {
       requirements: List<String>.from(json['requirements'] ?? []),
       imageUrl: json['imageUrl'],
       agentId: json['agentId'] ?? '',
+      isArchived: json['isArchived'] == true,
     );
   }
 
@@ -44,5 +46,6 @@ class JobModel extends JobEntity {
         'requirements': requirements,
         'imageUrl': imageUrl,
         'agentId': agentId,
+        'isArchived': isArchived,
       };
 }

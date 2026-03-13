@@ -9,6 +9,7 @@ import '../../../../core/common/widgets/app_bar.dart';
 import '../../../../core/common/widgets/custom_loader.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_snackbars.dart';
+import '../../../applications/presentation/bloc/application_action_cubit.dart';
 import '../../../bookmarks/presentation/bloc/bookmark_status_cubit.dart';
 import '../../../chat/presentation/bloc/chat_cubit.dart';
 import '../widgets/job_details_body.dart';
@@ -24,6 +25,9 @@ class JobDetailsPage extends StatefulWidget {
       providers: [
         BlocProvider<BookmarkStatusCubit>(create: (_) => getIt<BookmarkStatusCubit>()),
         BlocProvider<ChatCubit>(create: (_) => getIt<ChatCubit>()),
+        BlocProvider<ApplicationActionCubit>(
+          create: (_) => getIt<ApplicationActionCubit>(),
+        ),
       ],
       child: JobDetailsPage(job: job),
     );

@@ -13,6 +13,7 @@ class JobEntity extends Equatable {
   final List<String> requirements;
   final String? imageUrl;
   final String agentId;
+  final bool isArchived;
 
   const JobEntity({
     required this.id,
@@ -26,6 +27,7 @@ class JobEntity extends Equatable {
     this.requirements = const [],
     this.imageUrl,
     required this.agentId,
+    this.isArchived = false,
   });
 
   @override
@@ -41,6 +43,6 @@ class JobEntity extends Equatable {
         requirements,
         imageUrl,
         agentId,
+        isArchived,
       ];
 }
-

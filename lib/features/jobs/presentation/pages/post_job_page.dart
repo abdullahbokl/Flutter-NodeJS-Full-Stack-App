@@ -8,7 +8,9 @@ import '../../../jobs/domain/entities/job_entity.dart';
 import '../bloc/post_job_cubit.dart';
 
 class PostJobPage extends StatefulWidget {
-  const PostJobPage({super.key});
+  final JobEntity? job;
+
+  const PostJobPage({super.key, this.job});
 
   @override
   State<PostJobPage> createState() => _PostJobPageState();
@@ -25,6 +27,23 @@ class _PostJobPageState extends State<PostJobPage> {
 
   String _period = 'full-time';
   String _contract = 'permanent';
+
+  bool get _isEditing => widget.job != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final job = widget.job;
+    if (job == null) return;
+    _titleController.text = job.title;
+    _descriptionController.text = job.description;
+    _locationController.text = job.location;
+    _salaryController.text = job.salary;
+    _companyController.text = job.company;
+    _requirementsController.text = job.requirements.join(', ');
+    _period = job.period;
+    _contract = job.contract;
+  }
 
   @override
   void dispose() {
@@ -55,7 +74,7 @@ class _PostJobPageState extends State<PostJobPage> {
           .toList(),
     };
 
-    context.read<PostJobCubit>().submitJob(payload);
+    context.read<PostJobCubit>().submitJob(payload, jobId: widget.job?.id);
   }
 
   @override
@@ -64,7 +83,11 @@ class _PostJobPageState extends State<PostJobPage> {
       listener: (context, state) {
         if (state is SuccessState<JobEntity>) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Job posted successfully')),
+            SnackBar(
+              content: Text(
+                _isEditing ? 'Job updated successfully' : 'Job posted successfully',
+              ),
+            ),
           );
           context.go('/company/manage-jobs');
         } else if (state is ErrorState<JobEntity>) {
@@ -77,7 +100,7 @@ class _PostJobPageState extends State<PostJobPage> {
         final isLoading = state is LoadingState<JobEntity>;
 
         return Scaffold(
-          appBar: AppBar(title: const Text('Post Job')),
+          appBar: AppBar(title: Text(_isEditing ? 'Edit Job' : 'Post Job')),
           body: Form(
             key: _formKey,
             child: ListView(
@@ -162,7 +185,11 @@ class _PostJobPageState extends State<PostJobPage> {
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : const Icon(Icons.send_rounded),
-                  label: Text(isLoading ? 'Posting...' : 'Post Job'),
+                  label: Text(
+                    isLoading
+                        ? (_isEditing ? 'Saving...' : 'Posting...')
+                        : (_isEditing ? 'Save Changes' : 'Post Job'),
+                  ),
                 ),
               ],
             ),
@@ -172,5 +199,4 @@ class _PostJobPageState extends State<PostJobPage> {
     );
   }
 }
-
 

@@ -13,7 +13,7 @@ class RoleSelectionPage extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Theme.of(context).colorScheme.primary.withOpacity(0.05),
+              Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
               Theme.of(context).colorScheme.surface,
             ],
           ),
@@ -37,7 +37,7 @@ class RoleSelectionPage extends StatelessWidget {
                 Text(
                   "Are you here to find a job or to hire talent?",
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -64,7 +64,9 @@ class RoleSelectionPage extends StatelessWidget {
                   children: [
                     Text(
                       "Already have an account? ",
-                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                      ),
                     ),
                     TextButton(
                       onPressed: () => context.go('/login'),
@@ -116,12 +118,12 @@ class _RoleCard extends StatelessWidget {
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               width: 2,
             ),
             boxShadow: [
               BoxShadow(
-                color: color.withOpacity(0.05),
+                color: color.withValues(alpha: 0.05),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
@@ -132,7 +134,7 @@ class _RoleCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -156,7 +158,7 @@ class _RoleCard extends StatelessWidget {
                     Text(
                       subtitle,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                     ),
                   ],
@@ -165,7 +167,7 @@ class _RoleCard extends StatelessWidget {
               Icon(
                 Icons.arrow_forward_ios_rounded,
                 size: 16,
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
               ),
             ],
           ),

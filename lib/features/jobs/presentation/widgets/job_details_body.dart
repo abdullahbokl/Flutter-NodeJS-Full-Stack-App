@@ -3,17 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/common/base_state.dart';
 import '../../domain/entities/job_entity.dart';
 import '../../../../core/common/widgets/app_style.dart';
 import '../../../../core/common/widgets/custom_btn.dart';
 import '../../../../core/common/widgets/height_spacer.dart';
 import '../../../../core/common/widgets/reusable_text.dart';
-import '../../../../core/config/app_setup.dart';
-import '../../../../core/services/api_services.dart';
-import '../../../../core/utils/api_endpoints.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_session.dart';
 import '../../../../core/utils/app_snackbars.dart';
+import '../../../applications/presentation/bloc/application_action_cubit.dart';
 import '../../../chat/presentation/bloc/chat_cubit.dart';
 import 'job_requirements_list_view.dart';
 import 'job_summary_card.dart';
@@ -96,14 +95,25 @@ class JobDetailsBody extends StatelessWidget {
           if (formKey.currentState!.validate()) {
             final coverLetter = messageController.text.trim();
             final chatCubit = context.read<ChatCubit>();
+            final applicationCubit = context.read<ApplicationActionCubit>();
             try {
-              await getIt<ApiServices>().post(
-                endPoint: '${ApiEndpoints.jobs}/${job.id}/apply',
-                data: {'coverLetter': coverLetter},
+              final application = await applicationCubit.applyForJob(
+                jobId: job.id,
+                coverLetter: coverLetter,
               );
-            } catch (e) {
+              if (application == null) {
+                if (!context.mounted) return;
+                final state = applicationCubit.state;
+                final message = switch (state) {
+                  ErrorState<dynamic>(message: final errorMessage) => errorMessage,
+                  _ => 'Failed to apply',
+                };
+                AppSnackBars.showError(context, message);
+                return;
+              }
+            } catch (_) {
               if (!context.mounted) return;
-              AppSnackBars.showError(context, e.toString());
+              AppSnackBars.showError(context, 'Failed to submit application');
               return;
             }
 
@@ -118,7 +128,9 @@ class JobDetailsBody extends StatelessWidget {
               // Application is already submitted even if chat creation fails.
               AppSnackBars.showInfo(context, 'Application sent, but chat was not created');
             }
-            Navigator.pop(context);
+            if (context.mounted) {
+              Navigator.pop(context);
+            }
           }
         },
         child: Container(
