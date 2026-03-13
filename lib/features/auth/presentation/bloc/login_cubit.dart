@@ -1,20 +1,26 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/common/base_state.dart';
-import '../../../../core/config/app_setup.dart';
 import '../../../../core/utils/app_session.dart';
-import '../../../../core/utils/app_strings.dart';
 import '../../domain/entities/user_entity.dart';
-import '../../domain/repositories/auth_repository.dart';
+import '../../domain/usecases/login_usecase.dart';
 
 class LoginCubit extends Cubit<BaseState<UserEntity>> {
-  final AuthRepository _repo;
+  final LoginUseCase _loginUseCase;
+  final SharedPreferences _prefs;
 
-  LoginCubit(this._repo) : super(const InitialState());
+  LoginCubit({
+    required LoginUseCase loginUseCase,
+    required SharedPreferences prefs,
+  })  : _loginUseCase = loginUseCase,
+        _prefs = prefs,
+        super(const InitialState());
 
   Future<void> login(String email, String password) async {
     emit(const LoadingState());
-    final result = await _repo.login(email, password);
+    final result = await _loginUseCase(
+      LoginParams(email: email, password: password),
+    );
     result.fold(
       (failure) => emit(ErrorState(failure.message)),
       (user) => _handleSuccess(user),
@@ -23,7 +29,9 @@ class LoginCubit extends Cubit<BaseState<UserEntity>> {
 
   Future<void> loginWithUsername(String userName, String password) async {
     emit(const LoadingState());
-    final result = await _repo.loginWithUsername(userName, password);
+    final result = await _loginUseCase(
+      LoginParams(userName: userName, password: password),
+    );
     result.fold(
       (failure) => emit(ErrorState(failure.message)),
       (user) => _handleSuccess(user),
@@ -31,8 +39,9 @@ class LoginCubit extends Cubit<BaseState<UserEntity>> {
   }
 
   void _handleSuccess(UserEntity user) {
-    AppSession.setSession(token: user.token, userId: user.id);
-    getIt<SharedPreferences>().setString(AppStrings.userToken, user.token);
+    AppSession.setSession(token: user.token, userId: user.id, role: user.role.name);
+    _prefs.setString('token', user.token);
+    _prefs.setString('role', user.role.name);
     emit(SuccessState(user));
   }
 

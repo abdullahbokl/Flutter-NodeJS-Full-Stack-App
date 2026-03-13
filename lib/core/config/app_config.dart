@@ -23,8 +23,13 @@ class AppConfig {
         );
       default: // dev
         return AppConfig._(
-          baseUrl: 'http://10.0.2.2:7000/api/v1', // Android emulator
-          socketUrl: 'http://10.0.2.2:7000',
+          // try the android emulator ip address first 10.0.2.2
+          // baseUrl: 'http://10.0.2.2:7000/api/v1',
+          // socketUrl: 'http://10.0.2.2:7000',
+
+          // if it fails try the physical device network ip ex: 192.168.100.42 
+          baseUrl: 'http://192.168.100.42:7000/api/v1',
+          socketUrl: 'http://192.168.100.42:7000',
         );
     }
   }
@@ -34,4 +39,3 @@ class AppConfig {
     _instance = AppConfig._(baseUrl: baseUrl, socketUrl: socketUrl);
   }
 }
-

@@ -1,7 +1,7 @@
 import '../../../../../core/common/models/user_model.dart';
 import '../../../../../core/services/api_services.dart';
 import '../../../../../core/services/logger.dart';
-import '../../../../../core/utils/app_strings.dart';
+import '../../../../../core/utils/api_endpoints.dart';
 import 'user_repo.dart';
 
 class UserRepoImpl implements UserRepo {
@@ -19,7 +19,7 @@ class UserRepoImpl implements UserRepo {
   Future<dynamic> getUser({required String id}) async {
     try {
       final user = await _apiServices.get(
-        endPoint: "${AppStrings.apiUsersUrl}/$id",
+        endPoint: id == 'me' ? '${ApiEndpoints.users}/me' : '${ApiEndpoints.users}/$id',
       );
       return user;
     } catch (e) {
@@ -34,7 +34,7 @@ class UserRepoImpl implements UserRepo {
   }) async {
     try {
       final user = await _apiServices.put(
-        endPoint: AppStrings.apiUsersUrl,
+        endPoint: '${ApiEndpoints.users}/me',
         data: newUserData,
       );
 

@@ -1,14 +1,13 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../../../../core/config/app_setup.dart';
 import '../../../../core/errors/error_mapper.dart';
 import '../../../../core/errors/failures.dart';
-import '../../../../core/utils/app_session.dart';
-import '../../../../core/utils/app_strings.dart';
+
 import '../../data/repositories/auth_repo/auth_repo_impl.dart';
 import '../../data/models/login_model.dart';
 import '../../data/models/register_model.dart';
+import '../../../../core/common/models/user_model.dart';
 import '../entities/user_entity.dart';
+import '../entities/user_role.dart';
 import '../repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -20,7 +19,7 @@ class AuthRepositoryImpl implements AuthRepository {
       _exec(() async {
         final data = await _legacy.login(
             loginModel: LoginModel(email: email, password: password));
-        return _mapToEntity(data['data']);
+        return UserModel.fromMap(data['data']);
       });
 
   @override
@@ -29,44 +28,34 @@ class AuthRepositoryImpl implements AuthRepository {
       _exec(() async {
         final data = await _legacy.login(
             loginModel: LoginModel(userName: userName, password: password));
-        return _mapToEntity(data['data']);
+        return UserModel.fromMap(data['data']);
       });
 
   @override
   Future<Either<Failure, UserEntity>> register(
-          String userName, String email, String password) =>
+    String userName,
+    String email,
+    String password, {
+    UserRole role = UserRole.seeker,
+    String? companyName,
+  }) =>
       _exec(() async {
         final data = await _legacy.register(
-            registerModel: RegisterModel(
-                userName: userName, email: email, password: password));
-        return _mapToEntity(data['data']);
+          registerModel: RegisterModel(
+            userName: userName,
+            email: email,
+            password: password,
+            role: role.name,
+            companyName: companyName,
+          ),
+        );
+        return UserModel.fromMap(data['data']);
       });
 
   @override
   Future<Either<Failure, void>> logout() => _exec(() async {
         await _legacy.logout();
       });
-
-  static UserEntity _mapToEntity(dynamic d) {
-    final pics = (d[AppStrings.userProfilePic] as List? ?? [])
-        .map((p) => p is String ? p : (p['url'] as String? ?? ''))
-        .where((s) => s.isNotEmpty)
-        .toList();
-    return UserEntity(
-      id: d[AppStrings.userId] ?? '',
-      email: d[AppStrings.userEmail] ?? '',
-      userName: d[AppStrings.userUserName] ?? '',
-      fullName: d[AppStrings.userFullName],
-      phone: d[AppStrings.userPhone],
-      profilePic: pics,
-      location: d[AppStrings.userLocation],
-      isAdmin: d[AppStrings.userIsAdmin] ?? false,
-      isAgent: d[AppStrings.userIsAgent] ?? false,
-      skills: List<String>.from(d[AppStrings.userSkills] ?? []),
-      bio: d[AppStrings.userBio],
-      token: d['token'] ?? '',
-    );
-  }
 
   Future<Either<Failure, T>> _exec<T>(Future<T> Function() action) async {
     try {

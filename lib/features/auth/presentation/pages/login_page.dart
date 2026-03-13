@@ -6,15 +6,12 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/common/base_state.dart';
 import '../../../../core/common/widgets/app_button.dart';
 import '../../../../core/common/widgets/app_text_field.dart';
+import '../../../../core/config/app_setup.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_snackbars.dart';
 import '../bloc/login_cubit.dart';
-import '../bloc/register_cubit.dart';
 import '../../domain/entities/user_entity.dart';
-import '../../domain/repositories/auth_repository_impl.dart';
-import '../../../../core/config/app_setup.dart';
-import '../../data/repositories/auth_repo/auth_repo_impl.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -22,8 +19,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => LoginCubit(
-          AuthRepositoryImpl(getIt<AuthRepoImpl>())),
+      create: (_) => getIt<LoginCubit>(),
       child: const _LoginView(),
     );
   }
@@ -47,43 +43,63 @@ class _LoginViewState extends State<_LoginView> {
         if (state is ErrorState<UserEntity>) {
           AppSnackBars.showError(ctx, state.message);
         } else if (state is SuccessState<UserEntity>) {
-          ctx.go('/home');
+          if (state.data.isCompany) {
+            ctx.go('/company/dashboard');
+          } else {
+            ctx.go('/home');
+          }
         }
       },
+
       child: Scaffold(
         body: Stack(
           children: [
             // Background gradient blob
-            Positioned(top: -80, right: -60,
-              child: Container(width: 260, height: 260,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.primary.withOpacity(0.12)))),
+            Positioned(
+                top: -80,
+                right: -60,
+                child: Container(
+                    width: 260,
+                    height: 260,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.primary.withValues(alpha: 0.12)))),
             SafeArea(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(AppSpacing.xl),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: AppSpacing.xl),
                     Text('Welcome\nBack 👋',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.w800, height: 1.2))
-                        .animate().fadeIn().slideX(begin: -0.2),
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineMedium
+                                ?.copyWith(
+                                    fontWeight: FontWeight.w800, height: 1.2))
+                        .animate()
+                        .fadeIn()
+                        .slideX(begin: -0.2),
                     const SizedBox(height: AppSpacing.sm),
                     Text('Sign in to find your perfect job',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textSecondary))
-                        .animate().fadeIn(delay: 100.ms),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: AppColors.textSecondary))
+                        .animate()
+                        .fadeIn(delay: 100.ms),
                     const SizedBox(height: AppSpacing.xl),
                     _FormCard(form: _form, email: _email, password: _password),
                     const SizedBox(height: AppSpacing.md),
-                    Row(mainAxisAlignment: MainAxisAlignment.center,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text("Don't have an account? "),
                         GestureDetector(
                           onTap: () => context.go('/register'),
                           child: const Text('Register',
-                              style: TextStyle(color: AppColors.primary,
+                              style: TextStyle(
+                                  color: AppColors.primary,
                                   fontWeight: FontWeight.w600)),
                         ),
                       ],
@@ -110,7 +126,8 @@ class _FormCard extends StatelessWidget {
   final GlobalKey<FormState> form;
   final TextEditingController email;
   final TextEditingController password;
-  const _FormCard({required this.form, required this.email, required this.password});
+  const _FormCard(
+      {required this.form, required this.email, required this.password});
 
   @override
   Widget build(BuildContext context) {
@@ -120,8 +137,10 @@ class _FormCard extends StatelessWidget {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
-          BoxShadow(color: AppColors.primary.withOpacity(0.08),
-              blurRadius: 20, offset: const Offset(0, 8))
+          BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.08),
+              blurRadius: 20,
+              offset: const Offset(0, 8))
         ],
       ),
       child: Form(
@@ -133,7 +152,8 @@ class _FormCard extends StatelessWidget {
             controller: email,
             keyboardType: TextInputType.emailAddress,
             prefixIcon: Icons.email_outlined,
-            validator: (v) => v?.contains('@') == true ? null : 'Enter a valid email',
+            validator: (v) =>
+                v?.contains('@') == true ? null : 'Enter a valid email',
           ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2),
           const SizedBox(height: AppSpacing.md),
           AppTextField(
@@ -151,7 +171,10 @@ class _FormCard extends StatelessWidget {
               isLoading: state is LoadingState,
               onTap: () {
                 if (form.currentState?.validate() == true) {
-                  ctx.read<LoginCubit>().login(email.text.trim(), password.text);
+                  FocusScope.of(ctx).unfocus();
+                  ctx
+                      .read<LoginCubit>()
+                      .login(email.text.trim(), password.text);
                 }
               },
               icon: Icons.arrow_forward_rounded,
@@ -162,4 +185,3 @@ class _FormCard extends StatelessWidget {
     );
   }
 }
-

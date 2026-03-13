@@ -4,8 +4,8 @@ import '../../../../../core/config/app_setup.dart';
 import '../../../../../core/errors/server_error_handler.dart';
 import '../../../../../core/services/api_services.dart';
 import '../../../../../core/services/logger.dart';
+import '../../../../../core/utils/api_endpoints.dart';
 import '../../../../../core/utils/app_session.dart';
-import '../../../../../core/utils/app_strings.dart';
 import '../../models/login_model.dart';
 import '../../models/register_model.dart';
 import 'auth_repo.dart';
@@ -19,7 +19,7 @@ class AuthRepoImpl implements AuthRepo {
   Future<dynamic> register({required RegisterModel registerModel}) async {
     try {
       final user = await _apiServices.post(
-        endPoint: AppStrings.apiRegisterUrl,
+        endPoint: ApiEndpoints.register,
         data: registerModel.toMap(),
       );
       _registerLogger("User registered successfully");
@@ -34,7 +34,7 @@ class AuthRepoImpl implements AuthRepo {
   Future<dynamic> login({required LoginModel loginModel}) async {
     try {
       final user = await _apiServices.post(
-        endPoint: AppStrings.apiLoginUrl,
+        endPoint: ApiEndpoints.login,
         data: loginModel.toMap(),
       );
       _loginLogger("User logged in successfully");
@@ -49,7 +49,8 @@ class AuthRepoImpl implements AuthRepo {
   Future<void> logout() async {
     AppSession.clearSession();
     final prefs = getIt<SharedPreferences>();
-    await prefs.remove(AppStrings.userToken);
+    await prefs.remove('token');
+    await prefs.remove('role');
     _loginLogger("User logged out");
   }
 
