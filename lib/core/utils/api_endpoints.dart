@@ -10,5 +10,6 @@ class ApiEndpoints {
   static const String uploadImage = '/images';
   static const String chats = '/chats';
   static const String messages = '/messages';
+  static const String applications = '/applications';
   static const String headersToken = 'Authorization';
 }

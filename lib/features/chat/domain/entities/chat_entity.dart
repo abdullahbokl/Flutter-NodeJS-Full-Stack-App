@@ -7,6 +7,7 @@ class ChatEntity extends Equatable {
   final String id;
   final String chatName;
   final bool isGroupChat;
+  final String? jobId;
   final List<UserModel> users;
   final MessageModel? latestMessage;
   final UserModel? groupAdmin;
@@ -15,6 +16,7 @@ class ChatEntity extends Equatable {
     required this.id,
     required this.chatName,
     this.isGroupChat = false,
+    this.jobId,
     this.users = const [],
     this.latestMessage,
     this.groupAdmin,
@@ -25,6 +27,7 @@ class ChatEntity extends Equatable {
         id,
         chatName,
         isGroupChat,
+        jobId,
         users,
         latestMessage,
         groupAdmin,

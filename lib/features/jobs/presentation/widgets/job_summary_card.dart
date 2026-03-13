@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../domain/entities/job_entity.dart';
+import '../../../../core/common/widgets/app_avatar.dart';
 import '../../../../core/common/widgets/app_style.dart';
 import '../../../../core/common/widgets/custom_outline_btn.dart';
 import '../../../../core/common/widgets/height_spacer.dart';
@@ -27,8 +28,10 @@ class JobSummaryCard extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircleAvatar(
-            backgroundImage: NetworkImage(job.imageUrl ?? ''),
+          AppAvatar(
+            radius: 28,
+            imageUrl: job.imageUrl,
+            fallbackInitials: job.company,
           ),
           const HeightSpacer(size: 10),
           ReusableText(

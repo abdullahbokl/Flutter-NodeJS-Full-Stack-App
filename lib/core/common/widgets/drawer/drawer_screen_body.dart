@@ -9,6 +9,8 @@ import '../../../theme/app_radius.dart';
 import '../../../theme/app_spacing.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/app_dialogs.dart';
+import '../../../config/app_router.dart';
+import '../../../utils/app_session.dart';
 import '../../../../features/profile/presentation/bloc/profile_cubit.dart';
 import '../app_avatar.dart';
 
@@ -31,14 +33,20 @@ class DrawerScreenBody extends StatelessWidget {
               const SizedBox(height: AppSpacing.xl),
               BlocBuilder<ProfileCubit, BaseState<UserModel>>(
                 builder: (context, state) {
-                  final user = state is SuccessState<UserModel> ? state.data : null;
+                  final isCompany = AppSession.isCompany;
                   final navItems = [
-                    if (user?.isCompany ?? false)
+                    if (isCompany)
                       const _NavItem(icon: Icons.dashboard_rounded, label: 'Dashboard', route: '/company/dashboard')
                     else
                       const _NavItem(icon: Icons.home_rounded, label: 'Home', route: '/home'),
                     const _NavItem(icon: Icons.search_rounded,      label: 'Search',    route: '/search'),
                     const _NavItem(icon: Icons.bookmark_rounded,    label: 'Bookmarks', route: '/bookmarks'),
+                    if (!isCompany)
+                      const _NavItem(
+                        icon: Icons.work_history_rounded,
+                        label: 'My Applications',
+                        route: AppRouter.myApplicationsPage,
+                      ),
                     const _NavItem(icon: Icons.chat_bubble_rounded, label: 'Messages',  route: '/chat'),
                     const _NavItem(icon: Icons.person_rounded,      label: 'Profile',   route: '/profile'),
                   ];

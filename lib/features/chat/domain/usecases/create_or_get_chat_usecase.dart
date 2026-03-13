@@ -8,8 +8,9 @@ import '../../data/repositories/chat_repo.dart';
 
 class CreateOrGetChatParams {
   final String receiverId;
+  final String? jobId;
 
-  const CreateOrGetChatParams(this.receiverId);
+  const CreateOrGetChatParams(this.receiverId, {this.jobId});
 }
 
 class CreateOrGetChatUseCase
@@ -21,7 +22,10 @@ class CreateOrGetChatUseCase
   @override
   Future<Either<Failure, ChatModel>> call(CreateOrGetChatParams params) async {
     try {
-      final chat = await _repository.createChat(params.receiverId);
+      final chat = await _repository.createChat(
+        params.receiverId,
+        jobId: params.jobId,
+      );
       return Right(chat);
     } catch (error) {
       return Left(mapToFailure(error));

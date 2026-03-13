@@ -12,16 +12,20 @@ import '../../features/chat/data/models/chat_model.dart';
 import '../../features/chat/presentation/pages/chat_list_page.dart';
 import '../../features/chat/presentation/pages/conversation_page.dart';
 import '../../features/home/presentation/pages/company_dashboard_page.dart';
+import '../../features/home/presentation/pages/company_applications_page.dart';
+import '../../features/home/presentation/pages/my_applications_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/jobs/domain/entities/job_entity.dart';
+import '../../features/jobs/presentation/bloc/manage_jobs_cubit.dart';
+import '../../features/jobs/presentation/bloc/post_job_cubit.dart';
 import '../../features/jobs/presentation/pages/job_details_page.dart';
 import '../../features/jobs/presentation/pages/jobs_list_page.dart';
+import '../../features/jobs/presentation/pages/post_job_page.dart';
 import '../../features/on_boarding/presentation/on_boarding_screen.dart';
 import '../../features/profile/presentation/bloc/profile_cubit.dart';
 import '../../features/profile/presentation/pages/edit_profile_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/search/presentation/pages/search_page.dart';
-import '../common/widgets/drawer/drawer_screen.dart';
 import '../utils/app_session.dart';
 import 'app_setup.dart';
 
@@ -39,6 +43,10 @@ class AppRouter {
   static const String editProfilePage = '/profile/edit';
   static const String jobsListPage = '/jobs';
   static const String jobDetailsPage = '/jobs/:id';
+  static const String postJobPage = '/jobs/post';
+  static const String manageJobsPage = '/company/manage-jobs';
+  static const String companyApplicationsPage = '/company/applications';
+  static const String myApplicationsPage = '/applications/mine';
   static const String chatDetailPage = '/chat/:id';
 }
 
@@ -47,13 +55,28 @@ class AppRouter {
 final GoRouter appRouter = GoRouter(
   initialLocation: AppRouter.onBoarding,
   redirect: (context, state) {
-    final prefs = getIt<SharedPreferences>();
-    final isFirstTime = prefs.getBool('isFirstTime') ?? true;
+    // Safe-get prefs: GetIt may not have been initialized yet when this
+    // top-level router is created, so avoid calling `getIt<SharedPreferences>()`
+    // unconditionally. Fall back to treating the user as first-time if prefs
+    // aren't available yet.
+    final SharedPreferences? prefs = getIt.isRegistered<SharedPreferences>()
+        ? getIt<SharedPreferences>()
+        : null;
+    final isFirstTime = prefs?.getBool('isFirstTime') ?? true;
     final isLoggedIn = AppSession.isAuthenticated;
     final location = state.matchedLocation;
 
     // If the user is authenticated, skip onboarding & login → go to appropriate home
     if (isLoggedIn) {
+      // Force company to dashboard if they land on seeker home
+      if (location == AppRouter.homePage && AppSession.isCompany) {
+        return AppRouter.companyDashboardPage;
+      }
+      // Force seeker to home if they land on company dashboard
+      if (location == AppRouter.companyDashboardPage && !AppSession.isCompany) {
+        return AppRouter.homePage;
+      }
+
       if (location == AppRouter.onBoarding ||
           location == AppRouter.loginPage ||
           location == AppRouter.roleSelectionPage ||
@@ -91,7 +114,7 @@ final GoRouter appRouter = GoRouter(
 
     // ─── Shell (drawer + persistent tabs) ───────────────────────────────────
     ShellRoute(
-      builder: (ctx, state, child) => DrawerScreen(child: child),
+      builder: (ctx, state, child) => child,
       routes: [
         GoRoute(
             path: AppRouter.homePage, builder: (_, __) => const HomePage()),
@@ -109,6 +132,24 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: '/jobs',
           builder: (ctx, state) => JobsListPage(title: state.extra as String?),
+        ),
+        GoRoute(
+          path: AppRouter.manageJobsPage,
+          builder: (ctx, state) => BlocProvider<ManageJobsCubit>(
+            create: (_) => getIt<ManageJobsCubit>()..loadMyJobs(),
+            child: const JobsListPage(
+              title: 'My Posted Jobs',
+              isMine: true,
+            ),
+          ),
+        ),
+        GoRoute(
+          path: AppRouter.companyApplicationsPage,
+          builder: (_, __) => const CompanyApplicationsPage(),
+        ),
+        GoRoute(
+          path: AppRouter.myApplicationsPage,
+          builder: (_, __) => const MyApplicationsPage(),
         ),
       ],
     ),
@@ -135,9 +176,17 @@ final GoRouter appRouter = GoRouter(
       ],
     ),
 
+    GoRoute(
+      path: AppRouter.postJobPage,
+      builder: (ctx, state) => BlocProvider<PostJobCubit>(
+        create: (_) => getIt<PostJobCubit>(),
+        child: const PostJobPage(),
+      ),
+    ),
+
     // /jobs/:id
     GoRoute(
-      path: '/jobs/:id',
+      path: AppRouter.jobDetailsPage,
       builder: (ctx, state) =>
           JobDetailsPage.page(job: state.extra as JobEntity),
     ),

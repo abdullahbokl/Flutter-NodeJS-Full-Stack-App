@@ -24,16 +24,20 @@ class MessageModel extends MessageEntity {
   }
 
   factory MessageModel.fromMap(Map<String, dynamic> map) {
+    final senderMap = map['sender'] is Map
+        ? Map<String, dynamic>.from(map['sender'] as Map)
+        : <String, dynamic>{};
+
     return MessageModel(
-      id: map['id'],
-      sender: UserModel.fromMap(map['sender']),
-      content: map['content'],
-      receiver: map['receiver'],
+      id: (map['id'] ?? map['_id'] ?? '').toString(),
+      sender: UserModel.fromMap(senderMap),
+      content: (map['content'] ?? '').toString(),
+      receiver: map['receiver']?.toString(),
       readBy: List<UserModel>.from(
         (map['readBy'] ?? const [])
             .map((userData) => UserModel.fromMap(userData)),
       ),
-      createdAt: map['createdAt'],
+      createdAt: (map['createdAt'] ?? '').toString(),
     );
   }
 }

@@ -117,10 +117,31 @@ class _MessagesList extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<MessagesCubit, BaseState<List<MessageModel>>>(
       builder: (ctx, state) {
-        if (state is! SuccessState<List<MessageModel>>) {
+        if (state is LoadingState<List<MessageModel>> ||
+            state is InitialState<List<MessageModel>>) {
           return const Center(child: CircularProgressIndicator(color: AppColors.primary));
         }
-        final msgs = state.data;
+
+        if (state is ErrorState<List<MessageModel>>) {
+          return Center(
+            child: Text(
+              state.message,
+              style: const TextStyle(color: AppColors.textSecondary),
+              textAlign: TextAlign.center,
+            ),
+          );
+        }
+
+        if (state is EmptyState<List<MessageModel>>) {
+          return const Center(
+            child: Text(
+              'No messages yet. Start the conversation.',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
+          );
+        }
+
+        final msgs = (state as SuccessState<List<MessageModel>>).data;
         return ListView.builder(
           controller: scroll,
           padding: const EdgeInsets.all(AppSpacing.md),

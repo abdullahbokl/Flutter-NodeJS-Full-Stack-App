@@ -25,8 +25,10 @@ class ChatCubit extends Cubit<BaseState<List<ChatModel>>> {
     );
   }
 
-  Future<ChatModel?> createOrGetChat(String receiverId) async {
-    final result = await _createOrGetChat(CreateOrGetChatParams(receiverId));
+  Future<ChatModel?> createOrGetChat(String receiverId, {String? jobId}) async {
+    final result = await _createOrGetChat(
+      CreateOrGetChatParams(receiverId, jobId: jobId),
+    );
     return result.fold((_) => null, (chat) => chat);
   }
 }

@@ -17,14 +17,9 @@ class ChatRepoImpl extends ChatRepo {
       final raw = await _apiService.get(endPoint: ApiEndpoints.chats);
       final chatsData = raw is Map ? raw['data'] : raw;
       if (chatsData is! List) return [];
-      final List<ChatModel> chatModels = [];
-      for (final chat in chatsData) {
-        if (chat['latestMessage'] != null) {
-          chatModels.add(ChatModel.fromMap(Map<String, dynamic>.from(chat)));
-        }
-      }
-
-      return chatModels;
+      return chatsData
+          .map((chat) => ChatModel.fromMap(Map<String, dynamic>.from(chat)))
+          .toList();
     } catch (e) {
       Logger.logEvent(
         className: "ChatRepoImpl",
@@ -69,9 +64,9 @@ class ChatRepoImpl extends ChatRepo {
       final messageData = await _apiService.post(
         endPoint: ApiEndpoints.messages,
         data: {
-          'id': chatId,
+          'chatId': chatId,
           'content': content,
-          'receiver': receiverId,
+          'receiverId': receiverId,
         },
       );
       final data = messageData is Map && messageData['data'] != null
@@ -91,13 +86,18 @@ class ChatRepoImpl extends ChatRepo {
   }
 
   @override
-  Future<ChatModel> createChat(String receiverId) async {
+  Future<ChatModel> createChat(String receiverId, {String? jobId}) async {
     try {
+      final payload = <String, dynamic>{
+        'userId': receiverId,
+      };
+      if (jobId != null && jobId.isNotEmpty) {
+        payload['jobId'] = jobId;
+      }
+
       final chatData = await _apiService.post(
         endPoint: ApiEndpoints.chats,
-        data: {
-          'userId': receiverId,
-        },
+        data: payload,
       );
       final data = chatData is Map && chatData['data'] != null
           ? chatData['data']

@@ -7,6 +7,7 @@ class ChatModel extends ChatEntity {
     required super.id,
     required super.chatName,
     super.isGroupChat = false,
+    super.jobId,
     super.users = const [],
     super.latestMessage,
     super.groupAdmin,
@@ -19,23 +20,35 @@ class ChatModel extends ChatEntity {
       'id': id,
       'chatName': chatName,
       'isGroupChat': isGroupChat,
+      'jobId': jobId,
       'users': users,
       'groupAdmin': groupAdmin?.toMap(),
     };
   }
 
   factory ChatModel.fromMap(Map<String, dynamic> map) {
+    final rawUsers = map['users'];
+    final usersList = rawUsers is List ? rawUsers : const [];
+    final rawJobId = map['jobId'];
+    final parsedJobId = rawJobId is Map
+        ? (rawJobId['id'] ?? rawJobId['_id'])?.toString()
+        : rawJobId?.toString();
+
     return ChatModel(
-      id: map['id'],
-      chatName: map['chatName'],
-      isGroupChat: map['isGroupChat'],
+      id: (map['id'] ?? map['_id'] ?? '').toString(),
+      chatName: (map['chatName'] ?? 'direct').toString(),
+      isGroupChat: map['isGroupChat'] == true,
+      jobId: parsedJobId,
       users: List<UserModel>.from(
-          map['users'].map((user) => UserModel.fromMap(user))),
+        usersList.map((user) => UserModel.fromMap(user)),
+      ),
       latestMessage: map['latestMessage'] != null
-          ? MessageModel.fromMap(map['latestMessage'])
+          ? MessageModel.fromMap(
+              Map<String, dynamic>.from(map['latestMessage'] as Map),
+            )
           : null,
       groupAdmin: map['groupAdmin'] != null
-          ? UserModel.fromMap(map['groupAdmin'])
+          ? UserModel.fromMap(Map<String, dynamic>.from(map['groupAdmin'] as Map))
           : null,
     );
   }

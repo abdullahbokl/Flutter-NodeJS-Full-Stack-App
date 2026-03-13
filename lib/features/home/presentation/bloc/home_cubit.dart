@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/common/base_state.dart';
-import '../../../../core/common/usecase.dart';
 import '../../../../core/common/models/job_model.dart';
+import '../../../../core/common/usecase.dart';
 import '../../domain/usecases/get_home_jobs_usecase.dart';
 
 class HomeCubit extends Cubit<BaseState<List<JobModel>>> {
@@ -18,4 +18,3 @@ class HomeCubit extends Cubit<BaseState<List<JobModel>>> {
     );
   }
 }
-

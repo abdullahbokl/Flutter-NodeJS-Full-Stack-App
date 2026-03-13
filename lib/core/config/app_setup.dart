@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/auth/domain/repositories/auth_repository_impl.dart';
 import '../../features/auth/domain/usecases/login_usecase.dart';
@@ -34,7 +33,11 @@ import '../../features/home/presentation/bloc/home_cubit.dart';
 import '../../features/jobs/data/repositories/jobs_repo_impl.dart';
 import '../../features/jobs/data/repositories/jobs_repo.dart';
 import '../../features/jobs/domain/usecases/get_jobs_usecase.dart';
+import '../../features/jobs/domain/usecases/create_job_usecase.dart';
+import '../../features/jobs/domain/usecases/get_my_jobs_usecase.dart';
 import '../../features/jobs/presentation/bloc/jobs_cubit.dart';
+import '../../features/jobs/presentation/bloc/post_job_cubit.dart';
+import '../../features/jobs/presentation/bloc/manage_jobs_cubit.dart';
 import '../../features/profile/domain/usecases/get_profile_usecase.dart';
 import '../../features/profile/domain/usecases/update_profile_usecase.dart';
 import '../../features/profile/presentation/bloc/profile_cubit.dart';
@@ -48,9 +51,7 @@ import '../services/auth_interceptor.dart';
 import '../services/logger.dart';
 import '../utils/app_session.dart';
 import 'app_config.dart';
-
 final GetIt getIt = GetIt.instance;
-
 class AppSetup {
   static Future<void> setupServiceLocator() async {
     await _registerInfrastructure();
@@ -59,7 +60,6 @@ class AppSetup {
     _registerCubits();
     _logEvent("All dependencies registered");
   }
-
   static Future<void> _registerInfrastructure() async {
     // Shared preferences
     final prefs = await SharedPreferences.getInstance();
@@ -67,7 +67,6 @@ class AppSetup {
     getIt.registerLazySingleton<ThemeCubit>(
       () => ThemeCubit(getIt<SharedPreferences>()),
     );
-
     // Dio with AuthInterceptor (no hardcoded token in BaseOptions)
     getIt.registerLazySingleton<Dio>(() {
       return Dio(
@@ -81,10 +80,8 @@ class AppSetup {
         ..interceptors.add(AuthInterceptor())
         ..interceptors.add(LogInterceptor(requestBody: true, responseBody: false));
     });
-
     getIt.registerLazySingleton<ApiServices>(() => ApiServices(getIt<Dio>()));
   }
-
   static Future<void> _registerRepositories() async {
     getIt.registerLazySingleton<AuthRepoImpl>(() => AuthRepoImpl(getIt<ApiServices>()));
     getIt.registerLazySingleton<UserRepoImpl>(() => UserRepoImpl(getIt<ApiServices>()));
@@ -101,7 +98,6 @@ class AppSetup {
     getIt.registerLazySingleton<BookmarksRepo>(() => getIt<BookmarksRepoImpl>());
     getIt.registerLazySingleton<ChatRepo>(() => getIt<ChatRepoImpl>());
   }
-
   static void _registerUseCases() {
     getIt.registerLazySingleton<LoginUseCase>(
       () => LoginUseCase(getIt<AuthRepository>()),
@@ -117,6 +113,12 @@ class AppSetup {
     );
     getIt.registerLazySingleton<GetJobsUseCase>(
       () => GetJobsUseCase(getIt<JobsRepo>()),
+    );
+    getIt.registerLazySingleton<CreateJobUseCase>(
+      () => CreateJobUseCase(getIt<JobsRepo>()),
+    );
+    getIt.registerLazySingleton<GetMyJobsUseCase>(
+      () => GetMyJobsUseCase(getIt<JobsRepo>()),
     );
     getIt.registerLazySingleton<SearchJobsUseCase>(
       () => SearchJobsUseCase(getIt<SearchRepo>()),
@@ -152,7 +154,6 @@ class AppSetup {
       () => SendMessageUseCase(getIt<ChatRepo>()),
     );
   }
-
   static void _registerCubits() {
     getIt.registerFactory<LoginCubit>(
       () => LoginCubit(
@@ -168,14 +169,16 @@ class AppSetup {
     );
     getIt.registerFactory<HomeCubit>(() => HomeCubit(getIt<GetHomeJobsUseCase>()));
     getIt.registerFactory<JobsCubit>(() => JobsCubit(getIt<GetJobsUseCase>()));
+    getIt.registerFactory<PostJobCubit>(() => PostJobCubit(getIt<CreateJobUseCase>()));
+    getIt.registerFactory<ManageJobsCubit>(() => ManageJobsCubit(getIt<GetMyJobsUseCase>()));
     getIt.registerFactory<SearchCubit>(
       () => SearchCubit(getIt<SearchJobsUseCase>()),
     );
     getIt.registerFactory<BookmarksCubit>(
       () => BookmarksCubit(
-        getBookmarks: getIt<GetBookmarksUseCase>(),
-        addBookmark: getIt<AddBookmarkUseCase>(),
-        removeBookmark: getIt<RemoveBookmarkUseCase>(),
+        getBookmarksUseCase: getIt<GetBookmarksUseCase>(),
+        addBookmarkUseCase: getIt<AddBookmarkUseCase>(),
+        removeBookmarkUseCase: getIt<RemoveBookmarkUseCase>(),
       ),
     );
     getIt.registerFactory<BookmarkStatusCubit>(
@@ -205,7 +208,6 @@ class AppSetup {
       ),
     );
   }
-
   static Future<void> loadData() async {
     _handleUserToken();
     if (AppSession.isAuthenticated) {
@@ -213,15 +215,12 @@ class AppSetup {
     }
     _logEvent("Session data loaded");
   }
-
   /// Call on logout — clears session and resets scoped lazy singletons
   static void resetSession() {
     AppSession.clearSession();
     // Repos hold no user-specific state; token cleared in AppSession
   }
-
   // ─── Private helpers ──────────────────────────────────────────────────────
-
   static void _handleUserToken() {
     final prefs = getIt<SharedPreferences>();
     final saved = prefs.getString('token') ?? '';
@@ -230,7 +229,6 @@ class AppSetup {
       AppSession.setSession(token: saved, userId: '', role: role);
     }
   }
-
   static Future<void> _handleUserId() async {
     try {
       final decoded = JwtDecoder.decode(AppSession.token);
@@ -241,7 +239,6 @@ class AppSetup {
       AppSession.clearSession();
     }
   }
-
   static void _logEvent(String message) {
     Logger.logEvent(
       className: 'AppSetup',
@@ -250,4 +247,3 @@ class AppSetup {
     );
   }
 }
-

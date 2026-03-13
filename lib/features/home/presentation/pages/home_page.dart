@@ -3,7 +3,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../../core/utils/app_session.dart';
 
 import '../../../../core/common/base_state.dart';
 import '../../../../core/common/models/job_model.dart';
@@ -11,9 +10,11 @@ import '../../../../core/common/widgets/app_avatar.dart';
 import '../../../../core/common/widgets/app_chip.dart';
 
 import '../../../../core/common/widgets/status_badge.dart';
+import '../../../../core/config/app_router.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_session.dart';
 import '../bloc/home_cubit.dart';
 
 class HomePage extends StatelessWidget {
@@ -36,16 +37,6 @@ class _HomeViewState extends State<_HomeView> {
   final _filters = ['All', 'Remote', 'Onsite', 'Full-time', 'Part-time'];
 
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (AppSession.isCompany) {
-        context.go('/company/dashboard');
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
@@ -56,6 +47,7 @@ class _HomeViewState extends State<_HomeView> {
             slivers: [
               SliverToBoxAdapter(child: _buildHeader(context)),
               SliverToBoxAdapter(child: _buildStatsBanner()),
+              SliverToBoxAdapter(child: _buildQuickActions(context)),
               SliverToBoxAdapter(child: _buildSectionTitle(
                 context, 'Featured Jobs', actionLabel: 'See All',
                 onAction: () => context.push('/jobs', extra: 'All Jobs'))),
@@ -114,6 +106,33 @@ class _HomeViewState extends State<_HomeView> {
         ]),
       ]),
     ).animate().fadeIn(delay: 200.ms).slideX(begin: 0.05);
+  }
+
+  Widget _buildQuickActions(BuildContext context) {
+    if (AppSession.isCompany) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+      child: Row(
+        children: [
+          Expanded(
+            child: OutlinedButton.icon(
+              onPressed: () => context.push(AppRouter.myApplicationsPage),
+              icon: const Icon(Icons.work_history_rounded),
+              label: const Text('My Applications'),
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: OutlinedButton.icon(
+              onPressed: () => context.push(AppRouter.chatPage),
+              icon: const Icon(Icons.chat_bubble_outline_rounded),
+              label: const Text('Messages'),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildFilterChips() {

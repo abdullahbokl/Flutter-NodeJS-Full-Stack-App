@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../utils/app_colors.dart';
 
@@ -55,13 +54,12 @@ class AppAvatar extends StatelessWidget {
   Widget _buildInner() {
     if (imageUrl != null && imageUrl!.isNotEmpty) {
       return ClipOval(
-        child: CachedNetworkImage(
-          imageUrl: imageUrl!,
+        child: Image.network(
+          imageUrl!,
           width: radius * 2,
           height: radius * 2,
           fit: BoxFit.cover,
-          placeholder: (_, __) => _initials(),
-          errorWidget: (_, __, ___) => _initials(),
+          errorBuilder: (_, __, ___) => _initials(),
         ),
       );
     }

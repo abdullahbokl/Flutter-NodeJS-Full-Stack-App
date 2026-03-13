@@ -8,7 +8,11 @@ import '../../../../core/common/widgets/app_style.dart';
 import '../../../../core/common/widgets/custom_btn.dart';
 import '../../../../core/common/widgets/height_spacer.dart';
 import '../../../../core/common/widgets/reusable_text.dart';
+import '../../../../core/config/app_setup.dart';
+import '../../../../core/services/api_services.dart';
+import '../../../../core/utils/api_endpoints.dart';
 import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_session.dart';
 import '../../../../core/utils/app_snackbars.dart';
 import '../../../chat/presentation/bloc/chat_cubit.dart';
 import 'job_requirements_list_view.dart';
@@ -24,6 +28,9 @@ class JobDetailsBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isPublisher =
+        AppSession.userId.isNotEmpty && job.agentId == AppSession.userId;
+
     return Padding(
       padding: EdgeInsets.only(left: 20.w, right: 20.w, bottom: 10.h),
       child: Stack(
@@ -62,8 +69,10 @@ class JobDetailsBody extends StatelessWidget {
           Align(
             alignment: Alignment.bottomCenter,
             child: CustomButton(
-              onTap: () => _showApplyDialog(context),
-              text: 'Apply Now',
+              onTap: () => isPublisher
+                  ? AppSnackBars.showInfo(context, 'Edit job flow coming soon')
+                  : _showApplyDialog(context),
+              text: isPublisher ? 'Edit Job' : 'Apply Now',
               color: AppColors.lightGreen,
             ),
           ),
@@ -85,15 +94,29 @@ class JobDetailsBody extends StatelessWidget {
       btnOk: GestureDetector(
         onTap: () async {
           if (formKey.currentState!.validate()) {
+            final coverLetter = messageController.text.trim();
             final chatCubit = context.read<ChatCubit>();
-            final chat = await chatCubit.createOrGetChat(job.agentId);
+            try {
+              await getIt<ApiServices>().post(
+                endPoint: '${ApiEndpoints.jobs}/${job.id}/apply',
+                data: {'coverLetter': coverLetter},
+              );
+            } catch (e) {
+              if (!context.mounted) return;
+              AppSnackBars.showError(context, e.toString());
+              return;
+            }
+
+            final chat = await chatCubit.createOrGetChat(
+              job.agentId,
+              jobId: job.id,
+            );
             if (!context.mounted) return;
             if (chat != null) {
-              // Message sent via use case through cubit — no need
-              // to use MessagesCubit here (it's scoped to conversation page).
               AppSnackBars.showSuccess(context, 'Application sent!');
             } else {
-              AppSnackBars.showError(context, 'Failed to start chat');
+              // Application is already submitted even if chat creation fails.
+              AppSnackBars.showInfo(context, 'Application sent, but chat was not created');
             }
             Navigator.pop(context);
           }

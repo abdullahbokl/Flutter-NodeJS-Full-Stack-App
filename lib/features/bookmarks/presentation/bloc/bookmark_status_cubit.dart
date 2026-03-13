@@ -62,9 +62,12 @@ class BookmarkStatusCubit extends Cubit<BookmarkStatusState> {
 
   /// Toggle bookmark status.
   Future<void> toggle(String jobId) async {
-    final wasBookmarked =
-        (state is BookmarkStatusLoaded && (state as BookmarkStatusLoaded).isBookmarked) ||
-        (state is BookmarkStatusToggled && (state as BookmarkStatusToggled).isBookmarked);
+    bool wasBookmarked = false;
+    if (state is BookmarkStatusLoaded) {
+      wasBookmarked = (state as BookmarkStatusLoaded).isBookmarked;
+    } else if (state is BookmarkStatusToggled) {
+      wasBookmarked = (state as BookmarkStatusToggled).isBookmarked;
+    }
 
     emit(const BookmarkStatusLoading(isToggling: true));
 
