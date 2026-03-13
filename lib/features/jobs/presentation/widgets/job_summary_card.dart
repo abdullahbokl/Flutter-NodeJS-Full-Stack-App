@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../core/common/models/job_model.dart';
+import '../../domain/entities/job_entity.dart';
 import '../../../../core/common/widgets/app_style.dart';
 import '../../../../core/common/widgets/custom_outline_btn.dart';
 import '../../../../core/common/widgets/height_spacer.dart';
@@ -16,7 +16,7 @@ class JobSummaryCard extends StatelessWidget {
     required this.job,
   });
 
-  final JobModel job;
+  final JobEntity job;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class JobSummaryCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CircleAvatar(
-            backgroundImage: NetworkImage(job.imageUrl),
+            backgroundImage: NetworkImage(job.imageUrl ?? ''),
           ),
           const HeightSpacer(size: 10),
           ReusableText(
@@ -52,10 +52,19 @@ class JobSummaryCard extends StatelessWidget {
                   color: AppColors.light,
                   textAndBorderColor: AppColors.lightGreen,
                 ),
-                SalaryWidget(
-                  salary: SalaryModel(
-                    amount: job.salary,
-                    salaryType: SalaryType.perMonth,
+                const SizedBox(width: 15),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: SalaryWidget(
+                        salary: SalaryModel(
+                          amount: job.salary,
+                          salaryType: SalaryType.perMonth,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ],

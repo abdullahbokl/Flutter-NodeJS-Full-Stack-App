@@ -1,104 +1,78 @@
-import '../../utils/app_strings.dart';
+import '../../../features/auth/domain/entities/user_role.dart';
+import '../../../features/auth/domain/entities/user_entity.dart';
 
-class UserModel {
-  final String id;
-  final String email;
-  final String userName;
-  final String? fullName;
-  final String? phone;
-  final List<String> profilePic;
-  final String? location;
-  final bool? isAdmin;
-  final bool? isAgent;
-  final List<String> skills;
-  final String? bio;
-
-  UserModel({
-    required this.id,
-    required this.email,
-    required this.userName,
-    this.fullName,
-    this.phone,
-    this.profilePic = const [],
-    this.location,
-    this.isAdmin = false,
-    this.isAgent = false,
-    this.skills = const [],
-    this.bio = "",
+class UserModel extends UserEntity {
+  const UserModel({
+    required super.id,
+    required super.email,
+    required super.userName,
+    super.fullName,
+    super.phone,
+    super.profilePic = const [],
+    super.location,
+    super.isAdmin = false,
+    super.role = UserRole.seeker,
+    super.companyName,
+    super.industry,
+    super.website,
+    super.skills = const [],
+    super.bio = "",
+    super.token = "",
   });
-
-  // copy with
-  factory UserModel.copyWith(
-    UserModel user, {
-    String? id,
-    String? email,
-    String? userName,
-    String? fullName,
-    String? phone,
-    List<String>? profilePic,
-    String? location,
-    bool? isAdmin,
-    bool? isAgent,
-    List<String>? skills,
-    String? bio,
-  }) {
-    return UserModel(
-      id: id ?? user.id,
-      email: email ?? user.email,
-      userName: userName ?? user.userName,
-      fullName: fullName ?? user.fullName,
-      phone: phone ?? user.phone,
-      profilePic: profilePic ?? user.profilePic,
-      location: location ?? user.location,
-      isAdmin: isAdmin ?? user.isAdmin,
-      isAgent: isAgent ?? user.isAgent,
-      skills: skills ?? user.skills,
-      bio: bio ?? user.bio,
-    );
-  }
 
   Map<String, dynamic> toMap() {
     return {
-      AppStrings.userId: id,
-      AppStrings.userEmail: email,
-      AppStrings.userUserName: userName,
-      AppStrings.userFullName: fullName,
-      AppStrings.userPhone: phone,
-      AppStrings.userProfilePic: profilePic,
-      AppStrings.userLocation: location,
-      AppStrings.userIsAdmin: isAdmin,
-      AppStrings.userIsAgent: isAgent,
-      AppStrings.userSkills: skills,
-      AppStrings.userBio: bio,
+      'id': id,
+      'email': email,
+      'userName': userName,
+      'fullName': fullName,
+      'phone': phone,
+      'profilePic': profilePic,
+      'location': location,
+      'isAdmin': isAdmin,
+      'role': role.name,
+      'companyName': companyName,
+      'industry': industry,
+      'website': website,
+      'skills': skills,
+      'bio': bio,
     };
   }
 
   factory UserModel.fromMap(dynamic map) {
-    final List<String> profilePic = [];
-    if (map[AppStrings.userProfilePic] != null) {
-      for (final pic in map[AppStrings.userProfilePic]) {
-        // final newImage = ImageModel.fromMap(pic);
-        profilePic.add(pic['url']);
+    var profilePic = <String>[];
+    if (map['profilePic'] != null) {
+      if (map['profilePic'] is List) {
+        profilePic = (map['profilePic'] as List)
+            .map((p) => p is String ? p : (p['url'] as String? ?? ''))
+            .where((s) => s.isNotEmpty)
+            .toList();
       }
     }
 
     final List<String> skills = [];
-    for (final skill in map[AppStrings.userSkills]) {
-      skills.add(skill);
+    if (map['skills'] != null) {
+      for (final skill in map['skills']) {
+        skills.add(skill);
+      }
     }
 
     return UserModel(
-      id: map[AppStrings.userId],
-      email: map[AppStrings.userEmail],
-      userName: map[AppStrings.userUserName],
-      fullName: map[AppStrings.userFullName],
-      phone: map[AppStrings.userPhone],
+      id: map['id'] ?? map['_id'] ?? '',
+      email: map['email'] ?? '',
+      userName: map['userName'] ?? '',
+      fullName: map['fullName'],
+      phone: map['phone'],
       profilePic: profilePic,
-      location: map[AppStrings.userLocation],
-      isAdmin: map[AppStrings.userIsAdmin],
-      isAgent: map[AppStrings.userIsAgent],
+      location: map['location'],
+      isAdmin: map['isAdmin'] ?? false,
+      role: UserRole.fromString(map['role']),
+      companyName: map['companyName'],
+      industry: map['industry'],
+      website: map['website'],
       skills: skills,
-      bio: map[AppStrings.userBio],
+      bio: map['bio'],
+      token: map['token'] ?? '',
     );
   }
 }

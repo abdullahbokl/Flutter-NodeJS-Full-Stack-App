@@ -30,11 +30,11 @@ class StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (bg, fg) = switch (variant) {
-      BadgeVariant.success => (AppColors.success.withOpacity(0.12), AppColors.success),
-      BadgeVariant.warning => (AppColors.warning.withOpacity(0.12), AppColors.warning),
-      BadgeVariant.error   => (AppColors.error.withOpacity(0.12),   AppColors.error),
-      BadgeVariant.info    => (AppColors.info.withOpacity(0.12),    AppColors.info),
-      BadgeVariant.neutral => (AppColors.primary.withOpacity(0.10), AppColors.primary),
+      BadgeVariant.success => (AppColors.success.withValues(alpha: 0.12), AppColors.success),
+      BadgeVariant.warning => (AppColors.warning.withValues(alpha: 0.12), AppColors.warning),
+      BadgeVariant.error   => (AppColors.error.withValues(alpha: 0.12),   AppColors.error),
+      BadgeVariant.info    => (AppColors.info.withValues(alpha: 0.12),    AppColors.info),
+      BadgeVariant.neutral => (AppColors.primary.withValues(alpha: 0.10), AppColors.primary),
     };
 
     if (isCircular) {

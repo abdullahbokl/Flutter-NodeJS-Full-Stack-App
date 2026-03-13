@@ -1,48 +1,41 @@
 import '../../../../core/common/models/user_model.dart';
-import '../../../../core/utils/app_strings.dart';
+import '../../domain/entities/chat_entity.dart';
 import 'message_model.dart';
 
-class ChatModel {
-  String id;
-  String chatName;
-  bool isGroupChat;
-  List<UserModel> users;
-  MessageModel? latestMessage;
-  UserModel? groupAdmin;
-
-  ChatModel({
-    required this.id,
-    required this.chatName,
-    this.isGroupChat = false,
-    this.users = const [],
-    this.latestMessage,
-    this.groupAdmin,
+class ChatModel extends ChatEntity {
+  const ChatModel({
+    required super.id,
+    required super.chatName,
+    super.isGroupChat = false,
+    super.users = const [],
+    super.latestMessage,
+    super.groupAdmin,
   });
 
   Map<String, dynamic> toMap() {
     final users = this.users.map((user) => user.toMap()).toList();
     return {
-      AppStrings.chatLatestMessage: latestMessage?.toMap(),
-      AppStrings.chatId: id,
-      AppStrings.chatName: chatName,
-      AppStrings.chatIsGroupChat: isGroupChat,
-      AppStrings.chatUsers: users,
-      AppStrings.chatGroupAdmin: groupAdmin?.toMap(),
+      'latestMessage': latestMessage?.toMap(),
+      'id': id,
+      'chatName': chatName,
+      'isGroupChat': isGroupChat,
+      'users': users,
+      'groupAdmin': groupAdmin?.toMap(),
     };
   }
 
   factory ChatModel.fromMap(Map<String, dynamic> map) {
     return ChatModel(
-      id: map[AppStrings.chatId],
-      chatName: map[AppStrings.chatName],
-      isGroupChat: map[AppStrings.chatIsGroupChat],
+      id: map['id'],
+      chatName: map['chatName'],
+      isGroupChat: map['isGroupChat'],
       users: List<UserModel>.from(
-          map[AppStrings.chatUsers].map((user) => UserModel.fromMap(user))),
-      latestMessage: map[AppStrings.chatLatestMessage] != null
-          ? MessageModel.fromMap(map[AppStrings.chatLatestMessage])
+          map['users'].map((user) => UserModel.fromMap(user))),
+      latestMessage: map['latestMessage'] != null
+          ? MessageModel.fromMap(map['latestMessage'])
           : null,
-      groupAdmin: map[AppStrings.chatGroupAdmin] != null
-          ? UserModel.fromMap(map[AppStrings.chatGroupAdmin])
+      groupAdmin: map['groupAdmin'] != null
+          ? UserModel.fromMap(map['groupAdmin'])
           : null,
     );
   }

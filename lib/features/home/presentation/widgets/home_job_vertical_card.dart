@@ -40,7 +40,7 @@ class HomeJobVerticalCard extends StatelessWidget {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundImage: NetworkImage(job.imageUrl),
+                  backgroundImage: NetworkImage(job.imageUrl ?? ''),
                   backgroundColor: AppColors.lightGrey,
                   radius: 30,
                 ),

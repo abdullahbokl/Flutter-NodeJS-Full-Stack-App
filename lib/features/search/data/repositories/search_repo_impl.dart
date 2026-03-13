@@ -3,7 +3,7 @@ import 'package:jobhub_flutter/core/services/logger.dart';
 import '../../../../core/common/models/job_model.dart';
 import '../../../../core/errors/server_error_handler.dart';
 import '../../../../core/services/api_services.dart';
-import '../../../../core/utils/app_strings.dart';
+import '../../../../core/utils/api_endpoints.dart';
 import 'search_repo.dart';
 
 class SearchRepoImpl implements SearchRepo {
@@ -13,16 +13,15 @@ class SearchRepoImpl implements SearchRepo {
 
   @override
   Future<List<JobModel>> searchJobs(String query) async {
-    List<JobModel> jobs = [];
     try {
-      final List<dynamic> jobsData = await _apiServices.get(
-        endPoint: "${AppStrings.apiSearch}/$query",
+      final raw = await _apiServices.get(
+        endPoint: "${ApiEndpoints.search}/$query",
       );
-
-      for (final job in jobsData) {
-        jobs.add(JobModel.fromMap(job));
-      }
-      return jobs;
+      final jobsData = raw is Map ? raw['data'] : raw;
+      if (jobsData is! List) return [];
+      return jobsData
+          .map((job) => JobModel.fromMap(Map<String, dynamic>.from(job)))
+          .toList();
     } catch (e) {
       _searchJobsLogger(handleServerError(e));
       throw handleServerError(e);

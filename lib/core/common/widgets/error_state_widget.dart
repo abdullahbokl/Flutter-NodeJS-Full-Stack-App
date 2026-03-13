@@ -24,14 +24,14 @@ class ErrorStateWidget extends StatelessWidget {
             Container(
               width: 80, height: 80,
               decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.08),
+                color: AppColors.error.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.wifi_off_rounded, size: 40, color: AppColors.error),
             ),
             const SizedBox(height: AppSpacing.lg),
-            Text('Something went wrong',
-                style: const TextStyle(
+            const Text('Something went wrong',
+                style: TextStyle(
                     fontSize: 18, fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary)),
             const SizedBox(height: AppSpacing.sm),

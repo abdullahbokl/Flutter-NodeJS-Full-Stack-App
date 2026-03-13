@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/common/base_state.dart';
 import '../../../../core/common/widgets/app_avatar.dart';
 import '../../../../core/common/widgets/bloc_state_widget.dart';
-import '../../../../core/theme/app_radius.dart';
+import '../../../../core/config/app_setup.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_session.dart';
@@ -20,7 +20,7 @@ class ChatListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ChatCubit()..loadChats(),
+      create: (_) => getIt<ChatCubit>()..loadChats(),
       child: const _ChatListView(),
     );
   }
@@ -89,7 +89,7 @@ class _ChatTile extends StatelessWidget {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md, vertical: AppSpacing.xs),
-      onTap: () => context.go('/chat/${chat.id}', extra: chat),
+      onTap: () => context.push('/chat/${chat.id}', extra: chat),
       leading: AppAvatar(
         imageUrl: other.profilePic.lastOrNull,
         radius: 26,

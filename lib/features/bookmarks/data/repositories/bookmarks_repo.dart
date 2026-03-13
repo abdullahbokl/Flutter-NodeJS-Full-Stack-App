@@ -6,4 +6,6 @@ abstract class BookmarksRepo {
   Future<void> removeBookmark(String bookmarkJobId);
 
   Future<List<JobModel>> getBookmarkedJobs();
+
+  Future<bool> isBookmarked(String jobId);
 }

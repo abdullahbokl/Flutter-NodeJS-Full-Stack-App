@@ -2,47 +2,66 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import '../../../../core/common/base_state.dart';
 import '../../../../core/config/app_config.dart';
-import '../../../../core/config/app_setup.dart';
-import '../../../../core/errors/error_mapper.dart';
-import '../../../../core/services/api_services.dart';
 import '../../../../core/utils/app_session.dart';
-import '../../../../core/utils/app_strings.dart';
 import '../../data/models/message_model.dart';
+import '../../domain/usecases/get_messages_usecase.dart';
+import '../../domain/usecases/send_message_usecase.dart';
+
+/// Extends SuccessState to carry a transient send-error without wiping the list.
+class MessagesSendError extends SuccessState<List<MessageModel>> {
+  final String errorMessage;
+  const MessagesSendError(super.data, this.errorMessage);
+}
 
 class MessagesCubit extends Cubit<BaseState<List<MessageModel>>> {
-  MessagesCubit() : super(const InitialState());
+  final GetMessagesUseCase _getMessagesUseCase;
+  final SendMessageUseCase _sendMessageUseCase;
+
+  MessagesCubit({
+    required GetMessagesUseCase getMessages,
+    required SendMessageUseCase sendMessageUseCase,
+  })  : _getMessagesUseCase = getMessages,
+        _sendMessageUseCase = sendMessageUseCase,
+        super(const InitialState());
 
   io.Socket? _socket;
-  String? _currentChatId;
   bool _isTyping = false;
   bool get isTyping => _isTyping;
 
   Future<void> loadMessages(String chatId) async {
-    _currentChatId = chatId;
     emit(const LoadingState());
-    try {
-      final raw = await getIt<ApiServices>().get(
-          endPoint: '${AppStrings.apiMessagesUrl}/$chatId');
-      final list = _parse(raw);
-      emit(list.isEmpty ? const EmptyState() : SuccessState(list));
-    } catch (e) {
-      emit(ErrorState(mapToFailure(e).message));
-    }
+    final result = await _getMessagesUseCase(GetMessagesParams(chatId));
+    result.fold(
+      (failure) => emit(ErrorState(failure.message)),
+      (messages) =>
+          emit(messages.isEmpty ? const EmptyState() : SuccessState(messages)),
+    );
   }
 
   Future<void> sendMessage(String chatId, String receiverId, String content) async {
-    try {
-      final raw = await getIt<ApiServices>().post(
-        endPoint: AppStrings.apiMessagesUrl,
-        data: {'content': content, 'chatId': chatId, 'receiverId': receiverId},
-      );
-      final data = raw is Map && raw['data'] != null ? raw['data'] : raw;
-      final message = MessageModel.fromMap(Map<String, dynamic>.from(data));
-      _appendMessage(message);
-      _socket?.emit('new-message', raw is Map ? raw['data'] : raw);
-    } catch (e) {
-      // message failed — surface error without clearing list
-    }
+    final result = await _sendMessageUseCase(
+      SendMessageParams(
+        chatId: chatId,
+        content: content,
+        receiverId: receiverId,
+      ),
+    );
+    result.fold(
+      (failure) {
+        // Preserve the existing list but surface the error to the listener
+        final msgs = state is SuccessState<List<MessageModel>>
+            ? (state as SuccessState<List<MessageModel>>).data
+            : <MessageModel>[];
+        emit(MessagesSendError(msgs, failure.message));
+      },
+      (message) {
+        _appendMessage(message);
+        _socket?.emit('new-message', {
+          ...message.toMap(),
+          'chat': {'id': chatId},
+        });
+      },
+    );
   }
 
   void connectSocket(String chatId) {
@@ -55,6 +74,10 @@ class MessagesCubit extends Cubit<BaseState<List<MessageModel>>> {
           .setAuth({'token': AppSession.token})
           .build(),
     );
+    _socket!
+      ..off('message-received')
+      ..off('typing')
+      ..off('stop-typing');
     _socket!.connect();
     _socket!.onConnect((_) {
       _socket!.emit('join-chat', chatId);
@@ -64,17 +87,20 @@ class MessagesCubit extends Cubit<BaseState<List<MessageModel>>> {
       });
       _socket!.on('typing', (_) {
         _isTyping = true;
-        emit(state); // rebuild to show typing dots
+        // Re-wrap current data so Bloc sees a new state object and rebuilds.
+        _reemit();
       });
       _socket!.on('stop-typing', (_) {
         _isTyping = false;
-        emit(state);
+        _reemit();
       });
     });
   }
 
-  void emitTyping(String chatId) => _socket?.emit('typing', chatId);
-  void emitStopTyping(String chatId) => _socket?.emit('stop-typing', chatId);
+  void emitTyping(String chatId) => _socket?.emit('typing', {'chatId': chatId});
+
+  void emitStopTyping(String chatId) =>
+      _socket?.emit('stop-typing', {'chatId': chatId});
 
   void _appendMessage(MessageModel msg) {
     final prev = state is SuccessState<List<MessageModel>>
@@ -84,14 +110,19 @@ class MessagesCubit extends Cubit<BaseState<List<MessageModel>>> {
     emit(SuccessState(prev));
   }
 
-  static List<MessageModel> _parse(dynamic raw) {
-    final list = raw is Map ? raw['data'] : raw;
-    if (list is! List) return [];
-    return list.map((e) => MessageModel.fromMap(Map<String, dynamic>.from(e))).toList();
+  /// Re-emits a fresh state object so Bloc rebuilds for typing indicators.
+  void _reemit() {
+    if (state is SuccessState<List<MessageModel>>) {
+      final data = (state as SuccessState<List<MessageModel>>).data;
+      emit(SuccessState(List<MessageModel>.from(data)));
+    } else {
+      // If not in success state yet, a no-op — typing indicator will show on next message load.
+    }
   }
 
   @override
   Future<void> close() {
+    _isTyping = false;
     _socket?.disconnect();
     return super.close();
   }

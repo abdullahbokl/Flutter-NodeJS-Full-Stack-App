@@ -1,7 +1,7 @@
 import '../../../../core/errors/server_error_handler.dart';
 import '../../../../core/services/api_services.dart';
 import '../../../../core/services/logger.dart';
-import '../../../../core/utils/app_strings.dart';
+import '../../../../core/utils/api_endpoints.dart';
 import '../models/chat_model.dart';
 import '../models/message_model.dart';
 import 'chat_repo.dart';
@@ -14,11 +14,13 @@ class ChatRepoImpl extends ChatRepo {
   @override
   Future<List<ChatModel>> getAllChats() async {
     try {
-      final chatsData = await _apiService.get(endPoint: AppStrings.apiChatsUrl);
+      final raw = await _apiService.get(endPoint: ApiEndpoints.chats);
+      final chatsData = raw is Map ? raw['data'] : raw;
+      if (chatsData is! List) return [];
       final List<ChatModel> chatModels = [];
-      for (var chat in chatsData) {
-        if (chat[AppStrings.chatLatestMessage] != null) {
-          chatModels.add(ChatModel.fromMap(chat));
+      for (final chat in chatsData) {
+        if (chat['latestMessage'] != null) {
+          chatModels.add(ChatModel.fromMap(Map<String, dynamic>.from(chat)));
         }
       }
 
@@ -36,11 +38,14 @@ class ChatRepoImpl extends ChatRepo {
   @override
   Future<List<MessageModel>> getMessages(String chatId) async {
     try {
-      final messages = await _apiService.get(
-          endPoint: "${AppStrings.apiMessagesUrl}/$chatId");
+      final raw = await _apiService.get(
+          endPoint: "${ApiEndpoints.messages}/$chatId");
+      final messages = raw is Map ? raw['data'] : raw;
+      if (messages is! List) return [];
       final List<MessageModel> messageModels = [];
-      for (var message in messages) {
-        messageModels.add(MessageModel.fromMap(message));
+      for (final message in messages) {
+        messageModels
+            .add(MessageModel.fromMap(Map<String, dynamic>.from(message)));
       }
 
       return messageModels;
@@ -62,14 +67,18 @@ class ChatRepoImpl extends ChatRepo {
   }) async {
     try {
       final messageData = await _apiService.post(
-        endPoint: AppStrings.apiMessagesUrl,
+        endPoint: ApiEndpoints.messages,
         data: {
-          AppStrings.chatId: chatId,
-          AppStrings.messageContent: content,
-          AppStrings.messageReceiver: receiverId,
+          'id': chatId,
+          'content': content,
+          'receiver': receiverId,
         },
       );
-      MessageModel message = MessageModel.fromMap(messageData);
+      final data = messageData is Map && messageData['data'] != null
+          ? messageData['data']
+          : messageData;
+      final MessageModel message =
+          MessageModel.fromMap(Map<String, dynamic>.from(data));
       return message;
     } catch (e) {
       Logger.logEvent(
@@ -85,12 +94,15 @@ class ChatRepoImpl extends ChatRepo {
   Future<ChatModel> createChat(String receiverId) async {
     try {
       final chatData = await _apiService.post(
-        endPoint: AppStrings.apiChatsUrl,
+        endPoint: ApiEndpoints.chats,
         data: {
-          'receiverId': receiverId,
+          'userId': receiverId,
         },
       );
-      final ChatModel chat = ChatModel.fromMap(chatData);
+      final data = chatData is Map && chatData['data'] != null
+          ? chatData['data']
+          : chatData;
+      final ChatModel chat = ChatModel.fromMap(Map<String, dynamic>.from(data));
       return chat;
     } catch (e) {
       Logger.logEvent(

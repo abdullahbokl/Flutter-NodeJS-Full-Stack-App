@@ -6,8 +6,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/common/base_state.dart';
 import '../../../../core/common/models/job_model.dart';
 import '../../../../core/common/widgets/app_avatar.dart';
-import '../../../../core/common/widgets/app_button.dart';
 import '../../../../core/common/widgets/bloc_state_widget.dart';
+
 import '../../../../core/common/widgets/status_badge.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -20,10 +20,7 @@ class BookmarksPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => BookmarksCubit()..loadBookmarks(),
-      child: const _BookmarksView(),
-    );
+    return const _BookmarksView();
   }
 }
 
@@ -76,7 +73,7 @@ class _BookmarkTile extends StatelessWidget {
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: AppSpacing.lg),
         decoration: BoxDecoration(
-          color: AppColors.error.withOpacity(0.12),
+          color: AppColors.error.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(AppRadius.lg),
         ),
         child: const Icon(Icons.delete_outline_rounded, color: AppColors.error),
@@ -88,14 +85,14 @@ class _BookmarkTile extends StatelessWidget {
             onAction: () => context.read<BookmarksCubit>().addBookmark(job.id));
       },
       child: InkWell(
-        onTap: () => context.go('/jobs/${job.id}', extra: job),
+        onTap: () => context.push('/jobs/${job.id}', extra: job),
         borderRadius: BorderRadius.circular(AppRadius.lg),
         child: Container(
           padding: const EdgeInsets.all(AppSpacing.md),
           decoration: BoxDecoration(
             color: isDark ? AppColors.surfaceDark : AppColors.surface,
             borderRadius: BorderRadius.circular(AppRadius.lg),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04),
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04),
                 blurRadius: 6, offset: const Offset(0, 2))],
           ),
           child: Row(children: [

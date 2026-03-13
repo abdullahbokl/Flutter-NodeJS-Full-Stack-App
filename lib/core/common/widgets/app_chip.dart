@@ -18,7 +18,7 @@ class AppChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg = isSelected ? AppColors.primary : AppColors.primary.withOpacity(0.08);
+    final bg = isSelected ? AppColors.primary : AppColors.primary.withValues(alpha: 0.08);
     final fg = isSelected ? Colors.white : AppColors.primary;
 
     return GestureDetector(

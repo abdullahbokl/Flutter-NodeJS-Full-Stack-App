@@ -5,10 +5,12 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/common/base_state.dart';
 import '../../../../core/common/widgets/app_avatar.dart';
+import '../../../../core/config/app_setup.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_session.dart';
+import '../../../../core/utils/app_snackbars.dart';
 import '../../data/models/chat_model.dart';
 import '../../data/models/message_model.dart';
 import '../bloc/messages_cubit.dart';
@@ -23,7 +25,7 @@ class ConversationPage extends StatelessWidget {
       return Scaffold(appBar: AppBar(), body: const Center(child: Text('Chat not found')));
     }
     return BlocProvider(
-      create: (_) => MessagesCubit()
+      create: (_) => getIt<MessagesCubit>()
         ..loadMessages(chat!.id)
         ..connectSocket(chat!.id),
       child: _ConversationView(chat: chat!),
@@ -60,21 +62,29 @@ class _ConversationViewState extends State<_ConversationView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(icon: const Icon(Icons.arrow_back_rounded),
-            onPressed: () => context.pop()),
-        title: Row(children: [
-          AppAvatar(radius: 18, fallbackInitials: _otherName),
-          const SizedBox(width: AppSpacing.sm),
-          Text(_otherName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+    return BlocListener<MessagesCubit, BaseState<List<MessageModel>>>(
+      listenWhen: (_, curr) => curr is MessagesSendError,
+      listener: (ctx, state) {
+        if (state is MessagesSendError) {
+          AppSnackBars.showError(ctx, 'Failed to send: ${state.errorMessage}');
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(icon: const Icon(Icons.arrow_back_rounded),
+              onPressed: () => context.pop()),
+          title: Row(children: [
+            AppAvatar(radius: 18, fallbackInitials: _otherName),
+            const SizedBox(width: AppSpacing.sm),
+            Text(_otherName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+          ]),
+        ),
+        body: Column(children: [
+          Expanded(child: _MessagesList(scroll: _scroll)),
+          _TypingIndicator(),
+          _InputRow(controller: _controller, chatId: widget.chat.id, onSend: _send),
         ]),
       ),
-      body: Column(children: [
-        Expanded(child: _MessagesList(scroll: _scroll)),
-        _TypingIndicator(),
-        _InputRow(controller: _controller, onSend: _send),
-      ]),
     );
   }
 
@@ -149,7 +159,7 @@ class _Bubble extends StatelessWidget {
             bottomLeft: Radius.circular(isMine ? AppRadius.xl : AppRadius.sm),
             bottomRight: Radius.circular(isMine ? AppRadius.sm : AppRadius.xl),
           ),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06),
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06),
               blurRadius: 6, offset: const Offset(0, 2))],
         ),
         child: Text(message.content,
@@ -193,21 +203,36 @@ class _TypingIndicator extends StatelessWidget {
 
 class _InputRow extends StatefulWidget {
   final TextEditingController controller;
+  final String chatId;
   final VoidCallback onSend;
-  const _InputRow({required this.controller, required this.onSend});
+  const _InputRow({
+    required this.controller,
+    required this.chatId,
+    required this.onSend,
+  });
   @override
   State<_InputRow> createState() => _InputRowState();
 }
 
 class _InputRowState extends State<_InputRow> {
   bool _hasText = false;
+  late final VoidCallback _listener;
 
   @override
   void initState() {
     super.initState();
-    widget.controller.addListener(() {
-      setState(() => _hasText = widget.controller.text.isNotEmpty);
-    });
+    _listener = () {
+      final hasText = widget.controller.text.trim().isNotEmpty;
+      if (hasText != _hasText) {
+        if (hasText) {
+          context.read<MessagesCubit>().emitTyping(widget.chatId);
+        } else {
+          context.read<MessagesCubit>().emitStopTyping(widget.chatId);
+        }
+      }
+      setState(() => _hasText = hasText);
+    };
+    widget.controller.addListener(_listener);
   }
 
   @override
@@ -218,7 +243,7 @@ class _InputRowState extends State<_InputRow> {
             horizontal: AppSpacing.md, vertical: AppSpacing.sm),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06),
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06),
               blurRadius: 8, offset: const Offset(0, -2))],
         ),
         child: Row(children: [
@@ -252,5 +277,14 @@ class _InputRowState extends State<_InputRow> {
         ]),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    if (_hasText) {
+      context.read<MessagesCubit>().emitStopTyping(widget.chatId);
+    }
+    widget.controller.removeListener(_listener);
+    super.dispose();
   }
 }

@@ -3,11 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/common/widgets/app_bar.dart';
 import '../../../../core/common/widgets/app_style.dart';
-import '../../../../core/common/widgets/drawer/drawer_icon.dart';
 import '../../../../core/common/widgets/height_spacer.dart';
+import '../../../../core/common/widgets/reusable_text.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../widgets/device_info.dart';
-import '../widgets/sign_out_all_devices_button.dart';
 
 class DeviceManagerPage extends StatelessWidget {
   const DeviceManagerPage({super.key});
@@ -18,7 +17,10 @@ class DeviceManagerPage extends StatelessWidget {
       appBar: customAppBar(
         leading: Padding(
           padding: EdgeInsets.all(12.h),
-          child: const DrawerIcon(),
+          child: GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: const Icon(Icons.arrow_back),
+          ),
         ),
         title: 'Device Manager',
       ),
@@ -64,7 +66,25 @@ class DeviceManagerPage extends StatelessWidget {
                 ),
               ),
             ),
-            const SignOutAllDevicesButton(),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: EdgeInsets.only(bottom: 12.h),
+                child: GestureDetector(
+                  onTap: () {
+                    // TODO: implement sign out logic
+                  },
+                  child: ReusableText(
+                    text: 'Sign Out All Devices',
+                    style: appStyle(
+                      16,
+                      AppColors.lightGreen,
+                      FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),

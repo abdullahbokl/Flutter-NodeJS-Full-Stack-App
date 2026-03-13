@@ -1,5 +1,7 @@
+import 'package:equatable/equatable.dart';
+
 /// Pure domain entity — no Flutter, no JSON.
-class JobEntity {
+class JobEntity extends Equatable {
   final String id;
   final String title;
   final String description;
@@ -26,18 +28,19 @@ class JobEntity {
     required this.agentId,
   });
 
-  static JobEntity fromMap(dynamic d) => JobEntity(
-    id: d['id'] ?? d['_id'] ?? '',
-    title: d['title'] ?? '',
-    description: d['description'] ?? '',
-    location: d['location'] ?? '',
-    salary: d['salary'] ?? '',
-    company: d['company'] ?? '',
-    period: d['period'] ?? '',
-    contract: d['contract'] ?? '',
-    requirements: List<String>.from(d['requirements'] ?? []),
-    imageUrl: d['imageUrl'],
-    agentId: d['agentId'] ?? '',
-  );
+  @override
+  List<Object?> get props => [
+        id,
+        title,
+        description,
+        location,
+        salary,
+        company,
+        period,
+        contract,
+        requirements,
+        imageUrl,
+        agentId,
+      ];
 }
 

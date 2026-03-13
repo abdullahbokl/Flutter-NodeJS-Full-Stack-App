@@ -8,7 +8,7 @@ abstract class ChatRepo {
 
   Future<List<MessageModel>> getMessages(String chatId);
 
-  Future<void> sendMessage({
+  Future<MessageModel> sendMessage({
     required String chatId,
     required String content,
     required String receiverId,

@@ -1,59 +1,48 @@
-import '../../utils/app_strings.dart';
+import '../../../features/jobs/domain/entities/job_entity.dart';
 
-class JobModel {
-  String id;
-  String title;
-  String description;
-  String location;
-  String salary;
-  String company;
-  String period;
-  String contract;
-  List<String> requirements;
-  String imageUrl;
-  String agentId;
 
-  JobModel({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.location,
-    required this.salary,
-    required this.company,
-    required this.period,
-    required this.contract,
-    required this.requirements,
-    required this.imageUrl,
-    required this.agentId,
+class JobModel extends JobEntity {
+  const JobModel({
+    required super.id,
+    required super.title,
+    required super.description,
+    required super.location,
+    required super.salary,
+    required super.company,
+    required super.period,
+    required super.contract,
+    required super.requirements,
+    super.imageUrl,
+    required super.agentId,
   });
 
   factory JobModel.fromMap(Map<String, dynamic> json) {
     return JobModel(
-      id: json[AppStrings.jobId],
-      title: json[AppStrings.jobTitle],
-      description: json[AppStrings.jobDescription],
-      location: json[AppStrings.jobLocation],
-      salary: json[AppStrings.jobSalary],
-      company: json[AppStrings.jobCompany],
-      period: json[AppStrings.jobPeriod],
-      contract: json[AppStrings.jobContract],
-      requirements: List<String>.from(json[AppStrings.jobRequirements]),
-      imageUrl: json[AppStrings.jobImageUrl],
-      agentId: json[AppStrings.jobAgentId],
+      id: json['id'] ?? json['_id'] ?? '',
+      title: json['title'] ?? '',
+      description: json['description'] ?? '',
+      location: json['location'] ?? '',
+      salary: json['salary'] ?? '',
+      company: json['company'] ?? '',
+      period: json['period'] ?? '',
+      contract: json['contract'] ?? '',
+      requirements: List<String>.from(json['requirements'] ?? []),
+      imageUrl: json['imageUrl'],
+      agentId: json['agentId'] ?? '',
     );
   }
 
   Map<String, dynamic> toMap() => {
-        AppStrings.jobId: id,
-        AppStrings.jobTitle: title,
-        AppStrings.jobDescription: description,
-        AppStrings.jobLocation: location,
-        AppStrings.jobSalary: salary,
-        AppStrings.jobCompany: company,
-        AppStrings.jobPeriod: period,
-        AppStrings.jobContract: contract,
-        AppStrings.jobRequirements: requirements,
-        AppStrings.jobImageUrl: imageUrl,
-        AppStrings.jobAgentId: agentId,
+        'id': id,
+        'title': title,
+        'description': description,
+        'location': location,
+        'salary': salary,
+        'company': company,
+        'period': period,
+        'contract': contract,
+        'requirements': requirements,
+        'imageUrl': imageUrl,
+        'agentId': agentId,
       };
 }

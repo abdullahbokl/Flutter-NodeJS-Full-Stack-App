@@ -1,19 +1,8 @@
-import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:provider/provider.dart';
-
-import '../../features/profile/presentation/manager/profile_provider.dart';
-import '../../generated/assets.dart';
-import '../common/widgets/app_style.dart';
-import '../common/widgets/reusable_text.dart';
-import 'app_colors.dart';
 
 class AppConstants {
   static double height = 812.h;
   static double width = 375.w;
-
-  static String theId = "";
 
   static List<String> requirements = [
     "Design and Build sophisticated and highly scalable apps using Flutter.",
@@ -34,78 +23,4 @@ class AppConstants {
     "Firebase",
     "AWS",
   ];
-
-  // User
-  static String userToken = "";
-
-  static String userId = "";
-
-  static getCurrentUserImage(BuildContext context) {
-    final profileProvider =
-        Provider.of<ProfileProvider>(context, listen: false);
-    final images = profileProvider.user?.profilePic;
-
-    if (images == null || images.isEmpty) {
-      return const AssetImage(Assets.imagesUser);
-    } else {
-      return NetworkImage(profileProvider.user?.profilePic.last ?? '');
-    }
-  }
-
-  /// Show snack bar
-  static showSnackBar({
-    required BuildContext context,
-    required String message,
-    bool isSuccess = false,
-  }) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Container(
-          alignment: Alignment.center,
-          child: ReusableText(
-            text: message,
-            style: appStyle(
-              16,
-              isSuccess ? Colors.green : AppColors.lightGreen,
-              FontWeight.w600,
-            ),
-          ),
-        ),
-        duration: const Duration(seconds: 3),
-      ),
-    );
-  }
-
-  /// Show dialog
-  static AwesomeDialog showAwesomeDialog({
-    required BuildContext context,
-    required DialogType dialogType,
-    required String dialogTitle,
-    required String message,
-    required Color titleColor,
-    String? btnOkText,
-    String? btnCancelText,
-    VoidCallback? onCancelTap,
-    VoidCallback? onOkTap,
-    void Function(DismissType)? onDismissCallback,
-  }) {
-    return AwesomeDialog(
-      context: context,
-      dialogType: dialogType,
-      animType: AnimType.bottomSlide,
-      title: dialogTitle,
-      titleTextStyle: TextStyle(
-          color: titleColor, fontWeight: FontWeight.bold, fontSize: 20),
-      desc: message,
-      descTextStyle: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 16,
-          color: Colors.black.withOpacity(0.5)),
-      btnOkOnPress: onOkTap,
-      onDismissCallback: onDismissCallback,
-      btnCancelOnPress: onCancelTap,
-      btnOkText: btnOkText,
-      btnCancelText: btnCancelText,
-    )..show();
-  }
 }

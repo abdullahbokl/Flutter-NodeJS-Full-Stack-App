@@ -7,6 +7,7 @@ import '../../../../core/common/base_state.dart';
 import '../../../../core/common/models/job_model.dart';
 import '../../../../core/common/widgets/app_avatar.dart';
 import '../../../../core/common/widgets/bloc_state_widget.dart';
+import '../../../../core/config/app_setup.dart';
 import '../../../../core/common/widgets/status_badge.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -19,7 +20,7 @@ class SearchPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => SearchCubit(),
+      create: (_) => getIt<SearchCubit>(),
       child: const _SearchView(),
     );
   }
@@ -126,14 +127,14 @@ class _SearchResultTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
-      onTap: () => context.go('/jobs/${job.id}', extra: job),
+      onTap: () => context.push('/jobs/${job.id}', extra: job),
       borderRadius: BorderRadius.circular(AppRadius.lg),
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
           color: isDark ? AppColors.surfaceDark : AppColors.surface,
           borderRadius: BorderRadius.circular(AppRadius.lg),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04),
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 6, offset: const Offset(0, 2))],
         ),
         child: Row(children: [
@@ -147,7 +148,12 @@ class _SearchResultTile extends StatelessWidget {
             Row(children: [
               const Icon(Icons.location_on_outlined, size: 13, color: AppColors.textSecondary),
               const SizedBox(width: 2),
-              Text(job.location, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+              Flexible(
+                child: Text(job.location,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+              ),
               const SizedBox(width: AppSpacing.sm),
               StatusBadge.contract(job.contract),
             ]),
@@ -165,7 +171,7 @@ class _EmptySearch extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Column(mainAxisSize: MainAxisSize.min, children: [
-        Icon(Icons.search_rounded, size: 64, color: AppColors.primary.withOpacity(0.3)),
+        Icon(Icons.search_rounded, size: 64, color: AppColors.primary.withValues(alpha: 0.3)),
         const SizedBox(height: AppSpacing.md),
         const Text('Search for jobs', style: TextStyle(fontSize: 16,
             fontWeight: FontWeight.w500, color: AppColors.textSecondary)),

@@ -1,42 +1,33 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/common/base_state.dart';
-import '../../../../core/config/app_setup.dart';
-import '../../../../core/errors/error_mapper.dart';
-import '../../../../core/services/api_services.dart';
-import '../../../../core/utils/app_strings.dart';
+import '../../../../core/common/usecase.dart';
 import '../../data/models/chat_model.dart';
+import '../../domain/usecases/create_or_get_chat_usecase.dart';
+import '../../domain/usecases/get_chats_usecase.dart';
 
 class ChatCubit extends Cubit<BaseState<List<ChatModel>>> {
-  ChatCubit() : super(const InitialState());
+  final GetChatsUseCase _getChats;
+  final CreateOrGetChatUseCase _createOrGetChat;
+
+  ChatCubit({
+    required GetChatsUseCase getChats,
+    required CreateOrGetChatUseCase createOrGetChat,
+  })  : _getChats = getChats,
+        _createOrGetChat = createOrGetChat,
+        super(const InitialState());
 
   Future<void> loadChats() async {
     emit(const LoadingState());
-    try {
-      final raw = await getIt<ApiServices>().get(endPoint: AppStrings.apiChatsUrl);
-      final list = _parse(raw);
-      emit(list.isEmpty ? const EmptyState() : SuccessState(list));
-    } catch (e) {
-      emit(ErrorState(mapToFailure(e).message));
-    }
+    final result = await _getChats(const NoParams());
+    result.fold(
+      (failure) => emit(ErrorState(failure.message)),
+      (chats) => emit(chats.isEmpty ? const EmptyState() : SuccessState(chats)),
+    );
   }
 
   Future<ChatModel?> createOrGetChat(String receiverId) async {
-    try {
-      final raw = await getIt<ApiServices>().post(
-        endPoint: AppStrings.apiChatsUrl,
-        data: {'userId': receiverId},
-      );
-      final data = raw is Map && raw['data'] != null ? raw['data'] : raw;
-      return ChatModel.fromMap(Map<String, dynamic>.from(data));
-    } catch (e) {
-      return null;
-    }
-  }
-
-  static List<ChatModel> _parse(dynamic raw) {
-    final list = raw is Map ? raw['data'] : raw;
-    if (list is! List) return [];
-    return list.map((e) => ChatModel.fromMap(Map<String, dynamic>.from(e))).toList();
+    final result = await _createOrGetChat(CreateOrGetChatParams(receiverId));
+    return result.fold((_) => null, (chat) => chat);
   }
 }
 

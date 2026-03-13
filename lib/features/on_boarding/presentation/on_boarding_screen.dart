@@ -8,7 +8,6 @@ import '../../../core/common/widgets/app_button.dart';
 import '../../../core/config/app_setup.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/utils/app_colors.dart';
-import '../../../core/utils/app_strings.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({super.key});
@@ -48,7 +47,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   }
 
   void _finish() {
-    getIt<SharedPreferences>().setBool(AppStrings.prefsIsFirstTime, false);
+    getIt<SharedPreferences>().setBool('isFirstTime', false);
     context.go('/login');
   }
 
@@ -136,7 +135,7 @@ class _PageContent extends StatelessWidget {
             width: 140,
             height: 140,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.15),
+              color: Colors.white.withValues(alpha: 0.15),
               shape: BoxShape.circle,
             ),
             child: Icon(page.icon, size: 70, color: Colors.white),

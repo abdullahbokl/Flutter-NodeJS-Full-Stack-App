@@ -1,56 +1,56 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/common/base_state.dart';
 import '../../../../core/common/models/job_model.dart';
-import '../../../../core/config/app_setup.dart';
-import '../../../../core/errors/error_mapper.dart';
-import '../../../../core/services/api_services.dart';
-import '../../../../core/utils/app_strings.dart';
+import '../../../../core/common/usecase.dart';
+import '../../domain/usecases/add_bookmark_usecase.dart';
+import '../../domain/usecases/get_bookmarks_usecase.dart';
+import '../../domain/usecases/remove_bookmark_usecase.dart';
 
 class BookmarksCubit extends Cubit<BaseState<List<JobModel>>> {
-  BookmarksCubit() : super(const InitialState());
+  final GetBookmarksUseCase _getBookmarks;
+  final AddBookmarkUseCase _addBookmark;
+  final RemoveBookmarkUseCase _removeBookmark;
+
+  BookmarksCubit({
+    required GetBookmarksUseCase getBookmarks,
+    required AddBookmarkUseCase addBookmark,
+    required RemoveBookmarkUseCase removeBookmark,
+  })  : _getBookmarks = getBookmarks,
+        _addBookmark = addBookmark,
+        _removeBookmark = removeBookmark,
+        super(const InitialState());
 
   Future<void> loadBookmarks() async {
     emit(const LoadingState());
-    try {
-      final raw = await getIt<ApiServices>().get(endPoint: AppStrings.apiBookmarkUrl);
-      final list = _parse(raw);
-      emit(list.isEmpty ? const EmptyState() : SuccessState(list));
-    } catch (e) {
-      emit(ErrorState(mapToFailure(e).message));
-    }
+    final result = await _getBookmarks(const NoParams());
+    result.fold(
+      (failure) => emit(ErrorState(failure.message)),
+      (jobs) => emit(jobs.isEmpty ? const EmptyState() : SuccessState(jobs)),
+    );
   }
 
   Future<void> addBookmark(String jobId) async {
-    try {
-      await getIt<ApiServices>().post(
-        endPoint: AppStrings.apiBookmarkUrl,
-        data: {AppStrings.bookmarkJobId: jobId},
-      );
-      loadBookmarks();
-    } catch (e) {
-      emit(ErrorState(mapToFailure(e).message));
-    }
+    final result = await _addBookmark(AddBookmarkParams(jobId));
+    result.fold(
+      (failure) => emit(ErrorState(failure.message)),
+      (_) => loadBookmarks(),
+    );
   }
 
   Future<void> removeBookmark(String jobId) async {
-    // Optimistic update
+    // Optimistic update: remove immediately from list
     if (state is SuccessState<List<JobModel>>) {
       final prev = (state as SuccessState<List<JobModel>>).data;
       final updated = prev.where((j) => j.id != jobId).toList();
       emit(updated.isEmpty ? const EmptyState() : SuccessState(updated));
     }
-    try {
-      await getIt<ApiServices>().delete(
-          endPoint: '${AppStrings.apiBookmarkUrl}/$jobId');
-    } catch (e) {
-      loadBookmarks(); // rollback on error
-    }
-  }
-
-  static List<JobModel> _parse(dynamic raw) {
-    final list = raw is Map ? raw['data'] : raw;
-    if (list is! List) return [];
-    return list.map((e) => JobModel.fromMap(e)).toList();
+    final result = await _removeBookmark(RemoveBookmarkParams(jobId));
+    result.fold(
+      // On failure: reload from server to restore the real list
+      (failure) => loadBookmarks(),
+      // On success: re-sync from server to stay consistent
+      (_) => loadBookmarks(),
+    );
   }
 }
 

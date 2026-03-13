@@ -1,42 +1,49 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/common/base_state.dart';
+import '../../../../core/common/usecase.dart';
 import '../../../../core/common/models/user_model.dart';
-import '../../../../core/config/app_setup.dart';
-import '../../../../core/errors/error_mapper.dart';
-import '../../../../core/services/api_services.dart';
-import '../../../../core/utils/app_session.dart';
-import '../../../../core/utils/app_strings.dart';
+import '../../../auth/domain/usecases/logout_usecase.dart';
+import '../../domain/usecases/get_profile_usecase.dart';
+import '../../domain/usecases/update_profile_usecase.dart';
 
 class ProfileCubit extends Cubit<BaseState<UserModel>> {
-  ProfileCubit() : super(const InitialState());
+  final GetProfileUseCase _getProfile;
+  final UpdateProfileUseCase _updateProfile;
+  final LogoutUseCase _logout;
+
+  ProfileCubit({
+    required GetProfileUseCase getProfile,
+    required UpdateProfileUseCase updateProfile,
+    required LogoutUseCase logout,
+  })  : _getProfile = getProfile,
+        _updateProfile = updateProfile,
+        _logout = logout,
+        super(const InitialState());
 
   Future<void> loadProfile() async {
     emit(const LoadingState());
-    try {
-      final raw = await getIt<ApiServices>().get(
-        endPoint: '${AppStrings.apiUsersUrl}/${AppSession.userId}',
-      );
-      final data = raw is Map && raw['data'] != null ? raw['data'] : raw;
-      emit(SuccessState(UserModel.fromMap(data)));
-    } catch (e) {
-      emit(ErrorState(mapToFailure(e).message));
-    }
+    final result = await _getProfile(const NoParams());
+    result.fold(
+      (failure) => emit(ErrorState(failure.message)),
+      (user) => emit(SuccessState(user)),
+    );
   }
 
   Future<void> updateProfile(Map<String, dynamic> updates) async {
     final current = state;
     emit(const LoadingState());
-    try {
-      final raw = await getIt<ApiServices>().put(
-        endPoint: '${AppStrings.apiUsersUrl}/${AppSession.userId}',
-        data: updates,
-      );
-      final data = raw is Map && raw['data'] != null ? raw['data'] : raw;
-      emit(SuccessState(UserModel.fromMap(data)));
-    } catch (e) {
-      emit(ErrorState(mapToFailure(e).message));
-      if (current is SuccessState<UserModel>) emit(current);
-    }
+    final result = await _updateProfile(UpdateProfileParams(updates));
+    result.fold(
+      (failure) {
+        emit(ErrorState(failure.message));
+        if (current is SuccessState<UserModel>) emit(current);
+      },
+      (user) => emit(SuccessState(user)),
+    );
+  }
+
+  Future<void> logout() async {
+    await _logout(const NoParams());
   }
 
   void updateLocally(UserModel user) => emit(SuccessState(user));

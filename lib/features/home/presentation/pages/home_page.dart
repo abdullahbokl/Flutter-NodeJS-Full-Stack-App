@@ -3,12 +3,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../../core/utils/app_session.dart';
 
 import '../../../../core/common/base_state.dart';
 import '../../../../core/common/models/job_model.dart';
 import '../../../../core/common/widgets/app_avatar.dart';
 import '../../../../core/common/widgets/app_chip.dart';
-import '../../../../core/common/widgets/bloc_state_widget.dart';
+
 import '../../../../core/common/widgets/status_badge.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -20,10 +21,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => HomeCubit()..loadJobs(),
-      child: const _HomeView(),
-    );
+    return const _HomeView();
   }
 }
 
@@ -38,6 +36,16 @@ class _HomeViewState extends State<_HomeView> {
   final _filters = ['All', 'Remote', 'Onsite', 'Full-time', 'Part-time'];
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (AppSession.isCompany) {
+        context.go('/company/dashboard');
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
@@ -50,7 +58,7 @@ class _HomeViewState extends State<_HomeView> {
               SliverToBoxAdapter(child: _buildStatsBanner()),
               SliverToBoxAdapter(child: _buildSectionTitle(
                 context, 'Featured Jobs', actionLabel: 'See All',
-                onAction: () => context.go('/jobs', extra: 'All Jobs'))),
+                onAction: () => context.push('/jobs', extra: 'All Jobs'))),
               SliverToBoxAdapter(child: _FeaturedJobsList()),
               SliverToBoxAdapter(child: _buildFilterChips()),
               SliverToBoxAdapter(child: _buildSectionTitle(context, 'Recent Jobs')),
@@ -79,7 +87,7 @@ class _HomeViewState extends State<_HomeView> {
             onPressed: () => context.go('/search')),
         const SizedBox(width: 4),
         AppAvatar(radius: 20, fallbackInitials: 'U',
-            onTap: () => context.go('/profile')),
+            onTap: () => context.push('/profile')),
       ]),
     ).animate().fadeIn().slideY(begin: -0.1);
   }
@@ -172,12 +180,15 @@ class _FeaturedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => context.go('/jobs/${job.id}', extra: job),
+      onTap: () => context.push('/jobs/${job.id}', extra: job),
       child: Container(
         width: 230,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [AppColors.primary.withOpacity(0.9), AppColors.accent.withOpacity(0.9)],
+            colors: [
+              AppColors.primary.withValues(alpha: 0.9),
+              AppColors.accent.withValues(alpha: 0.9),
+            ],
             begin: Alignment.topLeft, end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(AppRadius.xl),
@@ -247,11 +258,11 @@ class _JobListTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? AppColors.surfaceDark : AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8, offset: const Offset(0, 2))],
       ),
       child: InkWell(
-        onTap: () => context.go('/jobs/${job.id}', extra: job),
+        onTap: () => context.push('/jobs/${job.id}', extra: job),
         borderRadius: BorderRadius.circular(AppRadius.lg),
         child: Row(children: [
           AppAvatar(radius: 26, imageUrl: job.imageUrl, fallbackInitials: job.company),

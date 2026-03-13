@@ -9,6 +9,7 @@ import '../../../../core/common/widgets/app_avatar.dart';
 import '../../../../core/common/widgets/app_button.dart';
 import '../../../../core/common/widgets/app_chip.dart';
 import '../../../../core/common/widgets/bloc_state_widget.dart';
+
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/app_colors.dart';
@@ -20,10 +21,7 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => ProfileCubit()..loadProfile(),
-      child: const _ProfileView(),
-    );
+    return const _ProfileView();
   }
 }
 
@@ -63,10 +61,14 @@ class _ProfileContent extends StatelessWidget {
     return SliverAppBar(
       expandedHeight: 200,
       pinned: true,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_rounded),
+        onPressed: () => context.pop(),
+      ),
       actions: [
         IconButton(
           icon: const Icon(Icons.edit_outlined),
-          onPressed: () => context.go('/profile/edit'),
+          onPressed: () => context.push('/profile/edit'),
         ),
       ],
       flexibleSpace: FlexibleSpaceBar(
@@ -104,19 +106,19 @@ class _ProfileContent extends StatelessWidget {
         const SizedBox(height: 4),
         Text(user.email, style: const TextStyle(color: AppColors.textSecondary, fontSize: 14))
             .animate().fadeIn(delay: 150.ms),
-        if (user.isAgent == true)
+        if (user.isCompany)
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
-                color: AppColors.accent.withOpacity(0.1),
+                color: AppColors.accent.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppRadius.full),
               ),
-              child: const Row(mainAxisSize: MainAxisSize.min, children: [
-                Icon(Icons.verified_rounded, size: 14, color: AppColors.accent),
-                SizedBox(width: 4),
-                Text('Hiring Agent', style: TextStyle(fontSize: 12,
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                const Icon(Icons.business_rounded, size: 14, color: AppColors.accent),
+                const SizedBox(width: 4),
+                Text('Company Account', style: TextStyle(fontSize: 12,
                     color: AppColors.accent, fontWeight: FontWeight.w600)),
               ]),
             ),
@@ -132,7 +134,7 @@ class _ProfileContent extends StatelessWidget {
           label: 'Edit Profile',
           variant: AppButtonVariant.outline,
           icon: Icons.edit_outlined,
-          onTap: () => context.go('/profile/edit'),
+          onTap: () => context.push('/profile/edit'),
         ),
         const SizedBox(height: AppSpacing.sm),
         AppButton(
@@ -144,7 +146,10 @@ class _ProfileContent extends StatelessWidget {
             title: 'Logout',
             message: 'Are you sure you want to logout?',
             confirmLabel: 'Logout',
-            onConfirm: () => context.go('/login'),
+            onConfirm: () {
+              context.read<ProfileCubit>().logout();
+              context.go('/login');
+            },
           ),
         ),
       ]),
@@ -165,10 +170,19 @@ class _InfoCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? AppColors.surfaceDark : AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.xl),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10, offset: const Offset(0, 3))],
       ),
       child: Column(children: [
+        if (user.isCompany) ...[
+          if (user.companyName?.isNotEmpty == true)
+            _InfoRow(icon: Icons.business_rounded, label: 'Company: ${user.companyName!}'),
+          if (user.industry?.isNotEmpty == true)
+            _InfoRow(icon: Icons.category_outlined, label: 'Industry: ${user.industry!}'),
+          if (user.website?.isNotEmpty == true)
+            _InfoRow(icon: Icons.language_outlined, label: 'Website: ${user.website!}'),
+          const Divider(),
+        ],
         if (user.bio?.isNotEmpty == true) ...[
           _InfoRow(icon: Icons.info_outline_rounded, label: user.bio!),
           const Divider(),
@@ -214,7 +228,7 @@ class _SkillsCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? AppColors.surfaceDark : AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.xl),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10, offset: const Offset(0, 3))],
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

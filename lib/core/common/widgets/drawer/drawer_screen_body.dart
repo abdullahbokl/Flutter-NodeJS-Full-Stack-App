@@ -15,13 +15,6 @@ import '../app_avatar.dart';
 class DrawerScreenBody extends StatelessWidget {
   const DrawerScreenBody({super.key});
 
-  static const _navItems = [
-    _NavItem(icon: Icons.home_rounded,        label: 'Home',      route: '/home'),
-    _NavItem(icon: Icons.search_rounded,      label: 'Search',    route: '/search'),
-    _NavItem(icon: Icons.bookmark_rounded,    label: 'Bookmarks', route: '/bookmarks'),
-    _NavItem(icon: Icons.chat_bubble_rounded, label: 'Messages',  route: '/chat'),
-    _NavItem(icon: Icons.person_rounded,      label: 'Profile',   route: '/profile'),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +29,32 @@ class DrawerScreenBody extends StatelessWidget {
             children: [
               _ProfileHeader(),
               const SizedBox(height: AppSpacing.xl),
-              ...List.generate(_navItems.length, (i) {
-                final item = _navItems[i];
-                final selected = current.startsWith(item.route);
-                return _NavTile(item: item, isSelected: selected,
-                  onTap: () => context.go(item.route));
-              }),
+              BlocBuilder<ProfileCubit, BaseState<UserModel>>(
+                builder: (context, state) {
+                  final user = state is SuccessState<UserModel> ? state.data : null;
+                  final navItems = [
+                    if (user?.isCompany ?? false)
+                      const _NavItem(icon: Icons.dashboard_rounded, label: 'Dashboard', route: '/company/dashboard')
+                    else
+                      const _NavItem(icon: Icons.home_rounded, label: 'Home', route: '/home'),
+                    const _NavItem(icon: Icons.search_rounded,      label: 'Search',    route: '/search'),
+                    const _NavItem(icon: Icons.bookmark_rounded,    label: 'Bookmarks', route: '/bookmarks'),
+                    const _NavItem(icon: Icons.chat_bubble_rounded, label: 'Messages',  route: '/chat'),
+                    const _NavItem(icon: Icons.person_rounded,      label: 'Profile',   route: '/profile'),
+                  ];
+
+                  return Column(
+                    children: navItems.map((item) {
+                      final selected = current.startsWith(item.route);
+                      return _NavTile(
+                        item: item,
+                        isSelected: selected,
+                        onTap: () => context.go(item.route),
+                      );
+                    }).toList(),
+                  );
+                },
+              ),
               const Spacer(),
               _DarkModeToggle(),
               const SizedBox(height: AppSpacing.md),
@@ -90,7 +103,7 @@ class _NavTile extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.xs),
       decoration: BoxDecoration(
-        color: isSelected ? AppColors.primary.withOpacity(0.2) : Colors.transparent,
+        color: isSelected ? AppColors.primary.withValues(alpha: 0.2) : Colors.transparent,
         borderRadius: BorderRadius.circular(AppRadius.lg),
       ),
       child: ListTile(
@@ -122,7 +135,7 @@ class _DarkModeToggle extends StatelessWidget {
           trailing: Switch(
             value: mode == ThemeMode.dark,
             onChanged: (_) => context.read<ThemeCubit>().toggle(),
-            activeColor: AppColors.lightPurple,
+            activeThumbColor: AppColors.lightPurple,
           ),
         );
       },

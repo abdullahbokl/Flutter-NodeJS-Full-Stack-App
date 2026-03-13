@@ -194,7 +194,6 @@ class Assets {
       'lib/features/auth/data/repositories/user_repo/user_repo_impl.dart';
   static const String utilsAppColors = 'lib/core/utils/app_colors.dart';
   static const String utilsAppConstants = 'lib/core/utils/app_constants.dart';
-  static const String utilsAppStrings = 'lib/core/utils/app_strings.dart';
   static const String utilsDataValidation =
       'lib/core/utils/data_validation.dart';
   static const String widgetsAppBar = 'lib/core/common/widgets/app_bar.dart';

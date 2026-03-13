@@ -1,4 +1,4 @@
-import '../../utils/app_strings.dart';
+
 
 class ImageModel {
   final String url;
@@ -11,15 +11,15 @@ class ImageModel {
 
   factory ImageModel.fromMap(Map<String, dynamic> map) {
     return ImageModel(
-      url: map[AppStrings.imageModelUrl],
-      createdAt: map[AppStrings.imageModelUploadedAt],
+      url: map['url'],
+      createdAt: map['uploadedAt'],
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      AppStrings.imageModelUrl: url,
-      AppStrings.imageModelUploadedAt: createdAt,
+      'url': url,
+      'uploadedAt': createdAt,
     };
   }
 }

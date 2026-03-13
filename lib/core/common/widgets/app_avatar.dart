@@ -22,7 +22,7 @@ class AppAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget avatar = CircleAvatar(
       radius: radius,
-      backgroundColor: AppColors.primary.withOpacity(0.15),
+      backgroundColor: AppColors.primary.withValues(alpha: 0.15),
       child: _buildInner(),
     );
 

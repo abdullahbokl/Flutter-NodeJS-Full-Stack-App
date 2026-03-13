@@ -11,7 +11,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../jobs/domain/entities/job_entity.dart';
 import '../../presentation/bloc/jobs_cubit.dart';
-import '../../../../core/common/models/job_model.dart';
+
 
 class JobsListPage extends StatelessWidget {
   final String? title;
@@ -19,10 +19,8 @@ class JobsListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => JobsCubit()..loadJobs(),
-      child: Scaffold(
-        appBar: AppBar(
+    return Scaffold(
+      appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_rounded),
             onPressed: () => context.pop(),
@@ -42,7 +40,7 @@ class JobsListPage extends StatelessWidget {
                 final job = jobs[i];
                 final isDark = Theme.of(context).brightness == Brightness.dark;
                 return InkWell(
-                  onTap: () => context.go('/jobs/${job.id}', extra: job),
+                  onTap: () => context.push('/jobs/${job.id}', extra: job),
                   borderRadius: BorderRadius.circular(AppRadius.lg),
                   child: Container(
                     padding: const EdgeInsets.all(AppSpacing.md),
@@ -51,7 +49,7 @@ class JobsListPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(AppRadius.lg),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
+                          color: Colors.black.withValues(alpha: 0.04),
                           blurRadius: 6,
                           offset: const Offset(0, 2),
                         ),
@@ -118,8 +116,8 @@ class JobsListPage extends StatelessWidget {
               },
             ),
           ),
-        ),
       ),
     );
   }
 }
+
