@@ -115,9 +115,9 @@ class _ProfileContent extends StatelessWidget {
                 color: AppColors.accent.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppRadius.full),
               ),
-              child: Row(mainAxisSize: MainAxisSize.min, children: [
-                const Icon(Icons.business_rounded, size: 14, color: AppColors.accent),
-                const SizedBox(width: 4),
+              child: const Row(mainAxisSize: MainAxisSize.min, children: [
+                Icon(Icons.business_rounded, size: 14, color: AppColors.accent),
+                SizedBox(width: 4),
                 Text('Company Account', style: TextStyle(fontSize: 12,
                     color: AppColors.accent, fontWeight: FontWeight.w600)),
               ]),
@@ -128,6 +128,28 @@ class _ProfileContent extends StatelessWidget {
         if (user.skills.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.md),
           _SkillsCard(skills: user.skills),
+        ],
+        if (user.experience.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.md),
+          _DetailListCard(
+            title: 'Experience',
+            icon: Icons.work_history_outlined,
+            items: user.experience
+                .map((item) => (item['title'] ?? item['company'] ?? '').toString())
+                .where((item) => item.trim().isNotEmpty)
+                .toList(),
+          ),
+        ],
+        if (user.education.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.md),
+          _DetailListCard(
+            title: 'Education',
+            icon: Icons.school_outlined,
+            items: user.education
+                .map((item) => (item['school'] ?? item['degree'] ?? '').toString())
+                .where((item) => item.trim().isNotEmpty)
+                .toList(),
+          ),
         ],
         const SizedBox(height: AppSpacing.lg),
         AppButton(
@@ -237,6 +259,63 @@ class _SkillsCard extends StatelessWidget {
         Wrap(spacing: AppSpacing.sm, runSpacing: AppSpacing.sm,
           children: skills.map((s) => AppChip(label: s, isSelected: true)).toList()),
       ]),
+    );
+  }
+}
+
+class _DetailListCard extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final List<String> items;
+
+  const _DetailListCard({
+    required this.title,
+    required this.icon,
+    required this.items,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.surfaceDark : AppColors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 18, color: AppColors.primary),
+              const SizedBox(width: AppSpacing.xs),
+              Text(
+                title,
+                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          ...items.map(
+            (item) => Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+              child: Text(
+                '• $item',
+                style: const TextStyle(color: AppColors.textSecondary),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

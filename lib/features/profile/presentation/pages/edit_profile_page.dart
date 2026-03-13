@@ -39,6 +39,8 @@ class _EditProfileViewState extends State<_EditProfileView> {
   final _companyName = TextEditingController();
   final _industry = TextEditingController();
   final _website = TextEditingController();
+  final _experience = TextEditingController();
+  final _education = TextEditingController();
   final List<TextEditingController> _skills = [];
 
   File? _pickedImage;
@@ -64,6 +66,14 @@ class _EditProfileViewState extends State<_EditProfileView> {
     _companyName.text = user.companyName ?? '';
     _industry.text = user.industry ?? '';
     _website.text = user.website ?? '';
+    _experience.text = user.experience
+        .map((item) => _stringValue(item['title']) ?? _stringValue(item['company']) ?? '')
+        .where((item) => item.isNotEmpty)
+        .join('\n');
+    _education.text = user.education
+        .map((item) => _stringValue(item['school']) ?? _stringValue(item['degree']) ?? '')
+        .where((item) => item.isNotEmpty)
+        .join('\n');
     _skills.clear();
     if (user.skills.isEmpty) {
       _skills.add(TextEditingController());
@@ -72,6 +82,11 @@ class _EditProfileViewState extends State<_EditProfileView> {
         _skills.add(TextEditingController(text: s));
       }
     }
+  }
+
+  String? _stringValue(dynamic value) {
+    final text = value?.toString().trim() ?? '';
+    return text.isEmpty ? null : text;
   }
 
   Future<void> _pickImage() async {
@@ -94,6 +109,18 @@ class _EditProfileViewState extends State<_EditProfileView> {
       'industry': _industry.text.trim(),
       'website': _website.text.trim(),
       'skills': _skills.map((c) => c.text.trim()).where((s) => s.isNotEmpty).toList(),
+      'experience': _experience.text
+          .split('\n')
+          .map((item) => item.trim())
+          .where((item) => item.isNotEmpty)
+          .map((item) => {'title': item})
+          .toList(),
+      'education': _education.text
+          .split('\n')
+          .map((item) => item.trim())
+          .where((item) => item.isNotEmpty)
+          .map((item) => {'school': item})
+          .toList(),
     };
 
     await ctx.read<ProfileCubit>().updateProfile(updates);
@@ -117,6 +144,8 @@ class _EditProfileViewState extends State<_EditProfileView> {
     _companyName.dispose();
     _industry.dispose();
     _website.dispose();
+    _experience.dispose();
+    _education.dispose();
     for (final c in _skills) { c.dispose(); }
     super.dispose();
   }
@@ -245,6 +274,24 @@ class _EditProfileViewState extends State<_EditProfileView> {
                       icon: const Icon(Icons.add_rounded),
                       label: const Text('Add Skill'),
                     ),
+                    if (!(state is SuccessState<UserModel> && state.data.isCompany)) ...[
+                      const SizedBox(height: AppSpacing.lg),
+                      AppTextField(
+                        label: 'Experience',
+                        hint: 'One role or milestone per line',
+                        controller: _experience,
+                        prefixIcon: Icons.work_history_outlined,
+                        maxLines: 4,
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      AppTextField(
+                        label: 'Education',
+                        hint: 'One school or degree per line',
+                        controller: _education,
+                        prefixIcon: Icons.school_outlined,
+                        maxLines: 4,
+                      ),
+                    ],
                     const SizedBox(height: AppSpacing.xl),
                     AppButton(
                       label: 'Save Changes',

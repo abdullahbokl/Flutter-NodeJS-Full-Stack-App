@@ -19,6 +19,8 @@ class UserEntity extends Equatable {
   final String? website;
 
   final List<String> skills;
+  final List<Map<String, dynamic>> experience;
+  final List<Map<String, dynamic>> education;
   final String? bio;
   final String token;
 
@@ -36,6 +38,8 @@ class UserEntity extends Equatable {
     this.industry,
     this.website,
     this.skills = const [],
+    this.experience = const [],
+    this.education = const [],
     this.bio,
     this.token = '',
   });
@@ -55,6 +59,8 @@ class UserEntity extends Equatable {
     String? location,
     List<String>? profilePic,
     List<String>? skills,
+    List<Map<String, dynamic>>? experience,
+    List<Map<String, dynamic>>? education,
     UserRole? role,
     String? companyName,
     String? industry,
@@ -76,6 +82,8 @@ class UserEntity extends Equatable {
         industry: industry ?? this.industry,
         website: website ?? this.website,
         skills: skills ?? this.skills,
+        experience: experience ?? this.experience,
+        education: education ?? this.education,
         bio: bio ?? this.bio,
         token: token ?? this.token,
       );
@@ -95,8 +103,9 @@ class UserEntity extends Equatable {
         industry,
         website,
         skills,
+        experience,
+        education,
         bio,
         token,
       ];
 }
-

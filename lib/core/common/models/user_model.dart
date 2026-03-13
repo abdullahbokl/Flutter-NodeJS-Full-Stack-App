@@ -16,6 +16,8 @@ class UserModel extends UserEntity {
     super.industry,
     super.website,
     super.skills = const [],
+    super.experience = const [],
+    super.education = const [],
     super.bio = "",
     super.token = "",
   });
@@ -35,6 +37,8 @@ class UserModel extends UserEntity {
       'industry': industry,
       'website': website,
       'skills': skills,
+      'experience': experience,
+      'education': education,
       'bio': bio,
     };
   }
@@ -57,6 +61,24 @@ class UserModel extends UserEntity {
       }
     }
 
+    final List<Map<String, dynamic>> experience = [];
+    if (map['experience'] is List) {
+      for (final item in map['experience']) {
+        if (item is Map) {
+          experience.add(Map<String, dynamic>.from(item));
+        }
+      }
+    }
+
+    final List<Map<String, dynamic>> education = [];
+    if (map['education'] is List) {
+      for (final item in map['education']) {
+        if (item is Map) {
+          education.add(Map<String, dynamic>.from(item));
+        }
+      }
+    }
+
     return UserModel(
       id: map['id'] ?? map['_id'] ?? '',
       email: map['email'] ?? '',
@@ -71,6 +93,8 @@ class UserModel extends UserEntity {
       industry: map['industry'],
       website: map['website'],
       skills: skills,
+      experience: experience,
+      education: education,
       bio: map['bio'],
       token: map['token'] ?? '',
     );
