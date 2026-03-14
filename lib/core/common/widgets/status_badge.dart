@@ -20,7 +20,10 @@ class StatusBadge extends StatelessWidget {
     final v = switch (contract.toLowerCase()) {
       'full-time'  => BadgeVariant.success,
       'part-time'  => BadgeVariant.warning,
+      'contract'   => BadgeVariant.info,
       'freelance'  => BadgeVariant.info,
+      'temporary'  => BadgeVariant.info,
+      'permanent'  => BadgeVariant.success,
       'remote'     => BadgeVariant.neutral,
       _            => BadgeVariant.neutral,
     };
@@ -49,11 +52,14 @@ class StatusBadge extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(AppRadius.full)),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(AppRadius.full),
+        border: Border.all(color: fg.withValues(alpha: 0.15)),
+      ),
       child: Text(label,
           style: TextStyle(color: fg, fontSize: 12, fontWeight: FontWeight.w600)),
     );
   }
 }
-

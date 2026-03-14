@@ -6,12 +6,12 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/common/base_state.dart';
 import '../../../../core/common/widgets/app_button.dart';
 import '../../../../core/common/widgets/app_text_field.dart';
+import '../../../../core/common/widgets/premium_ui.dart';
 import '../../../../core/config/app_setup.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_snackbars.dart';
-import '../bloc/login_cubit.dart';
 import '../../domain/entities/user_entity.dart';
+import '../bloc/login_cubit.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -27,6 +27,7 @@ class LoginPage extends StatelessWidget {
 
 class _LoginView extends StatefulWidget {
   const _LoginView();
+
   @override
   State<_LoginView> createState() => _LoginViewState();
 }
@@ -43,72 +44,140 @@ class _LoginViewState extends State<_LoginView> {
         if (state is ErrorState<UserEntity>) {
           AppSnackBars.showError(ctx, state.message);
         } else if (state is SuccessState<UserEntity>) {
-          if (state.data.isCompany) {
-            ctx.go('/company/dashboard');
-          } else {
-            ctx.go('/home');
-          }
+          ctx.go(state.data.isCompany ? '/company/dashboard' : '/home');
         }
       },
+      child: PremiumScaffold(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1100),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final wide = constraints.maxWidth >= 860;
 
-      child: Scaffold(
-        body: Stack(
-          children: [
-            // Background gradient blob
-            Positioned(
-                top: -80,
-                right: -60,
-                child: Container(
-                    width: 260,
-                    height: 260,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors.primary.withValues(alpha: 0.12)))),
-            SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(AppSpacing.xl),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: AppSpacing.xl),
-                    Text('Welcome\nBack 👋',
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineMedium
-                                ?.copyWith(
-                                    fontWeight: FontWeight.w800, height: 1.2))
-                        .animate()
-                        .fadeIn()
-                        .slideX(begin: -0.2),
-                    const SizedBox(height: AppSpacing.sm),
-                    Text('Sign in to find your perfect job',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(color: AppColors.textSecondary))
-                        .animate()
-                        .fadeIn(delay: 100.ms),
-                    const SizedBox(height: AppSpacing.xl),
-                    _FormCard(form: _form, email: _email, password: _password),
-                    const SizedBox(height: AppSpacing.md),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text("Don't have an account? "),
-                        GestureDetector(
-                          onTap: () => context.go('/register'),
-                          child: const Text('Register',
-                              style: TextStyle(
-                                  color: AppColors.primary,
-                                  fontWeight: FontWeight.w600)),
+                  final intro = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Premium hiring,\nwithout the clutter.',
+                        style: Theme.of(context).textTheme.displayLarge,
+                      ).animate().fadeIn().slideX(begin: -0.05),
+                      const SizedBox(height: AppSpacing.md),
+                      Text(
+                        'Sign in to manage your hiring pipeline, discover roles faster, and keep every conversation in one polished workspace.',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ).animate().fadeIn(delay: 120.ms),
+                      const SizedBox(height: AppSpacing.xl),
+                      const GlassPanel(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _FeatureLine(icon: Icons.auto_awesome_rounded, text: 'Refined search and premium job cards'),
+                            SizedBox(height: AppSpacing.sm),
+                            _FeatureLine(icon: Icons.track_changes_rounded, text: 'Application tracking with clearer states'),
+                            SizedBox(height: AppSpacing.sm),
+                            _FeatureLine(icon: Icons.chat_bubble_outline_rounded, text: 'Faster candidate and recruiter conversations'),
+                          ],
                         ),
-                      ],
+                      ),
+                    ],
+                  );
+
+                  final form = GlassPanel(
+                    padding: const EdgeInsets.all(AppSpacing.lg),
+                    child: Form(
+                      key: _form,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Welcome back', style: Theme.of(context).textTheme.headlineMedium),
+                          const SizedBox(height: AppSpacing.xs),
+                          Text('Use your existing account to continue.', style: Theme.of(context).textTheme.bodyMedium),
+                          const SizedBox(height: AppSpacing.lg),
+                          AppTextField(
+                            label: 'Work Email',
+                            hint: 'you@example.com',
+                            controller: _email,
+                            keyboardType: TextInputType.emailAddress,
+                            prefixIcon: Icons.mail_outline_rounded,
+                            validator: (v) => v?.contains('@') == true ? null : 'Enter a valid email',
+                          ),
+                          const SizedBox(height: AppSpacing.md),
+                          AppTextField(
+                            label: 'Password',
+                            hint: 'Enter your password',
+                            controller: _password,
+                            obscureText: true,
+                            prefixIcon: Icons.lock_outline_rounded,
+                            validator: (v) => (v?.length ?? 0) >= 6 ? null : 'Min 6 characters',
+                          ),
+                          const SizedBox(height: AppSpacing.sm),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(onPressed: () {}, child: const Text('Forgot password?')),
+                          ),
+                          const SizedBox(height: AppSpacing.sm),
+                          BlocBuilder<LoginCubit, BaseState<UserEntity>>(
+                            builder: (ctx, state) => AppButton(
+                              label: 'Sign In',
+                              icon: Icons.arrow_forward_rounded,
+                              isLoading: state is LoadingState,
+                              onTap: () {
+                                if (_form.currentState?.validate() == true) {
+                                  FocusScope.of(ctx).unfocus();
+                                  ctx.read<LoginCubit>().login(_email.text.trim(), _password.text);
+                                }
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.md),
+                          const Row(
+                            children: [
+                              Expanded(child: Divider()),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                                child: Text('OR'),
+                              ),
+                              Expanded(child: Divider()),
+                            ],
+                          ),
+                          const SizedBox(height: AppSpacing.md),
+                          const SocialAuthButtons(),
+                          const SizedBox(height: AppSpacing.md),
+                          Center(
+                            child: TextButton(
+                              onPressed: () => context.go('/register'),
+                              child: const Text('Need an account? Create one'),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
+                  ).animate().fadeIn(delay: 100.ms).slideY(begin: 0.05);
+
+                  if (wide) {
+                    return Row(
+                      children: [
+                        Expanded(flex: 6, child: Padding(padding: const EdgeInsets.only(right: AppSpacing.xl), child: intro)),
+                        Expanded(flex: 5, child: form),
+                      ],
+                    );
+                  }
+
+                  return Column(
+                    children: [
+                      intro,
+                      const SizedBox(height: AppSpacing.xl),
+                      form,
+                    ],
+                  );
+                },
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -122,66 +191,23 @@ class _LoginViewState extends State<_LoginView> {
   }
 }
 
-class _FormCard extends StatelessWidget {
-  final GlobalKey<FormState> form;
-  final TextEditingController email;
-  final TextEditingController password;
-  const _FormCard(
-      {required this.form, required this.email, required this.password});
+class _FeatureLine extends StatelessWidget {
+  final IconData icon;
+  final String text;
+
+  const _FeatureLine({
+    required this.icon,
+    required this.text,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.08),
-              blurRadius: 20,
-              offset: const Offset(0, 8))
-        ],
-      ),
-      child: Form(
-        key: form,
-        child: Column(children: [
-          AppTextField(
-            label: 'Email',
-            hint: 'you@example.com',
-            controller: email,
-            keyboardType: TextInputType.emailAddress,
-            prefixIcon: Icons.email_outlined,
-            validator: (v) =>
-                v?.contains('@') == true ? null : 'Enter a valid email',
-          ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2),
-          const SizedBox(height: AppSpacing.md),
-          AppTextField(
-            label: 'Password',
-            hint: '••••••••',
-            controller: password,
-            obscureText: true,
-            prefixIcon: Icons.lock_outline_rounded,
-            validator: (v) => (v?.length ?? 0) >= 6 ? null : 'Min 6 characters',
-          ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.2),
-          const SizedBox(height: AppSpacing.lg),
-          BlocBuilder<LoginCubit, BaseState<UserEntity>>(
-            builder: (ctx, state) => AppButton(
-              label: 'Sign In',
-              isLoading: state is LoadingState,
-              onTap: () {
-                if (form.currentState?.validate() == true) {
-                  FocusScope.of(ctx).unfocus();
-                  ctx
-                      .read<LoginCubit>()
-                      .login(email.text.trim(), password.text);
-                }
-              },
-              icon: Icons.arrow_forward_rounded,
-            ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2),
-          ),
-        ]),
-      ),
+    return Row(
+      children: [
+        Icon(icon, size: 18),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(child: Text(text, style: Theme.of(context).textTheme.bodyMedium)),
+      ],
     );
   }
 }

@@ -37,8 +37,11 @@ class MessagesCubit extends Cubit<BaseState<List<MessageModel>>> {
     final result = await _getMessagesUseCase(GetMessagesParams(chatId));
     result.fold(
       (failure) => emit(ErrorState(failure.message)),
-      (messages) =>
-          emit(messages.isEmpty ? const EmptyState() : SuccessState(messages)),
+      (messages) => emit(
+        messages.isEmpty
+            ? const EmptyState()
+            : SuccessState(_sortMessagesChronologically(messages)),
+      ),
     );
   }
 
@@ -113,7 +116,21 @@ class MessagesCubit extends Cubit<BaseState<List<MessageModel>>> {
         ? List<MessageModel>.from((state as SuccessState<List<MessageModel>>).data)
         : <MessageModel>[];
     prev.add(msg);
-    emit(SuccessState(prev));
+    emit(SuccessState(_sortMessagesChronologically(prev)));
+  }
+
+  List<MessageModel> _sortMessagesChronologically(List<MessageModel> messages) {
+    final sorted = List<MessageModel>.from(messages);
+    sorted.sort((a, b) {
+      final aTime = DateTime.tryParse(a.createdAt);
+      final bTime = DateTime.tryParse(b.createdAt);
+
+      if (aTime == null && bTime == null) return 0;
+      if (aTime == null) return -1;
+      if (bTime == null) return 1;
+      return aTime.compareTo(bTime);
+    });
+    return sorted;
   }
 
   /// Re-emits a fresh state object so Bloc rebuilds for typing indicators.

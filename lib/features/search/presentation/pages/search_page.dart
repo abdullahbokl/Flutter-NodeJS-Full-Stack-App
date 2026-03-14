@@ -7,11 +7,13 @@ import '../../../../core/common/base_state.dart';
 import '../../../../core/common/models/job_model.dart';
 import '../../../../core/common/widgets/app_avatar.dart';
 import '../../../../core/common/widgets/bloc_state_widget.dart';
+import '../../../../core/config/app_router.dart';
 import '../../../../core/config/app_setup.dart';
 import '../../../../core/common/widgets/status_badge.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_session.dart';
 import '../../../jobs/domain/entities/job_filter_params.dart';
 import '../bloc/search_cubit.dart';
 
@@ -38,6 +40,17 @@ class _SearchViewState extends State<_SearchView> {
   final _focus = FocusNode();
   JobFilterParams _filters = const JobFilterParams();
 
+  void _handleBack(BuildContext context) {
+    if (context.canPop()) {
+      context.pop();
+      return;
+    }
+
+    context.go(
+      AppSession.isCompany ? AppRouter.companyDashboardPage : AppRouter.homePage,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,7 +70,7 @@ class _SearchViewState extends State<_SearchView> {
       child: Row(children: [
         IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
-          onPressed: () => context.pop(),
+          onPressed: () => _handleBack(context),
         ),
         Expanded(
           child: TextField(
@@ -254,9 +267,9 @@ class _FiltersSheetState extends State<_FiltersSheet> {
           DropdownButtonFormField<String>(
             initialValue: _contract.isEmpty ? null : _contract,
             items: const [
-              DropdownMenuItem(value: 'permanent', child: Text('Permanent')),
-              DropdownMenuItem(value: 'temporary', child: Text('Temporary')),
-              DropdownMenuItem(value: 'freelance', child: Text('Freelance')),
+              DropdownMenuItem(value: 'full-time', child: Text('Full time')),
+              DropdownMenuItem(value: 'part-time', child: Text('Part time')),
+              DropdownMenuItem(value: 'contract', child: Text('Contract')),
             ],
             onChanged: (value) => setState(() => _contract = value ?? ''),
             decoration: const InputDecoration(labelText: 'Contract Type'),

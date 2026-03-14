@@ -39,7 +39,7 @@ class DrawerScreenBody extends StatelessWidget {
                       const _NavItem(icon: Icons.dashboard_rounded, label: 'Dashboard', route: '/company/dashboard')
                     else
                       const _NavItem(icon: Icons.home_rounded, label: 'Home', route: '/home'),
-                    const _NavItem(icon: Icons.search_rounded,      label: 'Search',    route: '/search'),
+                    const _NavItem(icon: Icons.work_outline_rounded, label: 'Jobs', route: AppRouter.jobsListPage),
                     const _NavItem(icon: Icons.bookmark_rounded,    label: 'Bookmarks', route: '/bookmarks'),
                     if (!isCompany)
                       const _NavItem(
@@ -176,4 +176,3 @@ class _NavItem {
   final String route;
   const _NavItem({required this.icon, required this.label, required this.route});
 }
-

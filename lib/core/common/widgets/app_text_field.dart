@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_radius.dart';
+import '../../theme/app_spacing.dart';
 import '../../utils/app_colors.dart';
 
 class AppTextField extends StatefulWidget {
@@ -55,11 +56,14 @@ class _AppTextFieldState extends State<AppTextField> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (widget.label != null) ...[
-          Text(widget.label!,
-              style: const TextStyle(
-                  fontSize: 13, fontWeight: FontWeight.w500,
-                  color: AppColors.textSecondary)),
-          const SizedBox(height: 6),
+          Text(
+            widget.label!,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
         ],
         TextFormField(
           controller: widget.controller,
@@ -72,10 +76,10 @@ class _AppTextFieldState extends State<AppTextField> {
           readOnly: widget.readOnly,
           onTap: widget.onTap,
           focusNode: widget.focusNode,
-          style: const TextStyle(fontSize: 15, color: AppColors.textPrimary),
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppColors.textPrimary),
           decoration: InputDecoration(
             hintText: widget.hint,
-            hintStyle: const TextStyle(color: AppColors.textHint, fontSize: 14),
+            hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textHint),
             prefixIcon: widget.prefixIcon != null
                 ? Icon(widget.prefixIcon, size: 20, color: AppColors.textSecondary)
                 : null,
@@ -88,7 +92,7 @@ class _AppTextFieldState extends State<AppTextField> {
                 : widget.suffix,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppRadius.lg),
-              borderSide: BorderSide.none,
+              borderSide: const BorderSide(color: AppColors.cardBorder),
             ),
           ),
         ),
@@ -96,4 +100,3 @@ class _AppTextFieldState extends State<AppTextField> {
     );
   }
 }
-

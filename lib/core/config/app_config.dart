@@ -10,6 +10,16 @@ class AppConfig {
 
   factory AppConfig._fromFlavor() {
     const flavor = String.fromEnvironment('FLAVOR', defaultValue: 'dev');
+    const apiBaseUrlOverride = String.fromEnvironment('API_BASE_URL');
+    const socketUrlOverride = String.fromEnvironment('SOCKET_URL');
+
+    if (apiBaseUrlOverride.isNotEmpty && socketUrlOverride.isNotEmpty) {
+      return AppConfig._(
+        baseUrl: apiBaseUrlOverride,
+        socketUrl: socketUrlOverride,
+      );
+    }
+
     switch (flavor) {
       case 'prod':
         return AppConfig._(
@@ -23,13 +33,14 @@ class AppConfig {
         );
       default: // dev
         return AppConfig._(
-          // try the android emulator ip address first 10.0.2.2
+          // Default Android emulator host. Override with --dart-define when
+          // testing on a physical device or another machine.
           // baseUrl: 'http://10.0.2.2:7000/api/v1',
           // socketUrl: 'http://10.0.2.2:7000',
-
-          // if it fails try the physical device network ip ex: 192.168.100.42 
+          // try the device network IP address if the above doesn't work
           baseUrl: 'http://192.168.100.42:7000/api/v1',
           socketUrl: 'http://192.168.100.42:7000',
+          
         );
     }
   }

@@ -15,10 +15,9 @@ class GetHomeJobsUseCase implements UseCase<List<JobModel>, NoParams> {
   Future<Either<Failure, List<JobModel>>> call(NoParams params) async {
     try {
       final jobs = await _repository.getAllJobs();
-      return Right(jobs);
+      return Right(jobs.jobs.cast<JobModel>());
     } catch (error) {
       return Left(mapToFailure(error));
     }
   }
 }
-

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../theme/app_spacing.dart';
 import '../../utils/app_colors.dart';
 import 'app_button.dart';
+import 'premium_ui.dart';
 
 class EmptyStateWidget extends StatelessWidget {
   final String title;
@@ -24,38 +25,42 @@ class EmptyStateWidget extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xl),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 80, height: 80,
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.08),
-                shape: BoxShape.circle,
+        child: GlassPanel(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors.primary.withValues(alpha: 0.18),
+                      AppColors.accent.withValues(alpha: 0.12),
+                    ],
+                  ),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, size: 40, color: AppColors.primary),
               ),
-              child: Icon(icon, size: 40, color: AppColors.primary),
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            Text(title,
-                style: const TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary),
-                textAlign: TextAlign.center),
-            if (subtitle != null) ...[
-              const SizedBox(height: AppSpacing.sm),
-              Text(subtitle!,
-                  style: const TextStyle(
-                      fontSize: 14, color: AppColors.textSecondary),
-                  textAlign: TextAlign.center),
-            ],
-            if (actionLabel != null && onAction != null) ...[
               const SizedBox(height: AppSpacing.lg),
-              AppButton(label: actionLabel!, onTap: onAction, width: 160),
+              Text(title,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                  textAlign: TextAlign.center),
+              if (subtitle != null) ...[
+                const SizedBox(height: AppSpacing.sm),
+                Text(subtitle!,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    textAlign: TextAlign.center),
+              ],
+              if (actionLabel != null && onAction != null) ...[
+                const SizedBox(height: AppSpacing.lg),
+                AppButton(label: actionLabel!, onTap: onAction, width: 180),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
   }
 }
-

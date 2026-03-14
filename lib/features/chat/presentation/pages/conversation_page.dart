@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/common/base_state.dart';
 import '../../../../core/common/widgets/app_avatar.dart';
+import '../../../../core/common/widgets/premium_ui.dart';
+import '../../../../core/config/app_router.dart';
 import '../../../../core/config/app_setup.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -63,28 +66,59 @@ class _ConversationViewState extends State<_ConversationView> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<MessagesCubit, BaseState<List<MessageModel>>>(
-      listenWhen: (_, curr) => curr is MessagesSendError,
+      listenWhen: (prev, curr) =>
+          curr is MessagesSendError || curr is SuccessState<List<MessageModel>>,
       listener: (ctx, state) {
         if (state is MessagesSendError) {
           AppSnackBars.showError(ctx, 'Failed to send: ${state.errorMessage}');
+          return;
+        }
+
+        if (state is SuccessState<List<MessageModel>>) {
+          WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToLatest());
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(icon: const Icon(Icons.arrow_back_rounded),
-              onPressed: () => context.pop()),
-          title: Row(children: [
-            AppAvatar(radius: 18, fallbackInitials: _otherName),
-            const SizedBox(width: AppSpacing.sm),
-            Text(_otherName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-          ]),
+      child: PremiumScaffold(
+        child: Column(
+          children: [
+            _ConversationHeader(
+              name: _otherName,
+              onBack: () {
+                if (context.canPop()) {
+                  context.pop();
+                } else {
+                  context.go(
+                    AppSession.isCompany
+                        ? AppRouter.companyDashboardPage
+                        : AppRouter.homePage,
+                  );
+                }
+              },
+            ),
+            Expanded(
+              child: _MessagesList(
+                scroll: _scroll,
+                otherName: _otherName,
+              ),
+            ),
+            _TypingIndicator(),
+            _InputRow(
+              controller: _controller,
+              chatId: widget.chat.id,
+              onSend: _send,
+            ),
+          ],
         ),
-        body: Column(children: [
-          Expanded(child: _MessagesList(scroll: _scroll)),
-          _TypingIndicator(),
-          _InputRow(controller: _controller, chatId: widget.chat.id, onSend: _send),
-        ]),
       ),
+    );
+  }
+
+  void _scrollToLatest() {
+    if (!_scroll.hasClients) return;
+    _scroll.animateTo(
+      _scroll.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 260),
+      curve: Curves.easeOutCubic,
     );
   }
 
@@ -93,12 +127,7 @@ class _ConversationViewState extends State<_ConversationView> {
     if (text.isEmpty) return;
     _controller.clear();
     context.read<MessagesCubit>().sendMessage(widget.chat.id, _otherId, text);
-    Future.delayed(100.ms, () {
-      if (_scroll.hasClients) {
-        _scroll.animateTo(_scroll.position.maxScrollExtent,
-            duration: 300.ms, curve: Curves.easeOut);
-      }
-    });
+    Future.delayed(100.ms, _scrollToLatest);
   }
 
   @override
@@ -109,9 +138,80 @@ class _ConversationViewState extends State<_ConversationView> {
   }
 }
 
+class _ConversationHeader extends StatelessWidget {
+  final String name;
+  final VoidCallback onBack;
+
+  const _ConversationHeader({
+    required this.name,
+    required this.onBack,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.md,
+        AppSpacing.md,
+        AppSpacing.sm,
+      ),
+      child: GlassPanel(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm,
+        ),
+        child: Row(
+          children: [
+            IconButton(
+              onPressed: onBack,
+              icon: const Icon(Icons.arrow_back_rounded),
+            ),
+            AppAvatar(radius: 22, fallbackInitials: name),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Conversation',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              width: 10,
+              height: 10,
+              decoration: const BoxDecoration(
+                color: AppColors.success,
+                shape: BoxShape.circle,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ).animate().fadeIn().slideY(begin: -0.08);
+  }
+}
+
 class _MessagesList extends StatelessWidget {
   final ScrollController scroll;
-  const _MessagesList({required this.scroll});
+  final String otherName;
+
+  const _MessagesList({
+    required this.scroll,
+    required this.otherName,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -142,16 +242,47 @@ class _MessagesList extends StatelessWidget {
         }
 
         final msgs = (state as SuccessState<List<MessageModel>>).data;
-        return ListView.builder(
-          controller: scroll,
-          padding: const EdgeInsets.all(AppSpacing.md),
-          itemCount: msgs.length,
-          itemBuilder: (_, i) {
-            final msg = msgs[i];
-            final isMine = msg.sender.id == AppSession.userId;
-            return _Bubble(message: msg, isMine: isMine)
-                .animate().fadeIn(delay: Duration(milliseconds: 20 * i));
-          },
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            0,
+            AppSpacing.md,
+            AppSpacing.sm,
+          ),
+          child: LayoutBuilder(
+            builder: (context, constraints) => GlassPanel(
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              child: SingleChildScrollView(
+                controller: scroll,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.xs,
+                  vertical: AppSpacing.sm,
+                ),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      for (var i = 0; i < msgs.length; i++)
+                        Builder(
+                          builder: (_) {
+                            final msg = msgs[i];
+                            final isMine = msg.sender.id == AppSession.userId;
+                            final showAvatar = !isMine;
+                            return _Bubble(
+                              message: msg,
+                              isMine: isMine,
+                              showAvatar: showAvatar,
+                              senderName: otherName,
+                            ).animate().fadeIn(delay: Duration(milliseconds: 20 * i));
+                          },
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
         );
       },
     );
@@ -161,32 +292,109 @@ class _MessagesList extends StatelessWidget {
 class _Bubble extends StatelessWidget {
   final MessageModel message;
   final bool isMine;
-  const _Bubble({required this.message, required this.isMine});
+  final bool showAvatar;
+  final String senderName;
+
+  const _Bubble({
+    required this.message,
+    required this.isMine,
+    required this.showAvatar,
+    required this.senderName,
+  });
+
+  String _formatTime() {
+    if (message.createdAt.isEmpty) return '';
+    try {
+      return DateFormat('HH:mm').format(DateTime.parse(message.createdAt).toLocal());
+    } catch (_) {
+      return '';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
-        margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-        padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md, vertical: AppSpacing.sm),
-        decoration: BoxDecoration(
-          color: isMine ? AppColors.primary : Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(AppRadius.xl),
-            topRight: const Radius.circular(AppRadius.xl),
-            bottomLeft: Radius.circular(isMine ? AppRadius.xl : AppRadius.sm),
-            bottomRight: Radius.circular(isMine ? AppRadius.sm : AppRadius.xl),
-          ),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 6, offset: const Offset(0, 2))],
+    final bubble = Container(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width * 0.68,
+      ),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      decoration: BoxDecoration(
+        gradient: isMine
+            ? const LinearGradient(
+                colors: [AppColors.primary, AppColors.primaryDark],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
+        color: isMine ? null : Colors.white.withValues(alpha: 0.82),
+        borderRadius: BorderRadius.only(
+          topLeft: const Radius.circular(AppRadius.xl),
+          topRight: const Radius.circular(AppRadius.xl),
+          bottomLeft: Radius.circular(isMine ? AppRadius.xl : AppRadius.sm),
+          bottomRight: Radius.circular(isMine ? AppRadius.sm : AppRadius.xl),
         ),
-        child: Text(message.content,
+        border: isMine ? null : Border.all(color: AppColors.cardBorder),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment:
+            isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Text(
+            message.content,
             style: TextStyle(
-                color: isMine ? Colors.white : AppColors.textPrimary,
-                fontSize: 14)),
+              color: isMine ? Colors.white : AppColors.textPrimary,
+              fontSize: 14,
+              height: 1.35,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            _formatTime(),
+            style: TextStyle(
+              color: isMine
+                  ? Colors.white.withValues(alpha: 0.72)
+                  : AppColors.textSecondary,
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: Row(
+        mainAxisAlignment:
+            isMine ? MainAxisAlignment.end : MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          if (!isMine) ...[
+            AnimatedOpacity(
+              duration: 180.ms,
+              opacity: showAvatar ? 1 : 0,
+              child: Padding(
+                padding: const EdgeInsets.only(right: AppSpacing.xs),
+                child: AppAvatar(
+                  radius: 14,
+                  fallbackInitials: senderName,
+                ),
+              ),
+            ),
+            const SizedBox(width: AppSpacing.xs),
+          ],
+          bubble,
+        ],
       ),
     );
   }
@@ -203,18 +411,37 @@ class _TypingIndicator extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: 4),
           child: Row(children: [
-            const Text('typing',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
-            const SizedBox(width: 4),
-            ...List.generate(3, (i) => Container(
-              margin: const EdgeInsets.only(right: 3),
-              width: 6, height: 6,
-              decoration: const BoxDecoration(
-                  color: AppColors.textSecondary, shape: BoxShape.circle),
-            ).animate(onPlay: (c) => c.repeat())
-              .moveY(begin: 0, end: -4, delay: Duration(milliseconds: 100 * i),
-                    duration: 300.ms, curve: Curves.easeInOut)
-              .then().moveY(begin: -4, end: 0, duration: 300.ms)),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.sm,
+                vertical: 6,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.72),
+                borderRadius: BorderRadius.circular(AppRadius.full),
+              ),
+              child: Row(
+                children: [
+                  const Text(
+                    'typing',
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  ...List.generate(3, (i) => Container(
+                    margin: const EdgeInsets.only(right: 3),
+                    width: 6, height: 6,
+                    decoration: const BoxDecoration(
+                        color: AppColors.textSecondary, shape: BoxShape.circle),
+                  ).animate(onPlay: (c) => c.repeat())
+                    .moveY(begin: 0, end: -4, delay: Duration(milliseconds: 100 * i),
+                          duration: 300.ms, curve: Curves.easeInOut)
+                    .then().moveY(begin: -4, end: 0, duration: 300.ms)),
+                ],
+              ),
+            ),
           ]),
         );
       },
@@ -259,43 +486,65 @@ class _InputRowState extends State<_InputRow> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md, vertical: AppSpacing.sm),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 8, offset: const Offset(0, -2))],
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.xs,
+          AppSpacing.md,
+          AppSpacing.md,
         ),
-        child: Row(children: [
-          Expanded(
-            child: TextField(
-              controller: widget.controller,
-              maxLines: 4,
-              minLines: 1,
-              textInputAction: TextInputAction.send,
-              onSubmitted: (_) => widget.onSend(),
-              decoration: InputDecoration(
-                hintText: 'Type a message...',
-                border: OutlineInputBorder(
+        child: GlassPanel(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm,
+            vertical: AppSpacing.sm,
+          ),
+          child: Row(children: [
+            Expanded(
+              child: TextField(
+                controller: widget.controller,
+                maxLines: 4,
+                minLines: 1,
+                textInputAction: TextInputAction.send,
+                onSubmitted: (_) => widget.onSend(),
+                decoration: InputDecoration(
+                  hintText: 'Type a message...',
+                  border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(AppRadius.full),
-                    borderSide: BorderSide.none),
-                filled: true,
-                contentPadding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white.withValues(alpha: 0.7),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                    vertical: AppSpacing.sm,
+                  ),
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: AppSpacing.sm),
-          AnimatedContainer(
-            duration: 200.ms,
-            child: IconButton(
-              onPressed: _hasText ? widget.onSend : null,
-              icon: Icon(Icons.send_rounded,
-                  color: _hasText ? AppColors.primary : AppColors.textSecondary),
+            const SizedBox(width: AppSpacing.sm),
+            AnimatedContainer(
+              duration: 200.ms,
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                gradient: _hasText
+                    ? const LinearGradient(
+                        colors: [AppColors.primary, AppColors.primaryDark],
+                      )
+                    : null,
+                color: _hasText ? null : Colors.white,
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+              ),
+              child: IconButton(
+                onPressed: _hasText ? widget.onSend : null,
+                icon: Icon(
+                  Icons.send_rounded,
+                  color: _hasText ? Colors.white : AppColors.textSecondary,
+                ),
+              ),
             ),
-          ),
-        ]),
+          ]),
+        ),
       ),
     );
   }

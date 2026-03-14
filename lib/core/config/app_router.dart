@@ -29,12 +29,13 @@ import '../../features/on_boarding/presentation/on_boarding_screen.dart';
 import '../../features/profile/presentation/bloc/profile_cubit.dart';
 import '../../features/profile/presentation/pages/edit_profile_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
-import '../../features/search/presentation/pages/search_page.dart';
+import '../../features/splash/presentation/pages/splash_page.dart';
 import '../utils/app_session.dart';
 import 'app_setup.dart';
 
 class AppRouter {
-  static const String onBoarding = '/';
+  static const String splash = '/';
+  static const String onBoarding = '/onboarding';
   static const String loginPage = '/login';
   static const String roleSelectionPage = '/register';
   static const String registerPage = '/register/:role';
@@ -57,7 +58,7 @@ class AppRouter {
 
 /// GoRouter instance used by [MyApp].
 final GoRouter appRouter = GoRouter(
-  initialLocation: AppRouter.onBoarding,
+  initialLocation: AppRouter.splash,
   redirect: (context, state) {
     // Safe-get prefs: GetIt may not have been initialized yet when this
     // top-level router is created, so avoid calling `getIt<SharedPreferences>()`
@@ -71,6 +72,10 @@ final GoRouter appRouter = GoRouter(
     final location = state.matchedLocation;
 
     // If the user is authenticated, skip onboarding & login → go to appropriate home
+    if (location == AppRouter.splash) {
+      return null;
+    }
+
     if (isLoggedIn) {
       // Force company to dashboard if they land on seeker home
       if (location == AppRouter.homePage && AppSession.isCompany) {
@@ -98,6 +103,10 @@ final GoRouter appRouter = GoRouter(
     return null;
   },
   routes: [
+    GoRoute(
+      path: AppRouter.splash,
+      builder: (_, __) => const SplashPage(),
+    ),
     // ─── Auth / Onboarding (no shell) ───────────────────────────────────────
     GoRoute(
       path: AppRouter.onBoarding,
@@ -127,7 +136,12 @@ final GoRouter appRouter = GoRouter(
           builder: (_, __) => const CompanyDashboardPage(),
         ),
         GoRoute(
-            path: AppRouter.searchPage, builder: (_, __) => const SearchPage()),
+          path: AppRouter.searchPage,
+          builder: (_, __) => const JobsListPage(
+            title: 'All Jobs',
+            autofocusSearch: true,
+          ),
+        ),
         GoRoute(
             path: AppRouter.bookmarksPage,
             builder: (_, __) => const BookmarksPage()),

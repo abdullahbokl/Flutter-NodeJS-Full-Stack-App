@@ -1,29 +1,34 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:jobhub_flutter/my_app.dart';
+import 'package:jobhub_flutter/core/common/widgets/premium_ui.dart';
+import 'package:jobhub_flutter/core/theme/app_theme.dart';
+import 'package:jobhub_flutter/features/auth/presentation/pages/role_selection_page.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('role selection renders redesigned entry choices', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const RoleSelectionPage(),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.text('Job Seeker'), findsOneWidget);
+    expect(find.text('Company'), findsOneWidget);
+    expect(find.byType(GlassPanel), findsWidgets);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  testWidgets('premium scaffold renders glow background and child content', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const PremiumScaffold(
+          child: Center(child: Text('Hello Job Hub')),
+        ),
+      ),
+    );
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('Hello Job Hub'), findsOneWidget);
+    expect(find.byType(Scaffold), findsOneWidget);
   });
 }

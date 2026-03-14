@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../theme/app_spacing.dart';
 import '../../utils/app_colors.dart';
 import 'app_button.dart';
+import 'premium_ui.dart';
 
 class ErrorStateWidget extends StatelessWidget {
   final String message;
@@ -18,38 +19,37 @@ class ErrorStateWidget extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xl),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 80, height: 80,
-              decoration: BoxDecoration(
-                color: AppColors.error.withValues(alpha: 0.08),
-                shape: BoxShape.circle,
+        child: GlassPanel(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: AppColors.error.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.wifi_off_rounded, size: 40, color: AppColors.error),
               ),
-              child: const Icon(Icons.wifi_off_rounded, size: 40, color: AppColors.error),
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            const Text('Something went wrong',
-                style: TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary)),
-            const SizedBox(height: AppSpacing.sm),
-            Text(message,
-                style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
-                textAlign: TextAlign.center),
-            if (onRetry != null) ...[
               const SizedBox(height: AppSpacing.lg),
-              AppButton(
-                  label: 'Try Again',
-                  onTap: onRetry,
-                  width: 160,
-                  icon: Icons.refresh_rounded),
+              Text('Something went wrong', style: Theme.of(context).textTheme.headlineSmall),
+              const SizedBox(height: AppSpacing.sm),
+              Text(message,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  textAlign: TextAlign.center),
+              if (onRetry != null) ...[
+                const SizedBox(height: AppSpacing.lg),
+                AppButton(
+                    label: 'Try Again',
+                    onTap: onRetry,
+                    width: 180,
+                    icon: Icons.refresh_rounded),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
   }
 }
-

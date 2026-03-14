@@ -1,5 +1,4 @@
 class ApiEndpoints {
-  static const String baseUrl = 'http://10.0.2.2:7000/api';
   static const String login = '/login';
   static const String register = '/register';
   static const String users = '/users';

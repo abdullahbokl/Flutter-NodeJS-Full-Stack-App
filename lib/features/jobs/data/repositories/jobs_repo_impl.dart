@@ -3,6 +3,7 @@ import '../../../../core/errors/server_error_handler.dart';
 import '../../../../core/services/api_services.dart';
 import '../../../../core/utils/api_endpoints.dart';
 import '../../domain/entities/job_filter_params.dart';
+import '../../domain/entities/paginated_jobs_result.dart';
 import 'jobs_repo.dart';
 
 class JobsRepoImpl implements JobsRepo {
@@ -11,7 +12,7 @@ class JobsRepoImpl implements JobsRepo {
   JobsRepoImpl(this._apiServices);
 
   @override
-  Future<List<JobModel>> getAllJobs({
+  Future<PaginatedJobsResult> getAllJobs({
     JobFilterParams filters = const JobFilterParams(),
   }) async {
     try {
@@ -19,11 +20,31 @@ class JobsRepoImpl implements JobsRepo {
         endPoint: ApiEndpoints.jobs,
         queryParameters: filters.toQueryParameters(),
       );
-      final jobsData = raw is Map ? raw['data'] : raw;
-      if (jobsData is! List) return [];
-      return jobsData
+      final jobsData = raw is Map ? raw['data'] : null;
+      final pagination = raw is Map ? raw['pagination'] : null;
+      if (jobsData is! List) {
+        return PaginatedJobsResult(
+          jobs: const [],
+          page: filters.page,
+          limit: filters.limit,
+          total: 0,
+          totalPages: 0,
+        );
+      }
+
+      final jobs = jobsData
           .map((job) => JobModel.fromMap(Map<String, dynamic>.from(job)))
           .toList();
+
+      return PaginatedJobsResult(
+        jobs: jobs,
+        page: pagination is Map ? (pagination['page'] as num?)?.toInt() ?? filters.page : filters.page,
+        limit: pagination is Map ? (pagination['limit'] as num?)?.toInt() ?? filters.limit : filters.limit,
+        total: pagination is Map ? (pagination['total'] as num?)?.toInt() ?? jobs.length : jobs.length,
+        totalPages: pagination is Map
+            ? (pagination['totalPages'] as num?)?.toInt() ?? (jobs.isEmpty ? 0 : 1)
+            : (jobs.isEmpty ? 0 : 1),
+      );
     } catch (e) {
       throw handleServerError(e);
     }

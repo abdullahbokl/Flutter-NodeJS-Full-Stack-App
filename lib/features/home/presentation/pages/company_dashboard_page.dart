@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/common/usecase.dart';
+import '../../../../core/common/widgets/app_card.dart';
+import '../../../../core/common/widgets/premium_ui.dart';
 import '../../../../core/config/app_router.dart';
 import '../../../../core/config/app_setup.dart';
 import '../../../../core/services/api_services.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/api_endpoints.dart';
 import '../../../../core/utils/app_colors.dart';
@@ -38,27 +41,21 @@ class _CompanyDashboardPageState extends State<CompanyDashboardPage> {
     final result = await getIt<GetMyJobsUseCase>()(const NoParams());
     if (!mounted) return;
     result.fold(
-      (_) {
-        setState(() {
-          _jobsCount = 0;
-          _isLoadingJobsCount = false;
-        });
-      },
-      (jobs) {
-        setState(() {
-          _jobsCount = jobs.length;
-          _isLoadingJobsCount = false;
-        });
-      },
+      (_) => setState(() {
+        _jobsCount = 0;
+        _isLoadingJobsCount = false;
+      }),
+      (jobs) => setState(() {
+        _jobsCount = jobs.length;
+        _isLoadingJobsCount = false;
+      }),
     );
   }
 
   Future<void> _loadApplicationsCount() async {
     setState(() => _isLoadingApplicationsCount = true);
     try {
-      final raw = await getIt<ApiServices>().get(
-        endPoint: '${ApiEndpoints.applications}/received',
-      );
+      final raw = await getIt<ApiServices>().get(endPoint: '${ApiEndpoints.applications}/received');
       final list = raw is Map ? raw['data'] : raw;
       if (!mounted) return;
       setState(() {
@@ -76,159 +73,327 @@ class _CompanyDashboardPageState extends State<CompanyDashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Company Dashboard'),
-        actions: [
-          IconButton(
-            onPressed: () => context.push('/profile'),
-            icon: const Icon(Icons.account_circle_outlined),
-          ),
-          IconButton(
-            onPressed: _loadDashboardStats,
-            icon: const Icon(Icons.refresh_rounded),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _DashboardCard(
-              title: 'Jobs Posted',
-              value: _isLoadingJobsCount ? '...' : '$_jobsCount',
-              icon: Icons.work_outline,
-              color: AppColors.primary,
-            ),
-            const SizedBox(height: AppSpacing.md),
-            _DashboardCard(
-              title: 'Applications',
-              value: _isLoadingApplicationsCount ? '...' : '$_applicationsCount',
-              icon: Icons.people_outline,
-              color: AppColors.accent,
-            ),
-            const SizedBox(height: AppSpacing.xl),
-            Text(
-              'Actions',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            ListTile(
-              leading: const Icon(Icons.add_circle_outline, color: AppColors.primary),
-              title: const Text('Post a New Job'),
-              subtitle: const Text('Start looking for your next hire'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () async {
-                await context.push(AppRouter.postJobPage);
-                await _loadDashboardStats();
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.list_alt, color: AppColors.accent),
-              title: const Text('Manage Jobs'),
-              subtitle: const Text('Edit or close existing job postings'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () async {
-                await context.push(AppRouter.manageJobsPage);
-                await _loadDashboardStats();
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.people_alt_outlined, color: AppColors.primary),
-              title: const Text('Review Applications'),
-              subtitle: const Text('See applicants and message them'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () async {
-                await context.push(AppRouter.companyApplicationsPage);
-                await _loadDashboardStats();
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.chat_bubble_outline, color: AppColors.accent),
-              title: const Text('Open Old Chats'),
-              subtitle: const Text('Check existing conversations directly'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.push(AppRouter.chatPage),
-            ),
-          ],
-        ),
-      ),
+    return PremiumScaffold(
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           await context.push(AppRouter.postJobPage);
           await _loadDashboardStats();
         },
         label: const Text('Post Job'),
-        icon: const Icon(Icons.add),
+        icon: const Icon(Icons.add_rounded),
+      ),
+      child: RefreshIndicator(
+        onRefresh: _loadDashboardStats,
+        child: ListView(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          children: [
+            PageHeader(
+              eyebrow: 'Company',
+              title: 'Hiring dashboard',
+              subtitle: 'Track openings, applicants, and next actions from one clean surface.',
+              actions: [
+                PageHeaderAction.icon(
+                  onPressed: () => context.push(AppRouter.profilePage),
+                  icon: Icons.account_circle_outlined,
+                  tooltip: 'Profile',
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            AppCard(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF103D5B), Color(0xFF0F7C78)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Keep your hiring engine moving',
+                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          'Review candidates, publish new roles, and revisit older conversations without leaving the dashboard.',
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white.withValues(alpha: 0.78)),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  const Icon(Icons.insights_rounded, color: Colors.white, size: 42),
+                ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            AppCard(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.md,
+              ),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                child: IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _DashboardMetricBlock(
+                        label: 'Active Jobs',
+                        value: _isLoadingJobsCount ? '...' : '$_jobsCount',
+                        icon: Icons.work_outline_rounded,
+                        color: AppColors.primary,
+                        caption: 'Currently posted',
+                      ),
+                      _MetricDivider(),
+                      _DashboardMetricBlock(
+                        label: 'New Applicants',
+                        value: _isLoadingApplicationsCount ? '...' : '$_applicationsCount',
+                        icon: Icons.groups_2_outlined,
+                        color: AppColors.accent,
+                        caption: 'Received applications',
+                      ),
+                      _MetricDivider(),
+                      _DashboardMetricBlock(
+                        label: 'Unread Messages',
+                        value: 'Open',
+                        icon: Icons.mark_chat_unread_outlined,
+                        color: AppColors.info,
+                        caption: 'Jump into chats',
+                        onTap: () => context.push(AppRouter.chatPage),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            const PremiumSectionHeader(
+              eyebrow: 'Actions',
+              title: 'Run the next hiring step',
+              subtitle: 'Everything below preserves the current business logic and routes.',
+            ),
+            const SizedBox(height: AppSpacing.md),
+            _ActionTile(
+              title: 'Post a New Job',
+              subtitle: 'Create a fresh opening and start receiving candidates.',
+              icon: Icons.add_business_outlined,
+              onTap: () async {
+                await context.push(AppRouter.postJobPage);
+                await _loadDashboardStats();
+              },
+            ),
+            const SizedBox(height: AppSpacing.md),
+            _ActionTile(
+              title: 'Manage Jobs',
+              subtitle: 'Edit, archive, or review your posted openings.',
+              icon: Icons.view_kanban_outlined,
+              onTap: () async {
+                await context.push(AppRouter.manageJobsPage);
+                await _loadDashboardStats();
+              },
+            ),
+            const SizedBox(height: AppSpacing.md),
+            _ActionTile(
+              title: 'Review Applications',
+              subtitle: 'See applicants, update status, and message top candidates.',
+              icon: Icons.fact_check_outlined,
+              onTap: () async {
+                await context.push(AppRouter.companyApplicationsPage);
+                await _loadDashboardStats();
+              },
+            ),
+            const SizedBox(height: AppSpacing.md),
+            _ActionTile(
+              title: 'Open Messages',
+              subtitle: 'Resume candidate conversations right away.',
+              icon: Icons.chat_bubble_outline_rounded,
+              onTap: () => context.push(AppRouter.chatPage),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class _DashboardCard extends StatelessWidget {
-  final String title;
+class _DashboardMetricBlock extends StatelessWidget {
+  final String label;
   final String value;
   final IconData icon;
   final Color color;
+  final String caption;
+  final VoidCallback? onTap;
 
-  const _DashboardCard({
-    required this.title,
+  const _DashboardMetricBlock({
+    required this.label,
     required this.value,
     required this.icon,
     required this.color,
+    required this.caption,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.lg),
+    final content = Container(
+      width: 208,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: 10,
+      ),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: color.withValues(alpha: 0.1)),
-        boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        gradient: RadialGradient(
+          center: const Alignment(-0.9, -0.1),
+          radius: 1.3,
+          colors: [
+            color.withValues(alpha: 0.16),
+            Colors.white.withValues(alpha: 0.0),
+          ],
+        ),
       ),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            color.withValues(alpha: 0.22),
+                            color.withValues(alpha: 0.06),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: color.withValues(alpha: 0.12),
+                            blurRadius: 18,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: Icon(icon, color: color, size: 26),
+                    ),
+                    if (value.trim().isNotEmpty) ...[
+                      const SizedBox(width: AppSpacing.sm),
+                      Text(
+                        value,
+                        style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              color: color,
+                              height: 1,
+                            ),
+                      ),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  label,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        height: 1.1,
+                      ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  caption,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                ),
+              ],
             ),
-            child: Icon(icon, color: color),
+          ),
+        ],
+      ),
+    );
+
+    if (onTap == null) return content;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        onTap: onTap,
+        child: content,
+      ),
+    );
+  }
+}
+
+class _MetricDivider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 1,
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+      color: AppColors.cardBorder.withValues(alpha: 0.6),
+    );
+  }
+}
+
+class _ActionTile extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _ActionTile({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCard(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: Icon(icon, color: AppColors.primary),
           ),
           const SizedBox(width: AppSpacing.md),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
-              ),
-              Text(
-                value,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-              ),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 4),
+                Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
+              ],
+            ),
           ),
+          const Icon(Icons.chevron_right_rounded),
         ],
       ),
     );

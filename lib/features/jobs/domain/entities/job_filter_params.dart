@@ -7,6 +7,8 @@ class JobFilterParams extends Equatable {
   final String? minSalary;
   final String? maxSalary;
   final bool includeArchived;
+  final int page;
+  final int limit;
 
   const JobFilterParams({
     this.query = '',
@@ -15,6 +17,8 @@ class JobFilterParams extends Equatable {
     this.minSalary,
     this.maxSalary,
     this.includeArchived = false,
+    this.page = 1,
+    this.limit = 10,
   });
 
   bool get isEmpty =>
@@ -43,6 +47,8 @@ class JobFilterParams extends Equatable {
     if (includeArchived) {
       queryParameters['includeArchived'] = 'true';
     }
+    queryParameters['page'] = '$page';
+    queryParameters['limit'] = '$limit';
     return queryParameters;
   }
 
@@ -53,6 +59,8 @@ class JobFilterParams extends Equatable {
     String? minSalary,
     String? maxSalary,
     bool? includeArchived,
+    int? page,
+    int? limit,
   }) {
     return JobFilterParams(
       query: query ?? this.query,
@@ -61,6 +69,8 @@ class JobFilterParams extends Equatable {
       minSalary: minSalary ?? this.minSalary,
       maxSalary: maxSalary ?? this.maxSalary,
       includeArchived: includeArchived ?? this.includeArchived,
+      page: page ?? this.page,
+      limit: limit ?? this.limit,
     );
   }
 
@@ -72,5 +82,7 @@ class JobFilterParams extends Equatable {
         minSalary,
         maxSalary,
         includeArchived,
+        page,
+        limit,
       ];
 }

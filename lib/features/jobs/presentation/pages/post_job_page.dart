@@ -25,8 +25,7 @@ class _PostJobPageState extends State<PostJobPage> {
   final _companyController = TextEditingController();
   final _requirementsController = TextEditingController();
 
-  String _period = 'full-time';
-  String _contract = 'permanent';
+  String _contract = 'full-time';
 
   bool get _isEditing => widget.job != null;
 
@@ -41,8 +40,16 @@ class _PostJobPageState extends State<PostJobPage> {
     _salaryController.text = job.salary;
     _companyController.text = job.company;
     _requirementsController.text = job.requirements.join(', ');
-    _period = job.period;
-    _contract = job.contract;
+    _contract = _normalizeContract(job.contract);
+  }
+
+  String _normalizeContract(String value) {
+    return switch (value.trim().toLowerCase()) {
+      'full-time' || 'full time' || 'permanent' => 'full-time',
+      'part-time' || 'part time' => 'part-time',
+      'contract' => 'contract',
+      _ => 'full-time',
+    };
   }
 
   @override
@@ -65,7 +72,7 @@ class _PostJobPageState extends State<PostJobPage> {
       'location': _locationController.text.trim(),
       'salary': _salaryController.text.trim(),
       'company': _companyController.text.trim(),
-      'period': _period,
+      'period': _contract,
       'contract': _contract,
       'requirements': _requirementsController.text
           .split(',')
@@ -139,23 +146,12 @@ class _PostJobPageState extends State<PostJobPage> {
                 ),
                 const SizedBox(height: AppSpacing.md),
                 DropdownButtonFormField<String>(
-                  initialValue: _period,
-                  decoration: const InputDecoration(labelText: 'Work period'),
-                  items: const [
-                    DropdownMenuItem(value: 'full-time', child: Text('Full-time')),
-                    DropdownMenuItem(value: 'part-time', child: Text('Part-time')),
-                    DropdownMenuItem(value: 'internship', child: Text('Internship')),
-                  ],
-                  onChanged: (v) => setState(() => _period = v ?? _period),
-                ),
-                const SizedBox(height: AppSpacing.md),
-                DropdownButtonFormField<String>(
                   initialValue: _contract,
                   decoration: const InputDecoration(labelText: 'Contract type'),
                   items: const [
-                    DropdownMenuItem(value: 'permanent', child: Text('Permanent')),
-                    DropdownMenuItem(value: 'temporary', child: Text('Temporary')),
-                    DropdownMenuItem(value: 'freelance', child: Text('Freelance')),
+                    DropdownMenuItem(value: 'full-time', child: Text('Full time')),
+                    DropdownMenuItem(value: 'part-time', child: Text('Part time')),
+                    DropdownMenuItem(value: 'contract', child: Text('Contract')),
                   ],
                   onChanged: (v) => setState(() => _contract = v ?? _contract),
                 ),
@@ -199,4 +195,3 @@ class _PostJobPageState extends State<PostJobPage> {
     );
   }
 }
-

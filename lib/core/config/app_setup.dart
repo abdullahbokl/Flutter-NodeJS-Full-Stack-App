@@ -82,6 +82,9 @@ class AppSetup {
     );
     // Dio with AuthInterceptor (no hardcoded token in BaseOptions)
     getIt.registerLazySingleton<Dio>(() {
+      _logEvent(
+        "Configuring Dio | baseUrl=${AppConfig.instance.baseUrl} | socketUrl=${AppConfig.instance.socketUrl}",
+      );
       return Dio(
         BaseOptions(
           baseUrl: AppConfig.instance.baseUrl,

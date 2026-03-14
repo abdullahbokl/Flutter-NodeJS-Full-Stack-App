@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_radius.dart';
+import '../../theme/app_shadows.dart';
 import '../../utils/app_colors.dart';
 
-enum AppButtonVariant { primary, secondary, outline, text, danger }
+enum AppButtonVariant { primary, secondary, outline, text, danger, soft }
 
 class AppButton extends StatelessWidget {
   final String label;
@@ -26,13 +27,13 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final (bg, fg, border) = switch (variant) {
       AppButtonVariant.primary  => (AppColors.primary, Colors.white, Colors.transparent),
       AppButtonVariant.secondary => (AppColors.accent, Colors.white, Colors.transparent),
-      AppButtonVariant.outline  => (Colors.transparent, AppColors.primary,  AppColors.primary),
+      AppButtonVariant.outline  => (Colors.white.withValues(alpha: 0.35), AppColors.primary,  AppColors.cardBorder),
       AppButtonVariant.text     => (Colors.transparent, AppColors.primary,  Colors.transparent),
       AppButtonVariant.danger   => (AppColors.error, Colors.white, Colors.transparent),
+      AppButtonVariant.soft     => (Colors.white.withValues(alpha: 0.8), AppColors.textPrimary, AppColors.cardBorder),
     };
 
     final content = isLoading
@@ -58,6 +59,7 @@ class AppButton extends StatelessWidget {
           decoration: BoxDecoration(
             color: bg,
             borderRadius: BorderRadius.circular(AppRadius.lg),
+            boxShadow: variant == AppButtonVariant.text ? null : AppShadows.sm,
             border: border == Colors.transparent ? null
                 : Border.all(color: border, width: 1.5),
           ),
@@ -75,5 +77,4 @@ class AppButton extends StatelessWidget {
     );
   }
 }
-
 

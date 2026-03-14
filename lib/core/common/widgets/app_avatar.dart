@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../theme/app_shadows.dart';
 import '../../utils/app_colors.dart';
 
 class AppAvatar extends StatelessWidget {
@@ -21,8 +23,18 @@ class AppAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget avatar = CircleAvatar(
       radius: radius,
-      backgroundColor: AppColors.primary.withValues(alpha: 0.15),
-      child: _buildInner(),
+      backgroundColor: AppColors.surfaceElevated,
+      child: DecoratedBox(
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: AppShadows.sm,
+        ),
+        child: CircleAvatar(
+          radius: radius,
+          backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+          child: _buildInner(),
+        ),
+      ),
     );
 
     if (showOnlineDot) {
@@ -78,4 +90,3 @@ class AppAvatar extends StatelessWidget {
             fontWeight: FontWeight.w700));
   }
 }
-
