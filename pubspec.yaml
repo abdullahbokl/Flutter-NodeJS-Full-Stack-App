@@ -48,6 +48,7 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   bloc_test: ^9.1.7
   mocktail: ^1.0.4
+  flutter_launcher_icons: ^0.14.3
 
 dependency_overrides:
   flutter_plugin_android_lifecycle: ^2.0.33
@@ -63,3 +64,9 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/json/
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/icons/app_icon.png
+  remove_alpha_ios: true
