@@ -1,5 +1,6 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -32,8 +33,24 @@ class _HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<_HomeView> {
-  String _filter = 'All';
+  late final ValueNotifier<String> _filterNotifier;
+  Timer? _loadJobsTimer;
   final _filters = const ['All', 'Remote', 'Onsite', 'Full-time', 'Part-time'];
+
+  @override
+  void initState() {
+    super.initState();
+    _filterNotifier = ValueNotifier<String>('All');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadJobsTimer = Timer(const Duration(milliseconds: 120), () async {
+        if (!mounted) return;
+        final cubit = context.read<HomeCubit>();
+        if (cubit.state is InitialState<List<JobModel>>) {
+          await cubit.loadJobs();
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,51 +58,64 @@ class _HomeViewState extends State<_HomeView> {
       child: RefreshIndicator(
         onRefresh: () async => context.read<HomeCubit>().loadJobs(),
         child: CustomScrollView(
-          physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+          physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics()),
           slivers: [
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 0),
+              padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.md, AppSpacing.md, AppSpacing.md, 0),
               sliver: SliverList(
                 delegate: SliverChildListDelegate(
                   [
-                    _Header(onJobsTap: () => context.go(AppRouter.jobsListPage)),
+                    _Header(
+                        onJobsTap: () => context.go(AppRouter.jobsListPage)),
                     const SizedBox(height: AppSpacing.lg),
-                    _HeroPanel(onSearchTap: () => context.go(AppRouter.jobsListPage)),
+                    RepaintBoundary(
+                      child: _HeroPanel(
+                          onSearchTap: () =>
+                              context.go(AppRouter.jobsListPage)),
+                    ),
                     const SizedBox(height: AppSpacing.lg),
                     if (!AppSession.isCompany) ...[
-                      _QuickActions(),
+                      const RepaintBoundary(child: _QuickActions()),
                       const SizedBox(height: AppSpacing.lg),
                     ],
                     PremiumSectionHeader(
                       eyebrow: 'Featured',
                       title: 'Curated opportunities',
-                      subtitle: 'Hand-picked roles with strong signal and cleaner details.',
+                      subtitle:
+                          'Hand-picked roles with strong signal and cleaner details.',
                       actionLabel: 'See all',
                       onAction: () => context.push('/jobs', extra: 'All Jobs'),
                     ),
                     const SizedBox(height: AppSpacing.md),
-                    const _FeaturedJobsList(),
+                    const RepaintBoundary(child: _FeaturedJobsList()),
                     const SizedBox(height: AppSpacing.lg),
                     const PremiumSectionHeader(
                       eyebrow: 'Browse',
                       title: 'Recent jobs',
-                      subtitle: 'Use quick filters or open the full jobs page for deeper discovery.',
+                      subtitle:
+                          'Use quick filters or open the full jobs page for deeper discovery.',
                     ),
                     const SizedBox(height: AppSpacing.md),
-                    SizedBox(
-                      height: 42,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (_, index) {
-                          final filter = _filters[index];
-                          return AppChip(
-                            label: filter,
-                            isSelected: _filter == filter,
-                            onTap: () => setState(() => _filter = filter),
-                          );
-                        },
-                        separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.sm),
-                        itemCount: _filters.length,
+                    ValueListenableBuilder<String>(
+                      valueListenable: _filterNotifier,
+                      builder: (context, selectedFilter, _) => SizedBox(
+                        height: 42,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (_, index) {
+                            final filter = _filters[index];
+                            return AppChip(
+                              label: filter,
+                              isSelected: selectedFilter == filter,
+                              onTap: () => _filterNotifier.value = filter,
+                            );
+                          },
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(width: AppSpacing.sm),
+                          itemCount: _filters.length,
+                        ),
                       ),
                     ),
                     const SizedBox(height: AppSpacing.md),
@@ -93,12 +123,22 @@ class _HomeViewState extends State<_HomeView> {
                 ),
               ),
             ),
-            _RecentJobsList(filter: _filter),
+            ValueListenableBuilder<String>(
+              valueListenable: _filterNotifier,
+              builder: (context, filter, _) => _RecentJobsList(filter: filter),
+            ),
             const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.xxl)),
           ],
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _loadJobsTimer?.cancel();
+    _filterNotifier.dispose();
+    super.dispose();
   }
 }
 
@@ -118,20 +158,23 @@ class _Header extends StatelessWidget {
               Text('Today', style: Theme.of(context).textTheme.labelLarge),
               const SizedBox(height: 4),
               Text(
-                AppSession.isCompany ? 'Manage your hiring pipeline' : 'Find a role worth applying for',
+                AppSession.isCompany
+                    ? 'Manage your hiring pipeline'
+                    : 'Find a role worth applying for',
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
             ],
           ),
         ),
-        IconButton(onPressed: onJobsTap, icon: const Icon(Icons.work_outline_rounded)),
+        IconButton(
+            onPressed: onJobsTap, icon: const Icon(Icons.work_outline_rounded)),
         AppAvatar(
           radius: 22,
           fallbackInitials: 'U',
           onTap: () => context.push(AppRouter.profilePage),
         ),
       ],
-    ).animate().fadeIn().slideY(begin: -0.08);
+    );
   }
 }
 
@@ -157,18 +200,25 @@ class _HeroPanel extends StatelessWidget {
               Expanded(
                 child: Text(
                   'Search premium opportunities in one sharper workflow.',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white),
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineMedium
+                      ?.copyWith(color: Colors.white),
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.14),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
                   '1,240+ live roles',
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white),
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelMedium
+                      ?.copyWith(color: Colors.white),
                 ),
               ),
             ],
@@ -176,7 +226,10 @@ class _HeroPanel extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           Text(
             'Clearer search, richer cards, and faster access to applications, messages, and saved jobs.',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white.withValues(alpha: 0.8)),
+            style: Theme.of(context)
+                .textTheme
+                .bodyLarge
+                ?.copyWith(color: Colors.white.withValues(alpha: 0.8)),
           ),
           const SizedBox(height: AppSpacing.lg),
           PremiumSearchBar(
@@ -186,7 +239,8 @@ class _HeroPanel extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                gradient: const LinearGradient(colors: [Color(0xFFE7B75F), Color(0xFFF6DDA5)]),
+                gradient: const LinearGradient(
+                    colors: [Color(0xFFE7B75F), Color(0xFFF6DDA5)]),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: const Icon(Icons.north_east_rounded),
@@ -194,11 +248,13 @@ class _HeroPanel extends StatelessWidget {
           ),
         ],
       ),
-    ).animate().fadeIn(delay: 90.ms).slideY(begin: 0.05);
+    );
   }
 }
 
 class _QuickActions extends StatelessWidget {
+  const _QuickActions();
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -241,12 +297,15 @@ class _FeaturedJobsList extends StatelessWidget {
           if (state is LoadingState || state is InitialState) {
             return ListView.separated(
               scrollDirection: Axis.horizontal,
-              itemBuilder: (_, __) => const SizedBox(width: 260, child: GlassPanel(child: SizedBox.expand())),
+              itemBuilder: (_, __) => const SizedBox(
+                  width: 260, child: GlassPanel(child: SizedBox.expand())),
               separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.md),
               itemCount: 3,
             );
           }
-          if (state is! SuccessState<List<JobModel>>) return const SizedBox.shrink();
+          if (state is! SuccessState<List<JobModel>>) {
+            return const SizedBox.shrink();
+          }
           final jobs = state.data.take(6).toList();
           return ListView.separated(
             scrollDirection: Axis.horizontal,
@@ -267,38 +326,53 @@ class _FeaturedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 280,
-      child: AppCard(
-        onTap: () => context.push('/jobs/${job.id}', extra: job),
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                AppAvatar(radius: 24, fallbackInitials: job.company, imageUrl: job.imageUrl),
-                const Spacer(),
-                StatusBadge.contract(job.contract),
-              ],
-            ),
-            const Spacer(),
-            Text(job.title, style: Theme.of(context).textTheme.titleLarge, maxLines: 2, overflow: TextOverflow.ellipsis),
-            const SizedBox(height: AppSpacing.xs),
-            Text(job.company, style: Theme.of(context).textTheme.bodyMedium),
-            const SizedBox(height: AppSpacing.sm),
-            Row(
-              children: [
-                const Icon(Icons.location_on_outlined, size: 16),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(job.location, style: Theme.of(context).textTheme.bodySmall, overflow: TextOverflow.ellipsis),
-                ),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text('\$${job.salary}', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.primary)),
-          ],
+    return RepaintBoundary(
+      child: SizedBox(
+        width: 280,
+        child: AppCard(
+          shadowLevel: AppCardShadowLevel.none,
+          onTap: () => context.push('/jobs/${job.id}', extra: job),
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  AppAvatar(
+                      radius: 24,
+                      fallbackInitials: job.company,
+                      imageUrl: job.imageUrl),
+                  const Spacer(),
+                  StatusBadge.contract(job.contract),
+                ],
+              ),
+              const Spacer(),
+              Text(job.title,
+                  style: Theme.of(context).textTheme.titleLarge,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis),
+              const SizedBox(height: AppSpacing.xs),
+              Text(job.company, style: Theme.of(context).textTheme.bodyMedium),
+              const SizedBox(height: AppSpacing.sm),
+              Row(
+                children: [
+                  const Icon(Icons.location_on_outlined, size: 16),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(job.location,
+                        style: Theme.of(context).textTheme.bodySmall,
+                        overflow: TextOverflow.ellipsis),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              Text('\$${job.salary}',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Theme.of(context).colorScheme.primary)),
+            ],
+          ),
         ),
       ),
     );
@@ -322,7 +396,8 @@ class _RecentJobsList extends StatelessWidget {
         if (filter != 'All') {
           jobs = jobs.where((job) {
             final f = filter.toLowerCase();
-            return job.contract.toLowerCase().contains(f) || job.location.toLowerCase().contains(f);
+            return job.contract.toLowerCase().contains(f) ||
+                job.location.toLowerCase().contains(f);
           }).toList();
         }
 
@@ -330,7 +405,9 @@ class _RecentJobsList extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           sliver: SliverList.separated(
             itemCount: jobs.length,
-            itemBuilder: (_, index) => _JobListCard(job: jobs[index]).animate().fadeIn(delay: (40 * index).ms).slideY(begin: 0.04),
+            itemBuilder: (_, index) {
+              return RepaintBoundary(child: _JobListCard(job: jobs[index]));
+            },
             separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
           ),
         );
@@ -347,25 +424,35 @@ class _JobListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppCard(
+      shadowLevel: AppCardShadowLevel.none,
       onTap: () => context.push('/jobs/${job.id}', extra: job),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              AppAvatar(radius: 24, fallbackInitials: job.company, imageUrl: job.imageUrl),
+              AppAvatar(
+                  radius: 24,
+                  fallbackInitials: job.company,
+                  imageUrl: job.imageUrl),
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(job.title, style: Theme.of(context).textTheme.titleMedium),
+                    Text(job.title,
+                        style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 4),
-                    Text(job.company, style: Theme.of(context).textTheme.bodyMedium),
+                    Text(job.company,
+                        style: Theme.of(context).textTheme.bodyMedium),
                   ],
                 ),
               ),
-              Text('\$${job.salary}', style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).colorScheme.primary)),
+              Text('\$${job.salary}',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleSmall
+                      ?.copyWith(color: Theme.of(context).colorScheme.primary)),
             ],
           ),
           const SizedBox(height: AppSpacing.md),

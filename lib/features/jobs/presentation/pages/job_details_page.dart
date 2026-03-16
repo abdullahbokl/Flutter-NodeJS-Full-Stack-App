@@ -26,9 +26,11 @@ class JobDetailsPage extends StatefulWidget {
   static Widget page({required JobEntity job}) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<BookmarkStatusCubit>(create: (_) => getIt<BookmarkStatusCubit>()),
+        BlocProvider<BookmarkStatusCubit>(
+            create: (_) => getIt<BookmarkStatusCubit>()),
         BlocProvider<ChatCubit>(create: (_) => getIt<ChatCubit>()),
-        BlocProvider<ApplicationActionCubit>(create: (_) => getIt<ApplicationActionCubit>()),
+        BlocProvider<ApplicationActionCubit>(
+            create: (_) => getIt<ApplicationActionCubit>()),
       ],
       child: JobDetailsPage(job: job),
     );
@@ -39,7 +41,8 @@ class JobDetailsPage extends StatefulWidget {
 }
 
 class _JobDetailsPageState extends State<JobDetailsPage> {
-  final GlobalKey<JobDetailsBodyState> _bodyKey = GlobalKey<JobDetailsBodyState>();
+  final GlobalKey<JobDetailsBodyState> _bodyKey =
+      GlobalKey<JobDetailsBodyState>();
 
   static const double _expandedHeight = 300;
 
@@ -78,8 +81,11 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
                 actions: [
                   Padding(
                     padding: const EdgeInsets.all(8),
-                    child: BlocConsumer<BookmarkStatusCubit, BookmarkStatusState>(
-                      listenWhen: (prev, curr) => curr is BookmarkStatusToggled || curr is BookmarkStatusError,
+                    child:
+                        BlocConsumer<BookmarkStatusCubit, BookmarkStatusState>(
+                      listenWhen: (prev, curr) =>
+                          curr is BookmarkStatusToggled ||
+                          curr is BookmarkStatusError,
                       listener: (context, state) {
                         if (state is BookmarkStatusToggled) {
                           AppSnackBars.showSuccess(context, state.message);
@@ -97,9 +103,13 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
                         return AppCard(
                           padding: const EdgeInsets.all(10),
                           borderRadius: BorderRadius.circular(AppRadius.full),
-                          onTap: () => context.read<BookmarkStatusCubit>().toggle(widget.job.id),
+                          onTap: () => context
+                              .read<BookmarkStatusCubit>()
+                              .toggle(widget.job.id),
                           child: Icon(
-                            isBookmarked ? CupertinoIcons.bookmark_fill : CupertinoIcons.bookmark,
+                            isBookmarked
+                                ? CupertinoIcons.bookmark_fill
+                                : CupertinoIcons.bookmark,
                             color: AppColors.primary,
                           ),
                         );
@@ -111,80 +121,94 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
                   builder: (context, constraints) {
                     final topPadding = MediaQuery.of(context).padding.top;
                     final collapsedTrigger = kToolbarHeight + topPadding + 40;
-                    final isCollapsed = constraints.maxHeight <= collapsedTrigger;
+                    final isCollapsed =
+                        constraints.maxHeight <= collapsedTrigger;
 
                     return FlexibleSpaceBar(
                       titlePadding: const EdgeInsets.fromLTRB(24, 0, 24, 18),
-                      title: AnimatedOpacity(
-                        duration: const Duration(milliseconds: 180),
-                        opacity: isCollapsed ? 1 : 0,
-                        child: Text(
-                          widget.job.title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      ),
-                      background: Container(
-                        decoration: const BoxDecoration(gradient: AppColors.heroGradient),
-                        child: SafeArea(
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(24, 88, 24, 28),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    AppAvatar(
-                                      radius: 26,
-                                      imageUrl: widget.job.imageUrl,
-                                      fallbackInitials: widget.job.company,
-                                    ),
-                                    const SizedBox(width: AppSpacing.md),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            widget.job.company,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium
-                                                ?.copyWith(color: Colors.white),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            widget.job.location,
-                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                  color: Colors.white.withValues(alpha: 0.8),
-                                                ),
-                                          ),
-                                        ],
+                      title: isCollapsed
+                          ? Text(
+                              widget.job.title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(color: Colors.white),
+                            )
+                          : null,
+                      background: RepaintBoundary(
+                        child: Container(
+                          decoration: const BoxDecoration(
+                              gradient: AppColors.heroGradient),
+                          child: SafeArea(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(24, 88, 24, 28),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      AppAvatar(
+                                        radius: 26,
+                                        imageUrl: widget.job.imageUrl,
+                                        fallbackInitials: widget.job.company,
                                       ),
-                                    ),
-                                    const SizedBox(width: AppSpacing.sm),
-                                    Flexible(
-                                      child: Align(
-                                        alignment: Alignment.topRight,
-                                        child: StatusBadge.contract(widget.job.contract),
+                                      const SizedBox(width: AppSpacing.md),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              widget.job.company,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleMedium
+                                                  ?.copyWith(
+                                                      color: Colors.white),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              widget.job.location,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium
+                                                  ?.copyWith(
+                                                    color: Colors.white
+                                                        .withValues(alpha: 0.8),
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: AppSpacing.md),
-                                Text(
-                                  widget.job.title,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w800,
-                                        height: 1.1,
+                                      const SizedBox(width: AppSpacing.sm),
+                                      Flexible(
+                                        child: Align(
+                                          alignment: Alignment.topRight,
+                                          child: StatusBadge.contract(
+                                              widget.job.contract),
+                                        ),
                                       ),
-                                ),
-                              ],
+                                    ],
+                                  ),
+                                  const SizedBox(height: AppSpacing.md),
+                                  Text(
+                                    widget.job.title,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium
+                                        ?.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w800,
+                                          height: 1.1,
+                                        ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -193,7 +217,8 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
                   },
                 ),
               ),
-              SliverToBoxAdapter(child: JobDetailsBody(key: _bodyKey, job: widget.job)),
+              SliverToBoxAdapter(
+                  child: JobDetailsBody(key: _bodyKey, job: widget.job)),
               const SliverToBoxAdapter(child: SizedBox(height: 120)),
             ],
           ),
@@ -210,17 +235,22 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text('Compensation', style: Theme.of(context).textTheme.labelMedium),
+                          Text('Compensation',
+                              style: Theme.of(context).textTheme.labelMedium),
                           const SizedBox(height: 4),
-                          Text('\$${widget.job.salary}', style: Theme.of(context).textTheme.titleLarge),
+                          Text('\$${widget.job.salary}',
+                              style: Theme.of(context).textTheme.titleLarge),
                         ],
                       ),
                     ),
                     Expanded(
                       child: AppButton(
-                        label: widget.job.agentId == AppSession.userId ? 'Edit Job' : 'Apply Now',
+                        label: widget.job.agentId == AppSession.userId
+                            ? 'Edit Job'
+                            : 'Apply Now',
                         icon: Icons.arrow_forward_rounded,
-                        onTap: () => _bodyKey.currentState?.handlePrimaryAction(),
+                        onTap: () =>
+                            _bodyKey.currentState?.handlePrimaryAction(),
                       ),
                     ),
                   ],

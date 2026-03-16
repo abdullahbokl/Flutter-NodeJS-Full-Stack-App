@@ -43,7 +43,8 @@ class JobsCubit extends Cubit<BaseState<List<JobEntity>>> {
   void search(String query) {
     _debounce?.cancel();
     _filters = _filters.copyWith(query: query, page: 1);
-    _debounce = Timer(const Duration(milliseconds: 350), () => loadJobs(_filters));
+    _debounce =
+        Timer(const Duration(milliseconds: 350), () => loadJobs(_filters));
   }
 
   Future<void> applyFilters(JobFilterParams filters) async {

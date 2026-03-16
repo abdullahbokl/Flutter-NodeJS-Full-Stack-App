@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/common/base_state.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/utils/app_snackbars.dart';
 import '../../../jobs/domain/entities/job_entity.dart';
 import '../bloc/post_job_cubit.dart';
 
@@ -24,8 +25,7 @@ class _PostJobPageState extends State<PostJobPage> {
   final _salaryController = TextEditingController();
   final _companyController = TextEditingController();
   final _requirementsController = TextEditingController();
-
-  String _contract = 'full-time';
+  final _contractNotifier = ValueNotifier<String>('full-time');
 
   bool get _isEditing => widget.job != null;
 
@@ -40,7 +40,7 @@ class _PostJobPageState extends State<PostJobPage> {
     _salaryController.text = job.salary;
     _companyController.text = job.company;
     _requirementsController.text = job.requirements.join(', ');
-    _contract = _normalizeContract(job.contract);
+    _contractNotifier.value = _normalizeContract(job.contract);
   }
 
   String _normalizeContract(String value) {
@@ -60,6 +60,7 @@ class _PostJobPageState extends State<PostJobPage> {
     _salaryController.dispose();
     _companyController.dispose();
     _requirementsController.dispose();
+    _contractNotifier.dispose();
     super.dispose();
   }
 
@@ -72,8 +73,8 @@ class _PostJobPageState extends State<PostJobPage> {
       'location': _locationController.text.trim(),
       'salary': _salaryController.text.trim(),
       'company': _companyController.text.trim(),
-      'period': _contract,
-      'contract': _contract,
+      'period': _contractNotifier.value,
+      'contract': _contractNotifier.value,
       'requirements': _requirementsController.text
           .split(',')
           .map((e) => e.trim())
@@ -86,112 +87,164 @@ class _PostJobPageState extends State<PostJobPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<PostJobCubit, BaseState<JobEntity>>(
+    return BlocListener<PostJobCubit, BaseState<JobEntity>>(
+      listenWhen: (previous, current) =>
+          current is SuccessState<JobEntity> ||
+          current is ErrorState<JobEntity>,
       listener: (context, state) {
         if (state is SuccessState<JobEntity>) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                _isEditing ? 'Job updated successfully' : 'Job posted successfully',
-              ),
-            ),
-          );
           context.go('/company/manage-jobs');
         } else if (state is ErrorState<JobEntity>) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
+          AppSnackBars.showError(context, state.message);
         }
       },
-      builder: (context, state) {
-        final isLoading = state is LoadingState<JobEntity>;
-
-        return Scaffold(
-          appBar: AppBar(title: Text(_isEditing ? 'Edit Job' : 'Post Job')),
-          body: Form(
-            key: _formKey,
-            child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              children: [
-                TextFormField(
-                  controller: _titleController,
-                  decoration: const InputDecoration(labelText: 'Job title'),
-                  validator: (v) => (v == null || v.trim().isEmpty)
-                      ? 'Job title is required'
-                      : null,
-                ),
-                const SizedBox(height: AppSpacing.md),
-                TextFormField(
-                  controller: _companyController,
-                  decoration: const InputDecoration(labelText: 'Company'),
-                  validator: (v) => (v == null || v.trim().isEmpty)
-                      ? 'Company is required'
-                      : null,
-                ),
-                const SizedBox(height: AppSpacing.md),
-                TextFormField(
-                  controller: _locationController,
-                  decoration: const InputDecoration(labelText: 'Location'),
-                  validator: (v) => (v == null || v.trim().isEmpty)
-                      ? 'Location is required'
-                      : null,
-                ),
-                const SizedBox(height: AppSpacing.md),
-                TextFormField(
-                  controller: _salaryController,
-                  decoration: const InputDecoration(labelText: 'Salary'),
-                  validator: (v) => (v == null || v.trim().isEmpty)
-                      ? 'Salary is required'
-                      : null,
-                ),
-                const SizedBox(height: AppSpacing.md),
-                DropdownButtonFormField<String>(
-                  initialValue: _contract,
-                  decoration: const InputDecoration(labelText: 'Contract type'),
-                  items: const [
-                    DropdownMenuItem(value: 'full-time', child: Text('Full time')),
-                    DropdownMenuItem(value: 'part-time', child: Text('Part time')),
-                    DropdownMenuItem(value: 'contract', child: Text('Contract')),
-                  ],
-                  onChanged: (v) => setState(() => _contract = v ?? _contract),
-                ),
-                const SizedBox(height: AppSpacing.md),
-                TextFormField(
-                  controller: _descriptionController,
-                  decoration: const InputDecoration(labelText: 'Description'),
-                  maxLines: 4,
-                  validator: (v) => (v == null || v.trim().isEmpty)
-                      ? 'Description is required'
-                      : null,
-                ),
-                const SizedBox(height: AppSpacing.md),
-                TextFormField(
-                  controller: _requirementsController,
-                  decoration: const InputDecoration(
-                    labelText: 'Requirements (comma separated)',
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xl),
-                ElevatedButton.icon(
-                  onPressed: isLoading ? null : _submit,
-                  icon: isLoading
-                      ? const SizedBox(
-                          height: 18,
-                          width: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.send_rounded),
-                  label: Text(
-                    isLoading
-                        ? (_isEditing ? 'Saving...' : 'Posting...')
-                        : (_isEditing ? 'Save Changes' : 'Post Job'),
-                  ),
-                ),
-              ],
-            ),
+      child: Scaffold(
+        appBar: AppBar(title: Text(_isEditing ? 'Edit Job' : 'Post Job')),
+        body: Form(
+          key: _formKey,
+          child: ListView.separated(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            itemBuilder: (context, index) => _buildFormItem(index),
+            separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
+            itemCount: _formItemCount,
           ),
-        );
-      },
+        ),
+      ),
+    );
+  }
+
+  static const int _formItemCount = 8;
+
+  Widget _buildFormItem(int index) {
+    return switch (index) {
+      0 => _RequiredJobField(
+          controller: _titleController,
+          label: 'Job title',
+          errorMessage: 'Job title is required',
+        ),
+      1 => _RequiredJobField(
+          controller: _companyController,
+          label: 'Company',
+          errorMessage: 'Company is required',
+        ),
+      2 => _RequiredJobField(
+          controller: _locationController,
+          label: 'Location',
+          errorMessage: 'Location is required',
+        ),
+      3 => _RequiredJobField(
+          controller: _salaryController,
+          label: 'Salary',
+          errorMessage: 'Salary is required',
+        ),
+      4 => _ContractTypeField(contractNotifier: _contractNotifier),
+      5 => _RequiredJobField(
+          controller: _descriptionController,
+          label: 'Description',
+          errorMessage: 'Description is required',
+          maxLines: 4,
+        ),
+      6 => TextFormField(
+          controller: _requirementsController,
+          decoration: const InputDecoration(
+            labelText: 'Requirements (comma separated)',
+          ),
+        ),
+      7 => Padding(
+          padding: const EdgeInsets.only(top: AppSpacing.lg),
+          child: _PostJobSubmitButton(
+            isEditing: _isEditing,
+            onPressed: _submit,
+          ),
+        ),
+      _ => const SizedBox.shrink(),
+    };
+  }
+}
+
+class _RequiredJobField extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final String errorMessage;
+  final int maxLines;
+
+  const _RequiredJobField({
+    required this.controller,
+    required this.label,
+    required this.errorMessage,
+    this.maxLines = 1,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(labelText: label),
+      maxLines: maxLines,
+      validator: (value) =>
+          (value == null || value.trim().isEmpty) ? errorMessage : null,
+    );
+  }
+}
+
+class _ContractTypeField extends StatelessWidget {
+  final ValueNotifier<String> contractNotifier;
+
+  const _ContractTypeField({
+    required this.contractNotifier,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<String>(
+      valueListenable: contractNotifier,
+      builder: (context, contract, _) => DropdownButtonFormField<String>(
+        initialValue: contract,
+        decoration: const InputDecoration(labelText: 'Contract type'),
+        items: const [
+          DropdownMenuItem(value: 'full-time', child: Text('Full time')),
+          DropdownMenuItem(value: 'part-time', child: Text('Part time')),
+          DropdownMenuItem(value: 'contract', child: Text('Contract')),
+        ],
+        onChanged: (value) {
+          if (value != null) {
+            contractNotifier.value = value;
+          }
+        },
+      ),
+    );
+  }
+}
+
+class _PostJobSubmitButton extends StatelessWidget {
+  final bool isEditing;
+  final VoidCallback onPressed;
+
+  const _PostJobSubmitButton({
+    required this.isEditing,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocSelector<PostJobCubit, BaseState<JobEntity>, bool>(
+      selector: (state) => state is LoadingState<JobEntity>,
+      builder: (context, isLoading) => ElevatedButton.icon(
+        onPressed: isLoading ? null : onPressed,
+        icon: isLoading
+            ? const SizedBox(
+                height: 18,
+                width: 18,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : const Icon(Icons.send_rounded),
+        label: Text(
+          isLoading
+              ? (isEditing ? 'Saving...' : 'Posting...')
+              : (isEditing ? 'Save Changes' : 'Post Job'),
+        ),
+      ),
     );
   }
 }

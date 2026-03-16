@@ -22,4 +22,3 @@ class ChatSyncService {
 
   Future<void> dispose() => _controller.close();
 }
-

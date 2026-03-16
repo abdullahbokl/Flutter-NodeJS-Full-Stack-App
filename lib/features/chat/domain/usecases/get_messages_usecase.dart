@@ -12,13 +12,15 @@ class GetMessagesParams {
   const GetMessagesParams(this.chatId);
 }
 
-class GetMessagesUseCase implements UseCase<List<MessageModel>, GetMessagesParams> {
+class GetMessagesUseCase
+    implements UseCase<List<MessageModel>, GetMessagesParams> {
   final ChatRepo _repository;
 
   const GetMessagesUseCase(this._repository);
 
   @override
-  Future<Either<Failure, List<MessageModel>>> call(GetMessagesParams params) async {
+  Future<Either<Failure, List<MessageModel>>> call(
+      GetMessagesParams params) async {
     try {
       final messages = await _repository.getMessages(params.chatId);
       return Right(messages);
@@ -27,4 +29,3 @@ class GetMessagesUseCase implements UseCase<List<MessageModel>, GetMessagesParam
     }
   }
 }
-

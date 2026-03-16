@@ -21,4 +21,3 @@ class GetChatsUseCase implements UseCase<List<ChatModel>, NoParams> {
     }
   }
 }
-

@@ -48,7 +48,8 @@ class ChatModel extends ChatEntity {
             )
           : null,
       groupAdmin: map['groupAdmin'] != null
-          ? UserModel.fromMap(Map<String, dynamic>.from(map['groupAdmin'] as Map))
+          ? UserModel.fromMap(
+              Map<String, dynamic>.from(map['groupAdmin'] as Map))
           : null,
     );
   }

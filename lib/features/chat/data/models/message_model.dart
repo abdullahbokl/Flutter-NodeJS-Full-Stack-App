@@ -17,8 +17,7 @@ class MessageModel extends MessageEntity {
       'sender': sender.toMap(),
       'content': content,
       'receiver': receiver,
-      'readBy':
-          List<UserModel>.from(readBy.map((user) => user.toMap())),
+      'readBy': List<UserModel>.from(readBy.map((user) => user.toMap())),
       'createdAt': createdAt,
     };
   }

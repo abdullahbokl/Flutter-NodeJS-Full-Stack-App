@@ -33,8 +33,8 @@ class ChatRepoImpl extends ChatRepo {
   @override
   Future<List<MessageModel>> getMessages(String chatId) async {
     try {
-      final raw = await _apiService.get(
-          endPoint: "${ApiEndpoints.messages}/$chatId");
+      final raw =
+          await _apiService.get(endPoint: "${ApiEndpoints.messages}/$chatId");
       final messages = raw is Map ? raw['data'] : raw;
       if (messages is! List) return [];
       final List<MessageModel> messageModels = [];

@@ -37,4 +37,3 @@ class SendMessageUseCase implements UseCase<MessageModel, SendMessageParams> {
     }
   }
 }
-

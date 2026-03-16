@@ -38,11 +38,18 @@ class JobsRepoImpl implements JobsRepo {
 
       return PaginatedJobsResult(
         jobs: jobs,
-        page: pagination is Map ? (pagination['page'] as num?)?.toInt() ?? filters.page : filters.page,
-        limit: pagination is Map ? (pagination['limit'] as num?)?.toInt() ?? filters.limit : filters.limit,
-        total: pagination is Map ? (pagination['total'] as num?)?.toInt() ?? jobs.length : jobs.length,
+        page: pagination is Map
+            ? (pagination['page'] as num?)?.toInt() ?? filters.page
+            : filters.page,
+        limit: pagination is Map
+            ? (pagination['limit'] as num?)?.toInt() ?? filters.limit
+            : filters.limit,
+        total: pagination is Map
+            ? (pagination['total'] as num?)?.toInt() ?? jobs.length
+            : jobs.length,
         totalPages: pagination is Map
-            ? (pagination['totalPages'] as num?)?.toInt() ?? (jobs.isEmpty ? 0 : 1)
+            ? (pagination['totalPages'] as num?)?.toInt() ??
+                (jobs.isEmpty ? 0 : 1)
             : (jobs.isEmpty ? 0 : 1),
       );
     } catch (e) {

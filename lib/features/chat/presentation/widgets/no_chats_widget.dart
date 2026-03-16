@@ -15,10 +15,14 @@ class NoChatsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cacheWidth = (MediaQuery.sizeOf(context).width * 0.5).round();
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Image.asset(Assets.imagesOptimizedSearch),
+        Image.asset(
+          Assets.imagesOptimizedSearch,
+          cacheWidth: cacheWidth,
+        ),
         ReusableText(
           text: message,
           style: appStyle(24, AppColors.dark, FontWeight.bold),

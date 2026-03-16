@@ -13,7 +13,8 @@ class GetJobsUseCase implements UseCase<PaginatedJobsResult, JobFilterParams> {
   const GetJobsUseCase(this._repository);
 
   @override
-  Future<Either<Failure, PaginatedJobsResult>> call(JobFilterParams params) async {
+  Future<Either<Failure, PaginatedJobsResult>> call(
+      JobFilterParams params) async {
     try {
       final jobs = await _repository.getAllJobs(filters: params);
       return Right(jobs);

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -21,54 +23,44 @@ class CompanyDashboardPage extends StatefulWidget {
 }
 
 class _CompanyDashboardPageState extends State<CompanyDashboardPage> {
-  int _jobsCount = 0;
-  int _applicationsCount = 0;
-  bool _isLoadingJobsCount = true;
-  bool _isLoadingApplicationsCount = true;
+  final _statsNotifier = ValueNotifier<_DashboardStats>(
+    const _DashboardStats.loading(),
+  );
+  Timer? _statsLoadTimer;
 
   @override
   void initState() {
     super.initState();
-    _loadDashboardStats();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _statsLoadTimer = Timer(const Duration(milliseconds: 120), () async {
+        if (!mounted) return;
+        await _loadDashboardStats();
+      });
+    });
   }
 
   Future<void> _loadDashboardStats() async {
-    await Future.wait([_loadJobsCount(), _loadApplicationsCount()]);
-  }
-
-  Future<void> _loadJobsCount() async {
-    setState(() => _isLoadingJobsCount = true);
     final result = await getIt<GetMyJobsUseCase>()(const NoParams());
-    if (!mounted) return;
-    result.fold(
-      (_) => setState(() {
-        _jobsCount = 0;
-        _isLoadingJobsCount = false;
-      }),
-      (jobs) => setState(() {
-        _jobsCount = jobs.length;
-        _isLoadingJobsCount = false;
-      }),
-    );
-  }
+    final jobsCount = result.fold((_) => 0, (jobs) => jobs.length);
 
-  Future<void> _loadApplicationsCount() async {
-    setState(() => _isLoadingApplicationsCount = true);
+    var applicationsCount = 0;
     try {
-      final raw = await getIt<ApiServices>().get(endPoint: '${ApiEndpoints.applications}/received');
+      final raw = await getIt<ApiServices>()
+          .get(endPoint: '${ApiEndpoints.applications}/received');
       final list = raw is Map ? raw['data'] : raw;
-      if (!mounted) return;
-      setState(() {
-        _applicationsCount = list is List ? list.length : 0;
-        _isLoadingApplicationsCount = false;
-      });
+      applicationsCount = list is List ? list.length : 0;
     } catch (_) {
-      if (!mounted) return;
-      setState(() {
-        _applicationsCount = 0;
-        _isLoadingApplicationsCount = false;
-      });
+      applicationsCount = 0;
     }
+
+    if (!mounted) {
+      return;
+    }
+    _statsNotifier.value = _DashboardStats(
+      jobsCount: jobsCount,
+      applicationsCount: applicationsCount,
+      isLoading: false,
+    );
   }
 
   @override
@@ -90,7 +82,8 @@ class _CompanyDashboardPageState extends State<CompanyDashboardPage> {
             PageHeader(
               eyebrow: 'Company',
               title: 'Hiring dashboard',
-              subtitle: 'Track openings, applicants, and next actions from one clean surface.',
+              subtitle:
+                  'Track openings, applicants, and next actions from one clean surface.',
               actions: [
                 PageHeaderAction.icon(
                   onPressed: () => context.push(AppRouter.profilePage),
@@ -114,73 +107,49 @@ class _CompanyDashboardPageState extends State<CompanyDashboardPage> {
                       children: [
                         Text(
                           'Keep your hiring engine moving',
-                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium
+                              ?.copyWith(color: Colors.white),
                         ),
                         const SizedBox(height: AppSpacing.sm),
                         Text(
                           'Review candidates, publish new roles, and revisit older conversations without leaving the dashboard.',
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white.withValues(alpha: 0.78)),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge
+                              ?.copyWith(
+                                  color: Colors.white.withValues(alpha: 0.78)),
                         ),
                       ],
                     ),
                   ),
                   const SizedBox(width: AppSpacing.md),
-                  const Icon(Icons.insights_rounded, color: Colors.white, size: 42),
+                  const Icon(Icons.insights_rounded,
+                      color: Colors.white, size: 42),
                 ],
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            AppCard(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.md,
-                vertical: AppSpacing.md,
-              ),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                child: IntrinsicHeight(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _DashboardMetricBlock(
-                        label: 'Active Jobs',
-                        value: _isLoadingJobsCount ? '...' : '$_jobsCount',
-                        icon: Icons.work_outline_rounded,
-                        color: AppColors.primary,
-                        caption: 'Currently posted',
-                      ),
-                      _MetricDivider(),
-                      _DashboardMetricBlock(
-                        label: 'New Applicants',
-                        value: _isLoadingApplicationsCount ? '...' : '$_applicationsCount',
-                        icon: Icons.groups_2_outlined,
-                        color: AppColors.accent,
-                        caption: 'Received applications',
-                      ),
-                      _MetricDivider(),
-                      _DashboardMetricBlock(
-                        label: 'Unread Messages',
-                        value: 'Open',
-                        icon: Icons.mark_chat_unread_outlined,
-                        color: AppColors.info,
-                        caption: 'Jump into chats',
-                        onTap: () => context.push(AppRouter.chatPage),
-                      ),
-                    ],
-                  ),
-                ),
+            ValueListenableBuilder<_DashboardStats>(
+              valueListenable: _statsNotifier,
+              builder: (context, stats, _) => _DashboardMetricsCard(
+                stats: stats,
+                onMessagesTap: () => context.push(AppRouter.chatPage),
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
             const PremiumSectionHeader(
               eyebrow: 'Actions',
               title: 'Run the next hiring step',
-              subtitle: 'Everything below preserves the current business logic and routes.',
+              subtitle:
+                  'Everything below preserves the current business logic and routes.',
             ),
             const SizedBox(height: AppSpacing.md),
             _ActionTile(
               title: 'Post a New Job',
-              subtitle: 'Create a fresh opening and start receiving candidates.',
+              subtitle:
+                  'Create a fresh opening and start receiving candidates.',
               icon: Icons.add_business_outlined,
               onTap: () async {
                 await context.push(AppRouter.postJobPage);
@@ -200,7 +169,8 @@ class _CompanyDashboardPageState extends State<CompanyDashboardPage> {
             const SizedBox(height: AppSpacing.md),
             _ActionTile(
               title: 'Review Applications',
-              subtitle: 'See applicants, update status, and message top candidates.',
+              subtitle:
+                  'See applicants, update status, and message top candidates.',
               icon: Icons.fact_check_outlined,
               onTap: () async {
                 await context.push(AppRouter.companyApplicationsPage);
@@ -215,6 +185,86 @@ class _CompanyDashboardPageState extends State<CompanyDashboardPage> {
               onTap: () => context.push(AppRouter.chatPage),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _statsLoadTimer?.cancel();
+    _statsNotifier.dispose();
+    super.dispose();
+  }
+}
+
+class _DashboardStats {
+  final int jobsCount;
+  final int applicationsCount;
+  final bool isLoading;
+
+  const _DashboardStats({
+    required this.jobsCount,
+    required this.applicationsCount,
+    required this.isLoading,
+  });
+
+  const _DashboardStats.loading()
+      : jobsCount = 0,
+        applicationsCount = 0,
+        isLoading = true;
+}
+
+class _DashboardMetricsCard extends StatelessWidget {
+  final _DashboardStats stats;
+  final VoidCallback onMessagesTap;
+
+  const _DashboardMetricsCard({
+    required this.stats,
+    required this.onMessagesTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCard(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.md,
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        child: SizedBox(
+          height: 138,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _DashboardMetricBlock(
+                label: 'Active Jobs',
+                value: stats.isLoading ? '...' : '${stats.jobsCount}',
+                icon: Icons.work_outline_rounded,
+                color: AppColors.primary,
+                caption: 'Currently posted',
+              ),
+              _MetricDivider(),
+              _DashboardMetricBlock(
+                label: 'New Applicants',
+                value: stats.isLoading ? '...' : '${stats.applicationsCount}',
+                icon: Icons.groups_2_outlined,
+                color: AppColors.accent,
+                caption: 'Received applications',
+              ),
+              _MetricDivider(),
+              _DashboardMetricBlock(
+                label: 'Unread Messages',
+                value: 'Open',
+                icon: Icons.mark_chat_unread_outlined,
+                color: AppColors.info,
+                caption: 'Jump into chats',
+                onTap: onMessagesTap,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -295,11 +345,12 @@ class _DashboardMetricBlock extends StatelessWidget {
                       const SizedBox(width: AppSpacing.sm),
                       Text(
                         value,
-                        style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                              fontWeight: FontWeight.w800,
-                              color: color,
-                              height: 1,
-                            ),
+                        style:
+                            Theme.of(context).textTheme.headlineLarge?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                  color: color,
+                                  height: 1,
+                                ),
                       ),
                     ],
                   ],
@@ -370,6 +421,7 @@ class _ActionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppCard(
+      shadowLevel: AppCardShadowLevel.none,
       onTap: onTap,
       child: Row(
         children: [

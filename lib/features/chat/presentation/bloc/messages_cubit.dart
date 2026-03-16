@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import '../../../../core/common/base_state.dart';
@@ -29,8 +30,10 @@ class MessagesCubit extends Cubit<BaseState<List<MessageModel>>> {
         super(const InitialState());
 
   io.Socket? _socket;
-  bool _isTyping = false;
-  bool get isTyping => _isTyping;
+  final ValueNotifier<bool> _typingNotifier = ValueNotifier<bool>(false);
+
+  ValueListenable<bool> get typingListenable => _typingNotifier;
+  bool get isTyping => _typingNotifier.value;
 
   Future<void> loadMessages(String chatId) async {
     emit(const LoadingState());
@@ -45,7 +48,8 @@ class MessagesCubit extends Cubit<BaseState<List<MessageModel>>> {
     );
   }
 
-  Future<void> sendMessage(String chatId, String receiverId, String content) async {
+  Future<void> sendMessage(
+      String chatId, String receiverId, String content) async {
     final result = await _sendMessageUseCase(
       SendMessageParams(
         chatId: chatId,
@@ -63,7 +67,8 @@ class MessagesCubit extends Cubit<BaseState<List<MessageModel>>> {
       },
       (message) {
         _appendMessage(message);
-        _chatSyncService.publish(ChatSyncEvent(chatId: chatId, message: message));
+        _chatSyncService
+            .publish(ChatSyncEvent(chatId: chatId, message: message));
         _socket?.emit('new-message', {
           ...message.toMap(),
           'chat': {'id': chatId},
@@ -94,15 +99,8 @@ class MessagesCubit extends Cubit<BaseState<List<MessageModel>>> {
         _appendMessage(msg);
         _chatSyncService.publish(ChatSyncEvent(chatId: chatId, message: msg));
       });
-      _socket!.on('typing', (_) {
-        _isTyping = true;
-        // Re-wrap current data so Bloc sees a new state object and rebuilds.
-        _reemit();
-      });
-      _socket!.on('stop-typing', (_) {
-        _isTyping = false;
-        _reemit();
-      });
+      _socket!.on('typing', (_) => debugSetTyping(true));
+      _socket!.on('stop-typing', (_) => debugSetTyping(false));
     });
   }
 
@@ -111,9 +109,16 @@ class MessagesCubit extends Cubit<BaseState<List<MessageModel>>> {
   void emitStopTyping(String chatId) =>
       _socket?.emit('stop-typing', {'chatId': chatId});
 
+  @visibleForTesting
+  void debugSetTyping(bool isTyping) {
+    if (_typingNotifier.value == isTyping) return;
+    _typingNotifier.value = isTyping;
+  }
+
   void _appendMessage(MessageModel msg) {
     final prev = state is SuccessState<List<MessageModel>>
-        ? List<MessageModel>.from((state as SuccessState<List<MessageModel>>).data)
+        ? List<MessageModel>.from(
+            (state as SuccessState<List<MessageModel>>).data)
         : <MessageModel>[];
     prev.add(msg);
     emit(SuccessState(_sortMessagesChronologically(prev)));
@@ -133,19 +138,10 @@ class MessagesCubit extends Cubit<BaseState<List<MessageModel>>> {
     return sorted;
   }
 
-  /// Re-emits a fresh state object so Bloc rebuilds for typing indicators.
-  void _reemit() {
-    if (state is SuccessState<List<MessageModel>>) {
-      final data = (state as SuccessState<List<MessageModel>>).data;
-      emit(SuccessState(List<MessageModel>.from(data)));
-    } else {
-      // If not in success state yet, a no-op — typing indicator will show on next message load.
-    }
-  }
-
   @override
   Future<void> close() {
-    _isTyping = false;
+    _typingNotifier.value = false;
+    _typingNotifier.dispose();
     _socket?.disconnect();
     return super.close();
   }
