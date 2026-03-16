@@ -33,14 +33,13 @@ class AppConfig {
         );
       default: // dev
         return AppConfig._(
-          // Default Android emulator host. Override with --dart-define when
-          // testing on a physical device or another machine.
+          // Android emulator should talk to the host machine through 10.0.2.2.
+          // Override with --dart-define when testing on a physical device.
           // baseUrl: 'http://10.0.2.2:7000/api/v1',
           // socketUrl: 'http://10.0.2.2:7000',
-          // try the device network IP address if the above doesn't work
-          baseUrl: 'http://192.168.100.42:7000/api/v1',
-          socketUrl: 'http://192.168.100.42:7000',
-          
+          // use the device's local IP address if the above doesn't work
+          baseUrl: 'http://192.168.100.17:7000/api/v1',
+          socketUrl: 'http://192.168.100.17:7000',
         );
     }
   }

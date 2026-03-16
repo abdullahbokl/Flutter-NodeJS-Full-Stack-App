@@ -7,8 +7,7 @@ const _kThemeKey = 'theme_mode';
 class ThemeCubit extends Cubit<ThemeMode> {
   final SharedPreferences _prefs;
 
-  ThemeCubit(this._prefs)
-      : super(_load(_prefs));
+  ThemeCubit(this._prefs) : super(_load(_prefs));
 
   static ThemeMode _load(SharedPreferences prefs) {
     final saved = prefs.getString(_kThemeKey);
@@ -21,12 +20,16 @@ class ThemeCubit extends Cubit<ThemeMode> {
     emit(next);
   }
 
-  void setDark()  { _set(ThemeMode.dark);  }
-  void setLight() { _set(ThemeMode.light); }
+  void setDark() {
+    _set(ThemeMode.dark);
+  }
+
+  void setLight() {
+    _set(ThemeMode.light);
+  }
 
   void _set(ThemeMode mode) {
     _prefs.setString(_kThemeKey, mode == ThemeMode.dark ? 'dark' : 'light');
     emit(mode);
   }
 }
-

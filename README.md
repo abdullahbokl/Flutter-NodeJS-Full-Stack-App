@@ -27,8 +27,9 @@ Job-Hub is a comprehensive full-stack Flutter application that leverages the pow
 - 📦 Bcrypt
 - 📦 Multer
 
-## 🏗️ Architecture: MVVM
-## 🔄 State Management: Provider
+## 🏗️ Architecture: Feature-first layered architecture
+## 🔄 State Management: flutter_bloc + Cubit
+## 🧭 Navigation: go_router
 
 ## 📦 Backend : [NodeJS Job-Hub App](https://github.com/abdullahbokl/boklo_jobhub_backend)
 
@@ -39,3 +40,7 @@ Job-Hub is a comprehensive full-stack Flutter application that leverages the pow
 <img src="assets/screenshots/image7.png" width="250"> <img src="assets/screenshots/image8.png" width="250"> <img src="assets/screenshots/image9.png" width="250">
 <img src="assets/screenshots/image10.png" width="250"> <img src="assets/screenshots/image11.png" width="250"> <img src="assets/screenshots/image12.png" width="250">
 
+## Performance
+
+- Profile-mode workflow and jank triage steps live in [docs/performance.md](docs/performance.md).
+- Enable the Flutter performance overlay with `--dart-define=SHOW_PERFORMANCE_OVERLAY=true`.

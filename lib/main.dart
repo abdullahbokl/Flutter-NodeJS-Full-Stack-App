@@ -5,9 +5,6 @@ import 'my_app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await AppSetup.setupServiceLocator();
-  await AppSetup.loadData();
+  await AppSetup.prepareForFirstFrame();
   runApp(const MyApp());
 }
-
-

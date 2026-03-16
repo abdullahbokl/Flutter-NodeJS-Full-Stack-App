@@ -12,7 +12,8 @@ class AppSession {
   static bool get isAuthenticated => _token.isNotEmpty;
   static bool get isCompany => _role == 'company';
 
-  static void setSession({required String token, required String userId, String role = 'seeker'}) {
+  static void setSession(
+      {required String token, required String userId, String role = 'seeker'}) {
     _token = token;
     _userId = userId;
     _role = role;
@@ -24,4 +25,3 @@ class AppSession {
     _role = 'seeker';
   }
 }
-
