@@ -27,10 +27,13 @@ class ConnectivityWrapper extends StatelessWidget {
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.wifi_off_rounded, color: Colors.white, size: 16),
+                        Icon(Icons.wifi_off_rounded,
+                            color: Colors.white, size: 16),
                         SizedBox(width: 6),
                         Text('No internet connection',
-                            style: TextStyle(color: Colors.white, fontSize: 13,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
                                 fontWeight: FontWeight.w500)),
                       ],
                     ),
@@ -44,4 +47,3 @@ class ConnectivityWrapper extends StatelessWidget {
     );
   }
 }
-

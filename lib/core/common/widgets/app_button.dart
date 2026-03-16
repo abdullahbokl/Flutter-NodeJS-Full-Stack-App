@@ -28,53 +28,102 @@ class AppButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (bg, fg, border) = switch (variant) {
-      AppButtonVariant.primary  => (AppColors.primary, Colors.white, Colors.transparent),
-      AppButtonVariant.secondary => (AppColors.accent, Colors.white, Colors.transparent),
-      AppButtonVariant.outline  => (Colors.white.withValues(alpha: 0.35), AppColors.primary,  AppColors.cardBorder),
-      AppButtonVariant.text     => (Colors.transparent, AppColors.primary,  Colors.transparent),
-      AppButtonVariant.danger   => (AppColors.error, Colors.white, Colors.transparent),
-      AppButtonVariant.soft     => (Colors.white.withValues(alpha: 0.8), AppColors.textPrimary, AppColors.cardBorder),
+      AppButtonVariant.primary => (
+          AppColors.primary,
+          Colors.white,
+          Colors.transparent
+        ),
+      AppButtonVariant.secondary => (
+          AppColors.accent,
+          Colors.white,
+          Colors.transparent
+        ),
+      AppButtonVariant.outline => (
+          Colors.white.withValues(alpha: 0.35),
+          AppColors.primary,
+          AppColors.cardBorder
+        ),
+      AppButtonVariant.text => (
+          Colors.transparent,
+          AppColors.primary,
+          Colors.transparent
+        ),
+      AppButtonVariant.danger => (
+          AppColors.error,
+          Colors.white,
+          Colors.transparent
+        ),
+      AppButtonVariant.soft => (
+          Colors.white.withValues(alpha: 0.8),
+          AppColors.textPrimary,
+          AppColors.cardBorder
+        ),
     };
 
     final content = isLoading
         ? SizedBox(
-            width: 22, height: 22,
+            width: 22,
+            height: 22,
             child: CircularProgressIndicator(strokeWidth: 2.5, color: fg))
         : Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (icon != null) ...[Icon(icon, size: 18, color: fg), const SizedBox(width: 6)],
+              if (icon != null) ...[
+                Icon(icon, size: 18, color: fg),
+                const SizedBox(width: 6)
+              ],
               Text(label,
-                  style: TextStyle(color: fg, fontSize: 15, fontWeight: FontWeight.w600)),
+                  style: TextStyle(
+                      color: fg, fontSize: 15, fontWeight: FontWeight.w600)),
+            ],
+          );
+
+    final disabled = onTap == null && !isLoading;
+    final resolvedBg = disabled ? bg.withValues(alpha: 0.6) : bg;
+    final resolvedFg = disabled ? fg.withValues(alpha: 0.7) : fg;
+
+    final resolvedContent = isLoading
+        ? content
+        : Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (icon != null) ...[
+                Icon(icon, size: 18, color: resolvedFg),
+                const SizedBox(width: 6),
+              ],
+              Text(
+                label,
+                style: TextStyle(
+                  color: resolvedFg,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ],
           );
 
     return SizedBox(
       width: width ?? double.infinity,
       height: height,
-      child: AnimatedOpacity(
-        opacity: onTap == null && !isLoading ? 0.5 : 1.0,
-        duration: const Duration(milliseconds: 200),
-        child: Container(
-          decoration: BoxDecoration(
-            color: bg,
+      child: Container(
+        decoration: BoxDecoration(
+          color: resolvedBg,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          boxShadow: variant == AppButtonVariant.text ? null : AppShadows.sm,
+          border: border == Colors.transparent
+              ? null
+              : Border.all(color: border, width: 1.5),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          child: InkWell(
+            onTap: isLoading ? null : onTap,
             borderRadius: BorderRadius.circular(AppRadius.lg),
-            boxShadow: variant == AppButtonVariant.text ? null : AppShadows.sm,
-            border: border == Colors.transparent ? null
-                : Border.all(color: border, width: 1.5),
-          ),
-          child: Material(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(AppRadius.lg),
-            child: InkWell(
-              onTap: isLoading ? null : onTap,
-              borderRadius: BorderRadius.circular(AppRadius.lg),
-              child: Center(child: content),
-            ),
+            child: Center(child: resolvedContent),
           ),
         ),
       ),
     );
   }
 }
-

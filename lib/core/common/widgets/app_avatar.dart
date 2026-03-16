@@ -1,6 +1,8 @@
+import 'dart:math' as math;
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import '../../theme/app_shadows.dart';
 import '../../utils/app_colors.dart';
 
 class AppAvatar extends StatelessWidget {
@@ -21,18 +23,20 @@ class AppAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget avatar = CircleAvatar(
-      radius: radius,
-      backgroundColor: AppColors.surfaceElevated,
+    final size = radius * 2;
+    Widget avatar = SizedBox(
+      width: size,
+      height: size,
       child: DecoratedBox(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           shape: BoxShape.circle,
-          boxShadow: AppShadows.sm,
+          color: AppColors.surfaceElevated,
+          border: Border.all(
+            color: AppColors.cardBorder.withValues(alpha: 0.6),
+          ),
         ),
-        child: CircleAvatar(
-          radius: radius,
-          backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-          child: _buildInner(),
+        child: ClipOval(
+          child: _buildInner(context),
         ),
       ),
     );
@@ -59,29 +63,51 @@ class AppAvatar extends StatelessWidget {
     }
 
     return onTap != null
-        ? GestureDetector(onTap: onTap, child: avatar)
+        ? InkResponse(
+            onTap: onTap,
+            radius: radius + 8,
+            child: avatar,
+          )
         : avatar;
   }
 
-  Widget _buildInner() {
+  Widget _buildInner(BuildContext context) {
     if (imageUrl != null && imageUrl!.isNotEmpty) {
-      return ClipOval(
-        child: Image.network(
-          imageUrl!,
-          width: radius * 2,
-          height: radius * 2,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => _initials(),
+      final cacheSize = math.max(
+        1,
+        (radius * 2 * MediaQuery.devicePixelRatioOf(context)).round(),
+      );
+      return CachedNetworkImage(
+        imageUrl: imageUrl!,
+        width: radius * 2,
+        height: radius * 2,
+        fit: BoxFit.cover,
+        memCacheWidth: cacheSize,
+        memCacheHeight: cacheSize,
+        placeholder: (_, __) => ColoredBox(
+          color: AppColors.primary.withValues(alpha: 0.1),
+          child: Center(child: _initials()),
+        ),
+        errorWidget: (_, __, ___) => ColoredBox(
+          color: AppColors.primary.withValues(alpha: 0.1),
+          child: Center(child: _initials()),
         ),
       );
     }
-    return _initials();
+    return ColoredBox(
+      color: AppColors.primary.withValues(alpha: 0.1),
+      child: Center(child: _initials()),
+    );
   }
 
   Widget _initials() {
     final letters = fallbackInitials?.isNotEmpty == true
-        ? fallbackInitials!.trim().split(' ')
-            .take(2).map((w) => w[0].toUpperCase()).join()
+        ? fallbackInitials!
+            .trim()
+            .split(' ')
+            .take(2)
+            .map((w) => w[0].toUpperCase())
+            .join()
         : '?';
     return Text(letters,
         style: TextStyle(

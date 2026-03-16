@@ -1,9 +1,6 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 import '../../theme/app_radius.dart';
-import '../../theme/app_shadows.dart';
 import '../../theme/app_spacing.dart';
 import '../../utils/app_colors.dart';
 import 'app_button.dart';
@@ -29,28 +26,34 @@ class PremiumScaffold extends StatelessWidget {
       appBar: appBar,
       floatingActionButton: floatingActionButton,
       bottomNavigationBar: bottomNavigationBar,
-      body: DecoratedBox(
-        decoration: const BoxDecoration(gradient: AppColors.pageGlow),
-        child: Stack(
-          children: [
-            Positioned(
-              top: -80,
-              right: -60,
-              child: _GlowOrb(
-                size: 240,
-                color: AppColors.primary.withValues(alpha: 0.12),
-              ),
-            ),
-            Positioned(
-              top: 180,
-              left: -70,
-              child: _GlowOrb(
-                size: 190,
-                color: AppColors.accent.withValues(alpha: 0.12),
-              ),
-            ),
-            SafeArea(child: child),
+      body: Stack(
+        children: [
+          const ColoredBox(
+            color: AppColors.backgroundLight,
+            child: SizedBox.expand(),
+          ),
+          const RepaintBoundary(child: _StaticBackground()),
+          SafeArea(child: child),
+        ],
+      ),
+    );
+  }
+}
+
+class _StaticBackground extends StatelessWidget {
+  const _StaticBackground();
+
+  @override
+  Widget build(BuildContext context) {
+    return const DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color(0xFFF7FAFA),
+            Color(0xFFFFFFFF),
           ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
         ),
       ),
     );
@@ -75,20 +78,14 @@ class GlassPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final radius = borderRadius ?? BorderRadius.circular(AppRadius.xl);
 
-    return ClipRRect(
+    return AppCard(
+      onTap: onTap,
+      padding: padding,
       borderRadius: radius,
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: AppCard(
-          onTap: onTap,
-          padding: padding,
-          borderRadius: radius,
-          color: Colors.white.withValues(alpha: 0.74),
-          border: Border.all(color: AppColors.glassStroke.withValues(alpha: 0.35)),
-          shadows: AppShadows.lg,
-          child: child,
-        ),
-      ),
+      color: AppColors.surfaceElevated,
+      border: Border.all(color: AppColors.cardBorder),
+      shadowLevel: AppCardShadowLevel.none,
+      child: child,
     );
   }
 }
@@ -142,7 +139,10 @@ class PremiumSectionHeader extends StatelessWidget {
         if (actionIcon != null)
           Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.65),
+              color: Theme.of(context)
+                  .colorScheme
+                  .surfaceContainerHighest
+                  .withValues(alpha: 0.65),
               shape: BoxShape.circle,
             ),
             child: IconButton(
@@ -266,7 +266,10 @@ class _PageHeaderActionButton extends StatelessWidget {
     return switch (action.style) {
       PageHeaderActionStyle.icon => Container(
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.65),
+            color: Theme.of(context)
+                .colorScheme
+                .surfaceContainerHighest
+                .withValues(alpha: 0.65),
             shape: BoxShape.circle,
           ),
           child: IconButton(
@@ -298,7 +301,8 @@ class PremiumSearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GlassPanel(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md, vertical: AppSpacing.sm),
       onTap: onTap,
       child: Row(
         children: [
@@ -307,7 +311,10 @@ class PremiumSearchBar extends StatelessWidget {
           Expanded(
             child: Text(
               hint,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textHint),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppColors.textHint),
             ),
           ),
           if (trailing != null) trailing!,
@@ -422,7 +429,9 @@ class ApplicationStatusStepper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final activeIndex = _steps.indexWhere((step) => step.$1 == status).clamp(0, _steps.length - 1);
+    final activeIndex = _steps
+        .indexWhere((step) => step.$1 == status)
+        .clamp(0, _steps.length - 1);
 
     return Row(
       children: List.generate(_steps.length, (index) {
@@ -434,8 +443,7 @@ class ApplicationStatusStepper extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 250),
+                    Container(
                       height: 6,
                       decoration: BoxDecoration(
                         color: isActive ? AppColors.primary : AppColors.divider,
@@ -446,13 +454,16 @@ class ApplicationStatusStepper extends StatelessWidget {
                     Text(
                       _steps[index].$2,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: isActive ? AppColors.primary : AppColors.textSecondary,
+                            color: isActive
+                                ? AppColors.primary
+                                : AppColors.textSecondary,
                           ),
                     ),
                   ],
                 ),
               ),
-              if (index != _steps.length - 1) const SizedBox(width: AppSpacing.xs),
+              if (index != _steps.length - 1)
+                const SizedBox(width: AppSpacing.xs),
             ],
           ),
         );
@@ -491,29 +502,6 @@ class SocialAuthButtons extends StatelessWidget {
           ),
         ],
       ],
-    );
-  }
-}
-
-class _GlowOrb extends StatelessWidget {
-  final double size;
-  final Color color;
-
-  const _GlowOrb({required this.size, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: RadialGradient(
-            colors: [color, Colors.transparent],
-          ),
-        ),
-      ),
     );
   }
 }

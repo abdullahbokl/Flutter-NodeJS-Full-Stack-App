@@ -31,4 +31,3 @@ class LoadingOverlay extends StatelessWidget {
     );
   }
 }
-

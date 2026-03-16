@@ -1,5 +1,1 @@
-
-
-class ChatHelper {
-
-}
+class ChatHelper {}

@@ -53,7 +53,7 @@ class BlocStateWidget<T> extends StatelessWidget {
           actionLabel: onRetry != null ? 'Refresh' : null,
           onAction: onRetry),
       ErrorState<T>(message: final msg) =>
-          ErrorStateWidget(message: msg, onRetry: onRetry),
+        ErrorStateWidget(message: msg, onRetry: onRetry),
     };
   }
 }

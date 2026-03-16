@@ -10,4 +10,3 @@ abstract class UseCase<T, Params> {
 class NoParams {
   const NoParams();
 }
-

@@ -17,7 +17,6 @@ import '../app_avatar.dart';
 class DrawerScreenBody extends StatelessWidget {
   const DrawerScreenBody({super.key});
 
-
   @override
   Widget build(BuildContext context) {
     final current = GoRouterState.of(context).matchedLocation;
@@ -25,7 +24,8 @@ class DrawerScreenBody extends StatelessWidget {
       backgroundColor: AppColors.backgroundDark,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
+          padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg, vertical: AppSpacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -36,19 +36,37 @@ class DrawerScreenBody extends StatelessWidget {
                   final isCompany = AppSession.isCompany;
                   final navItems = [
                     if (isCompany)
-                      const _NavItem(icon: Icons.dashboard_rounded, label: 'Dashboard', route: '/company/dashboard')
+                      const _NavItem(
+                          icon: Icons.dashboard_rounded,
+                          label: 'Dashboard',
+                          route: '/company/dashboard')
                     else
-                      const _NavItem(icon: Icons.home_rounded, label: 'Home', route: '/home'),
-                    const _NavItem(icon: Icons.work_outline_rounded, label: 'Jobs', route: AppRouter.jobsListPage),
-                    const _NavItem(icon: Icons.bookmark_rounded,    label: 'Bookmarks', route: '/bookmarks'),
+                      const _NavItem(
+                          icon: Icons.home_rounded,
+                          label: 'Home',
+                          route: '/home'),
+                    const _NavItem(
+                        icon: Icons.work_outline_rounded,
+                        label: 'Jobs',
+                        route: AppRouter.jobsListPage),
+                    const _NavItem(
+                        icon: Icons.bookmark_rounded,
+                        label: 'Bookmarks',
+                        route: '/bookmarks'),
                     if (!isCompany)
                       const _NavItem(
                         icon: Icons.work_history_rounded,
                         label: 'My Applications',
                         route: AppRouter.myApplicationsPage,
                       ),
-                    const _NavItem(icon: Icons.chat_bubble_rounded, label: 'Messages',  route: '/chat'),
-                    const _NavItem(icon: Icons.person_rounded,      label: 'Profile',   route: '/profile'),
+                    const _NavItem(
+                        icon: Icons.chat_bubble_rounded,
+                        label: 'Messages',
+                        route: '/chat'),
+                    const _NavItem(
+                        icon: Icons.person_rounded,
+                        label: 'Profile',
+                        route: '/profile'),
                   ];
 
                   return Column(
@@ -83,17 +101,28 @@ class _ProfileHeader extends StatelessWidget {
       builder: (context, state) {
         final user = state is SuccessState<UserModel> ? state.data : null;
         return Row(children: [
-          AppAvatar(imageUrl: user?.profilePic.lastOrNull, radius: 26,
+          AppAvatar(
+              imageUrl: user?.profilePic.lastOrNull,
+              radius: 26,
               fallbackInitials: user?.fullName ?? user?.userName ?? 'U'),
           const SizedBox(width: AppSpacing.md),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(user?.fullName ?? user?.userName ?? '—',
-                style: const TextStyle(color: Colors.white, fontSize: 16,
-                    fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis),
-            Text(user?.email ?? '',
-                style: const TextStyle(color: AppColors.textSecondaryDark, fontSize: 12),
-                maxLines: 1, overflow: TextOverflow.ellipsis),
-          ])),
+          Expanded(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                Text(user?.fullName ?? user?.userName ?? '—',
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis),
+                Text(user?.email ?? '',
+                    style: const TextStyle(
+                        color: AppColors.textSecondaryDark, fontSize: 12),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis),
+              ])),
         ]);
       },
     );
@@ -104,20 +133,25 @@ class _NavTile extends StatelessWidget {
   final _NavItem item;
   final bool isSelected;
   final VoidCallback onTap;
-  const _NavTile({required this.item, required this.isSelected, required this.onTap});
+  const _NavTile(
+      {required this.item, required this.isSelected, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.xs),
       decoration: BoxDecoration(
-        color: isSelected ? AppColors.primary.withValues(alpha: 0.2) : Colors.transparent,
+        color: isSelected
+            ? AppColors.primary.withValues(alpha: 0.2)
+            : Colors.transparent,
         borderRadius: BorderRadius.circular(AppRadius.lg),
       ),
       child: ListTile(
         onTap: onTap,
         leading: Icon(item.icon,
-            color: isSelected ? AppColors.lightPurple : AppColors.textSecondaryDark),
+            color: isSelected
+                ? AppColors.lightPurple
+                : AppColors.textSecondaryDark),
         title: Text(item.label,
             style: TextStyle(
                 color: isSelected ? Colors.white : AppColors.textSecondaryDark,
@@ -137,9 +171,11 @@ class _DarkModeToggle extends StatelessWidget {
       builder: (context, mode) {
         return ListTile(
           dense: true,
-          leading: const Icon(Icons.dark_mode_rounded, color: AppColors.textSecondaryDark),
+          leading: const Icon(Icons.dark_mode_rounded,
+              color: AppColors.textSecondaryDark),
           title: const Text('Dark Mode',
-              style: TextStyle(color: AppColors.textSecondaryDark, fontSize: 14)),
+              style:
+                  TextStyle(color: AppColors.textSecondaryDark, fontSize: 14)),
           trailing: Switch(
             value: mode == ThemeMode.dark,
             onChanged: (_) => context.read<ThemeCubit>().toggle(),
@@ -158,7 +194,10 @@ class _LogoutButton extends StatelessWidget {
       dense: true,
       leading: const Icon(Icons.logout_rounded, color: AppColors.error),
       title: const Text('Logout',
-          style: TextStyle(color: AppColors.error, fontSize: 14, fontWeight: FontWeight.w600)),
+          style: TextStyle(
+              color: AppColors.error,
+              fontSize: 14,
+              fontWeight: FontWeight.w600)),
       onTap: () => AppDialogs.showConfirm(
         context: context,
         title: 'Logout',
@@ -174,5 +213,6 @@ class _NavItem {
   final IconData icon;
   final String label;
   final String route;
-  const _NavItem({required this.icon, required this.label, required this.route});
+  const _NavItem(
+      {required this.icon, required this.label, required this.route});
 }

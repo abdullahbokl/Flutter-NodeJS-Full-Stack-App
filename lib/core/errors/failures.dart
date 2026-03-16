@@ -31,4 +31,3 @@ class ConflictFailure extends Failure {
 class UnknownFailure extends Failure {
   const UnknownFailure([super.message = 'An unexpected error occurred']);
 }
-

@@ -76,17 +76,28 @@ class _AppTextFieldState extends State<AppTextField> {
           readOnly: widget.readOnly,
           onTap: widget.onTap,
           focusNode: widget.focusNode,
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppColors.textPrimary),
+          style: Theme.of(context)
+              .textTheme
+              .bodyLarge
+              ?.copyWith(color: AppColors.textPrimary),
           decoration: InputDecoration(
             hintText: widget.hint,
-            hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textHint),
+            hintStyle: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.textHint),
             prefixIcon: widget.prefixIcon != null
-                ? Icon(widget.prefixIcon, size: 20, color: AppColors.textSecondary)
+                ? Icon(widget.prefixIcon,
+                    size: 20, color: AppColors.textSecondary)
                 : null,
             suffixIcon: widget.obscureText
                 ? IconButton(
-                    icon: Icon(_obscured ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                        size: 20, color: AppColors.textSecondary),
+                    icon: Icon(
+                        _obscured
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                        size: 20,
+                        color: AppColors.textSecondary),
                     onPressed: () => setState(() => _obscured = !_obscured),
                   )
                 : widget.suffix,

@@ -36,4 +36,3 @@ Failure _mapStatusCode(int? code, dynamic data) {
     _ => ServerFailure(msg.isNotEmpty ? msg : 'Server error'),
   };
 }
-

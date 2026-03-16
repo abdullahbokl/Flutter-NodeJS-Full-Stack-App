@@ -1,5 +1,3 @@
-
-
 class ImageModel {
   final String url;
   final String createdAt;

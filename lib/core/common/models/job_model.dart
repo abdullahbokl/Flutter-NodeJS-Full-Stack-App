@@ -1,6 +1,5 @@
 import '../../../features/jobs/domain/entities/job_entity.dart';
 
-
 class JobModel extends JobEntity {
   const JobModel({
     required super.id,

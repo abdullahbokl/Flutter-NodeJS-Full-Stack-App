@@ -16,7 +16,8 @@ class AppDialogs {
       dialogType: DialogType.warning,
       animType: AnimType.bottomSlide,
       title: title,
-      titleTextStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+      titleTextStyle:
+          const TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
       desc: message,
       descTextStyle: const TextStyle(fontSize: 14),
       btnCancelText: cancelLabel,
@@ -57,4 +58,3 @@ class AppDialogs {
     ).show();
   }
 }
-
