@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -47,7 +46,9 @@ class _SearchViewState extends State<_SearchView> {
     }
 
     context.go(
-      AppSession.isCompany ? AppRouter.companyDashboardPage : AppRouter.homePage,
+      AppSession.isCompany
+          ? AppRouter.companyDashboardPage
+          : AppRouter.homePage,
     );
   }
 
@@ -66,7 +67,8 @@ class _SearchViewState extends State<_SearchView> {
 
   Widget _buildSearchBar(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md, vertical: AppSpacing.sm),
       child: Row(children: [
         IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -80,7 +82,8 @@ class _SearchViewState extends State<_SearchView> {
             onChanged: (q) => context.read<SearchCubit>().search(q),
             decoration: InputDecoration(
               hintText: 'Search jobs, companies...',
-              prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textSecondary),
+              prefixIcon: const Icon(Icons.search_rounded,
+                  color: AppColors.textSecondary),
               suffixIcon: _controller.text.isNotEmpty
                   ? IconButton(
                       icon: const Icon(Icons.clear_rounded, size: 18),
@@ -135,8 +138,9 @@ class _SearchViewState extends State<_SearchView> {
             padding: const EdgeInsets.all(AppSpacing.md),
             itemCount: jobs.length,
             separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
-            itemBuilder: (_, i) => _SearchResultTile(job: jobs[i])
-                .animate().fadeIn(delay: Duration(milliseconds: 40 * i)),
+            itemBuilder: (_, i) {
+              return _SearchResultTile(job: jobs[i]);
+            },
           ),
         );
       },
@@ -166,32 +170,50 @@ class _SearchResultTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: isDark ? AppColors.surfaceDark : AppColors.surface,
           borderRadius: BorderRadius.circular(AppRadius.lg),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 6, offset: const Offset(0, 2))],
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 6,
+                offset: const Offset(0, 2))
+          ],
         ),
         child: Row(children: [
-          AppAvatar(radius: 24, imageUrl: job.imageUrl, fallbackInitials: job.company),
+          AppAvatar(
+              radius: 24,
+              imageUrl: job.imageUrl,
+              fallbackInitials: job.company),
           const SizedBox(width: AppSpacing.md),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(job.title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
-                maxLines: 1, overflow: TextOverflow.ellipsis),
-            Text(job.company, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
-            const SizedBox(height: 4),
-            Row(children: [
-              const Icon(Icons.location_on_outlined, size: 13, color: AppColors.textSecondary),
-              const SizedBox(width: 2),
-              Flexible(
-                child: Text(job.location,
+          Expanded(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                Text(job.title,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w600, fontSize: 15),
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              StatusBadge.contract(job.contract),
-            ]),
-          ])),
+                    overflow: TextOverflow.ellipsis),
+                Text(job.company,
+                    style: const TextStyle(
+                        color: AppColors.textSecondary, fontSize: 13)),
+                const SizedBox(height: 4),
+                Row(children: [
+                  const Icon(Icons.location_on_outlined,
+                      size: 13, color: AppColors.textSecondary),
+                  const SizedBox(width: 2),
+                  Flexible(
+                    child: Text(job.location,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            fontSize: 12, color: AppColors.textSecondary)),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  StatusBadge.contract(job.contract),
+                ]),
+              ])),
           Text('\$${job.salary}',
-              style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.primary)),
+              style: const TextStyle(
+                  fontWeight: FontWeight.w700, color: AppColors.primary)),
         ]),
       ),
     );
@@ -203,10 +225,14 @@ class _EmptySearch extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Column(mainAxisSize: MainAxisSize.min, children: [
-        Icon(Icons.search_rounded, size: 64, color: AppColors.primary.withValues(alpha: 0.3)),
+        Icon(Icons.search_rounded,
+            size: 64, color: AppColors.primary.withValues(alpha: 0.3)),
         const SizedBox(height: AppSpacing.md),
-        const Text('Search for jobs', style: TextStyle(fontSize: 16,
-            fontWeight: FontWeight.w500, color: AppColors.textSecondary)),
+        const Text('Search for jobs',
+            style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textSecondary)),
       ]),
     );
   }
@@ -298,7 +324,8 @@ class _FiltersSheetState extends State<_FiltersSheet> {
           Row(
             children: [
               TextButton(
-                onPressed: () => Navigator.of(context).pop(const JobFilterParams()),
+                onPressed: () =>
+                    Navigator.of(context).pop(const JobFilterParams()),
                 child: const Text('Reset'),
               ),
               const Spacer(),

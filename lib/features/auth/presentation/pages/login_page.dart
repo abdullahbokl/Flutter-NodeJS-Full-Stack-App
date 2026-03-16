@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -64,22 +63,30 @@ class _LoginViewState extends State<_LoginView> {
                       Text(
                         'Premium hiring,\nwithout the clutter.',
                         style: Theme.of(context).textTheme.displayLarge,
-                      ).animate().fadeIn().slideX(begin: -0.05),
+                      ),
                       const SizedBox(height: AppSpacing.md),
                       Text(
                         'Sign in to manage your hiring pipeline, discover roles faster, and keep every conversation in one polished workspace.',
                         style: Theme.of(context).textTheme.bodyLarge,
-                      ).animate().fadeIn(delay: 120.ms),
+                      ),
                       const SizedBox(height: AppSpacing.xl),
                       const GlassPanel(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _FeatureLine(icon: Icons.auto_awesome_rounded, text: 'Refined search and premium job cards'),
+                            _FeatureLine(
+                                icon: Icons.auto_awesome_rounded,
+                                text: 'Refined search and premium job cards'),
                             SizedBox(height: AppSpacing.sm),
-                            _FeatureLine(icon: Icons.track_changes_rounded, text: 'Application tracking with clearer states'),
+                            _FeatureLine(
+                                icon: Icons.track_changes_rounded,
+                                text:
+                                    'Application tracking with clearer states'),
                             SizedBox(height: AppSpacing.sm),
-                            _FeatureLine(icon: Icons.chat_bubble_outline_rounded, text: 'Faster candidate and recruiter conversations'),
+                            _FeatureLine(
+                                icon: Icons.chat_bubble_outline_rounded,
+                                text:
+                                    'Faster candidate and recruiter conversations'),
                           ],
                         ),
                       ),
@@ -93,9 +100,12 @@ class _LoginViewState extends State<_LoginView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Welcome back', style: Theme.of(context).textTheme.headlineMedium),
+                          Text('Welcome back',
+                              style:
+                                  Theme.of(context).textTheme.headlineMedium),
                           const SizedBox(height: AppSpacing.xs),
-                          Text('Use your existing account to continue.', style: Theme.of(context).textTheme.bodyMedium),
+                          Text('Use your existing account to continue.',
+                              style: Theme.of(context).textTheme.bodyMedium),
                           const SizedBox(height: AppSpacing.lg),
                           AppTextField(
                             label: 'Work Email',
@@ -103,7 +113,9 @@ class _LoginViewState extends State<_LoginView> {
                             controller: _email,
                             keyboardType: TextInputType.emailAddress,
                             prefixIcon: Icons.mail_outline_rounded,
-                            validator: (v) => v?.contains('@') == true ? null : 'Enter a valid email',
+                            validator: (v) => v?.contains('@') == true
+                                ? null
+                                : 'Enter a valid email',
                           ),
                           const SizedBox(height: AppSpacing.md),
                           AppTextField(
@@ -112,12 +124,16 @@ class _LoginViewState extends State<_LoginView> {
                             controller: _password,
                             obscureText: true,
                             prefixIcon: Icons.lock_outline_rounded,
-                            validator: (v) => (v?.length ?? 0) >= 6 ? null : 'Min 6 characters',
+                            validator: (v) => (v?.length ?? 0) >= 6
+                                ? null
+                                : 'Min 6 characters',
                           ),
                           const SizedBox(height: AppSpacing.sm),
                           Align(
                             alignment: Alignment.centerRight,
-                            child: TextButton(onPressed: () {}, child: const Text('Forgot password?')),
+                            child: TextButton(
+                                onPressed: () {},
+                                child: const Text('Forgot password?')),
                           ),
                           const SizedBox(height: AppSpacing.sm),
                           BlocBuilder<LoginCubit, BaseState<UserEntity>>(
@@ -128,7 +144,8 @@ class _LoginViewState extends State<_LoginView> {
                               onTap: () {
                                 if (_form.currentState?.validate() == true) {
                                   FocusScope.of(ctx).unfocus();
-                                  ctx.read<LoginCubit>().login(_email.text.trim(), _password.text);
+                                  ctx.read<LoginCubit>().login(
+                                      _email.text.trim(), _password.text);
                                 }
                               },
                             ),
@@ -138,7 +155,8 @@ class _LoginViewState extends State<_LoginView> {
                             children: [
                               Expanded(child: Divider()),
                               Padding(
-                                padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: AppSpacing.sm),
                                 child: Text('OR'),
                               ),
                               Expanded(child: Divider()),
@@ -156,12 +174,17 @@ class _LoginViewState extends State<_LoginView> {
                         ],
                       ),
                     ),
-                  ).animate().fadeIn(delay: 100.ms).slideY(begin: 0.05);
+                  );
 
                   if (wide) {
                     return Row(
                       children: [
-                        Expanded(flex: 6, child: Padding(padding: const EdgeInsets.only(right: AppSpacing.xl), child: intro)),
+                        Expanded(
+                            flex: 6,
+                            child: Padding(
+                                padding:
+                                    const EdgeInsets.only(right: AppSpacing.xl),
+                                child: intro)),
                         Expanded(flex: 5, child: form),
                       ],
                     );
@@ -206,7 +229,8 @@ class _FeatureLine extends StatelessWidget {
       children: [
         Icon(icon, size: 18),
         const SizedBox(width: AppSpacing.sm),
-        Expanded(child: Text(text, style: Theme.of(context).textTheme.bodyMedium)),
+        Expanded(
+            child: Text(text, style: Theme.of(context).textTheme.bodyMedium)),
       ],
     );
   }

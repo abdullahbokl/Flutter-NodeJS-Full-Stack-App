@@ -94,14 +94,16 @@ class _NextSkipButtons extends StatelessWidget {
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeIn,
               ),
-              child: const Text('Skip', style: TextStyle(color: AppColors.light, fontSize: 16)),
+              child: const Text('Skip',
+                  style: TextStyle(color: AppColors.light, fontSize: 16)),
             ),
             TextButton(
               onPressed: () => controller.nextPage(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeIn,
               ),
-              child: const Text('Next', style: TextStyle(color: AppColors.light, fontSize: 16)),
+              child: const Text('Next',
+                  style: TextStyle(color: AppColors.light, fontSize: 16)),
             ),
           ],
         ),

@@ -11,7 +11,8 @@ class GetReceivedApplicationsUseCase {
 
   const GetReceivedApplicationsUseCase(this._repo);
 
-  Future<Either<Failure, List<JobApplicationModel>>> call(NoParams params) async {
+  Future<Either<Failure, List<JobApplicationModel>>> call(
+      NoParams params) async {
     try {
       final applications = await _repo.getReceivedApplications();
       return Right(applications);
@@ -20,4 +21,3 @@ class GetReceivedApplicationsUseCase {
     }
   }
 }
-

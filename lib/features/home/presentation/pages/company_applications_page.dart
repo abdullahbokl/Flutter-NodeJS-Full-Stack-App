@@ -25,7 +25,8 @@ class CompanyApplicationsPage extends StatefulWidget {
   const CompanyApplicationsPage({super.key});
 
   @override
-  State<CompanyApplicationsPage> createState() => _CompanyApplicationsPageState();
+  State<CompanyApplicationsPage> createState() =>
+      _CompanyApplicationsPageState();
 }
 
 class _CompanyApplicationsPageState extends State<CompanyApplicationsPage> {
@@ -36,7 +37,9 @@ class _CompanyApplicationsPageState extends State<CompanyApplicationsPage> {
     }
 
     context.go(
-      AppSession.isCompany ? AppRouter.companyDashboardPage : AppRouter.homePage,
+      AppSession.isCompany
+          ? AppRouter.companyDashboardPage
+          : AppRouter.homePage,
     );
   }
 
@@ -61,24 +64,30 @@ class _CompanyApplicationsPageState extends State<CompanyApplicationsPage> {
   @override
   Widget build(BuildContext context) {
     return PremiumScaffold(
-      child: BlocBuilder<ReceivedApplicationsCubit, BaseState<List<JobApplicationModel>>>(
+      child: BlocBuilder<ReceivedApplicationsCubit,
+          BaseState<List<JobApplicationModel>>>(
         builder: (context, state) => BlocStateWidget<List<JobApplicationModel>>(
           state: state,
           emptyTitle: 'No applications yet',
-          emptySubtitle: 'New candidates will appear here once people start applying.',
+          emptySubtitle:
+              'New candidates will appear here once people start applying.',
           emptyIcon: Icons.groups_outlined,
-          onRetry: () => context.read<ReceivedApplicationsCubit>().loadApplications(),
+          onRetry: () =>
+              context.read<ReceivedApplicationsCubit>().loadApplications(),
           onSuccess: (applications) => RefreshIndicator(
-            onRefresh: () async => context.read<ReceivedApplicationsCubit>().loadApplications(),
+            onRefresh: () async =>
+                context.read<ReceivedApplicationsCubit>().loadApplications(),
             child: ListView.separated(
               padding: const EdgeInsets.all(AppSpacing.md),
               itemCount: applications.length + 1,
-              separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
+              separatorBuilder: (_, __) =>
+                  const SizedBox(height: AppSpacing.md),
               itemBuilder: (context, index) {
                 if (index == 0) {
                   return PageHeader(
                     title: 'Applicant pipeline',
-                    subtitle: 'Screen candidates, update status, and jump into conversations.',
+                    subtitle:
+                        'Screen candidates, update status, and jump into conversations.',
                     leadingAction: PageHeaderAction.icon(
                       onPressed: () => _handleBack(context),
                       icon: Icons.arrow_back_rounded,
@@ -86,8 +95,9 @@ class _CompanyApplicationsPageState extends State<CompanyApplicationsPage> {
                     ),
                     actions: [
                       PageHeaderAction.icon(
-                        onPressed: () =>
-                            context.read<ReceivedApplicationsCubit>().loadApplications(),
+                        onPressed: () => context
+                            .read<ReceivedApplicationsCubit>()
+                            .loadApplications(),
                         icon: Icons.refresh_rounded,
                         tooltip: 'Refresh',
                       ),
@@ -104,7 +114,9 @@ class _CompanyApplicationsPageState extends State<CompanyApplicationsPage> {
                         children: [
                           AppAvatar(
                             radius: 22,
-                            fallbackInitials: app.applicant?.fullName ?? app.applicant?.userName ?? 'A',
+                            fallbackInitials: app.applicant?.fullName ??
+                                app.applicant?.userName ??
+                                'A',
                             imageUrl: app.applicant?.profilePic.lastOrNull,
                           ),
                           const SizedBox(width: AppSpacing.md),
@@ -113,11 +125,16 @@ class _CompanyApplicationsPageState extends State<CompanyApplicationsPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  app.applicant?.fullName ?? app.applicant?.userName ?? 'Applicant',
-                                  style: Theme.of(context).textTheme.titleMedium,
+                                  app.applicant?.fullName ??
+                                      app.applicant?.userName ??
+                                      'Applicant',
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
                                 ),
                                 const SizedBox(height: 4),
-                                Text(app.job.title, style: Theme.of(context).textTheme.bodyMedium),
+                                Text(app.job.title,
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium),
                               ],
                             ),
                           ),
@@ -129,10 +146,16 @@ class _CompanyApplicationsPageState extends State<CompanyApplicationsPage> {
                         spacing: AppSpacing.sm,
                         runSpacing: AppSpacing.sm,
                         children: [
-                          StatusBadge(label: app.job.company, variant: BadgeVariant.info),
-                          StatusBadge(label: app.job.location, variant: BadgeVariant.neutral),
+                          StatusBadge(
+                              label: app.job.company,
+                              variant: BadgeVariant.info),
+                          StatusBadge(
+                              label: app.job.location,
+                              variant: BadgeVariant.neutral),
                           if (app.applicant?.skills.isNotEmpty == true)
-                            StatusBadge(label: app.applicant!.skills.first, variant: BadgeVariant.success),
+                            StatusBadge(
+                                label: app.applicant!.skills.first,
+                                variant: BadgeVariant.success),
                         ],
                       ),
                       if (app.coverLetter.isNotEmpty) ...[
@@ -150,7 +173,9 @@ class _CompanyApplicationsPageState extends State<CompanyApplicationsPage> {
                           Expanded(
                             child: _StatusMenu(
                               application: app,
-                              onUpdated: () => context.read<ReceivedApplicationsCubit>().loadApplications(),
+                              onUpdated: () => context
+                                  .read<ReceivedApplicationsCubit>()
+                                  .loadApplications(),
                             ),
                           ),
                           const SizedBox(width: AppSpacing.sm),

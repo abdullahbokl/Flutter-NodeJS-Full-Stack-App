@@ -15,4 +15,3 @@ abstract class ApplicationsRepo {
     required String status,
   });
 }
-

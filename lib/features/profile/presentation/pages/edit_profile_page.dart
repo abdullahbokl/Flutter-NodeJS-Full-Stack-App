@@ -67,11 +67,13 @@ class _EditProfileViewState extends State<_EditProfileView> {
     _industry.text = user.industry ?? '';
     _website.text = user.website ?? '';
     _experience.text = user.experience
-        .map((item) => _stringValue(item['title']) ?? _stringValue(item['company']) ?? '')
+        .map((item) =>
+            _stringValue(item['title']) ?? _stringValue(item['company']) ?? '')
         .where((item) => item.isNotEmpty)
         .join('\n');
     _education.text = user.education
-        .map((item) => _stringValue(item['school']) ?? _stringValue(item['degree']) ?? '')
+        .map((item) =>
+            _stringValue(item['school']) ?? _stringValue(item['degree']) ?? '')
         .where((item) => item.isNotEmpty)
         .join('\n');
     _skills.clear();
@@ -91,7 +93,8 @@ class _EditProfileViewState extends State<_EditProfileView> {
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
-    final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
+    final picked =
+        await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
     if (picked != null && mounted) {
       setState(() => _pickedImage = File(picked.path));
     }
@@ -108,7 +111,8 @@ class _EditProfileViewState extends State<_EditProfileView> {
       'companyName': _companyName.text.trim(),
       'industry': _industry.text.trim(),
       'website': _website.text.trim(),
-      'skills': _skills.map((c) => c.text.trim()).where((s) => s.isNotEmpty).toList(),
+      'skills':
+          _skills.map((c) => c.text.trim()).where((s) => s.isNotEmpty).toList(),
       'experience': _experience.text
           .split('\n')
           .map((item) => item.trim())
@@ -146,7 +150,9 @@ class _EditProfileViewState extends State<_EditProfileView> {
     _website.dispose();
     _experience.dispose();
     _education.dispose();
-    for (final c in _skills) { c.dispose(); }
+    for (final c in _skills) {
+      c.dispose();
+    }
     super.dispose();
   }
 
@@ -195,7 +201,8 @@ class _EditProfileViewState extends State<_EditProfileView> {
                               color: Theme.of(context).colorScheme.primary,
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.camera_alt_rounded, size: 14, color: Colors.white),
+                            child: const Icon(Icons.camera_alt_rounded,
+                                size: 14, color: Colors.white),
                           ),
                         ],
                       ),
@@ -206,7 +213,8 @@ class _EditProfileViewState extends State<_EditProfileView> {
                       label: 'Full Name',
                       controller: _fullName,
                       prefixIcon: Icons.person_outline_rounded,
-                      validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
+                      validator: (v) =>
+                          v?.trim().isEmpty == true ? 'Required' : null,
                     ),
                     const SizedBox(height: AppSpacing.md),
                     AppTextField(
@@ -214,42 +222,52 @@ class _EditProfileViewState extends State<_EditProfileView> {
                       controller: _phone,
                       keyboardType: TextInputType.phone,
                       prefixIcon: Icons.phone_outlined,
-                      validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
+                      validator: (v) =>
+                          v?.trim().isEmpty == true ? 'Required' : null,
                     ),
                     const SizedBox(height: AppSpacing.md),
                     AppTextField(
                       label: 'Location',
                       controller: _location,
                       prefixIcon: Icons.location_on_outlined,
-                      validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
+                      validator: (v) =>
+                          v?.trim().isEmpty == true ? 'Required' : null,
                     ),
                     const SizedBox(height: AppSpacing.md),
-                     AppTextField(
+                    AppTextField(
                       label: 'Bio',
                       controller: _bio,
                       prefixIcon: Icons.info_outline_rounded,
                       maxLines: 3,
-                      validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
+                      validator: (v) =>
+                          v?.trim().isEmpty == true ? 'Required' : null,
                     ),
-                    if (state is SuccessState<UserModel> && state.data.isCompany) ...[
+                    if (state is SuccessState<UserModel> &&
+                        state.data.isCompany) ...[
                       const SizedBox(height: AppSpacing.lg),
                       Align(
                         alignment: Alignment.centerLeft,
-                        child: Text('Company Details', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                        child: Text('Company Details',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(fontWeight: FontWeight.w700)),
                       ),
                       const SizedBox(height: AppSpacing.md),
                       AppTextField(
                         label: 'Company Name',
                         controller: _companyName,
                         prefixIcon: Icons.business_rounded,
-                        validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
+                        validator: (v) =>
+                            v?.trim().isEmpty == true ? 'Required' : null,
                       ),
                       const SizedBox(height: AppSpacing.md),
                       AppTextField(
                         label: 'Industry',
                         controller: _industry,
                         prefixIcon: Icons.category_outlined,
-                        validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
+                        validator: (v) =>
+                            v?.trim().isEmpty == true ? 'Required' : null,
                       ),
                       const SizedBox(height: AppSpacing.md),
                       AppTextField(
@@ -257,24 +275,32 @@ class _EditProfileViewState extends State<_EditProfileView> {
                         controller: _website,
                         prefixIcon: Icons.language_outlined,
                         hint: 'https://example.com',
-                        validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
+                        validator: (v) =>
+                            v?.trim().isEmpty == true ? 'Required' : null,
                       ),
                     ],
                     const SizedBox(height: AppSpacing.lg),
                     // Skills
                     Align(
                       alignment: Alignment.centerLeft,
-                      child: Text('Skills', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                      child: Text('Skills',
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.copyWith(fontWeight: FontWeight.w700)),
                     ),
                     const SizedBox(height: AppSpacing.sm),
-                    _SkillsList(controllers: _skills, onChanged: () => setState(() {})),
+                    _SkillsList(
+                        controllers: _skills, onChanged: () => setState(() {})),
                     const SizedBox(height: AppSpacing.sm),
                     TextButton.icon(
-                      onPressed: () => setState(() => _skills.add(TextEditingController())),
+                      onPressed: () =>
+                          setState(() => _skills.add(TextEditingController())),
                       icon: const Icon(Icons.add_rounded),
                       label: const Text('Add Skill'),
                     ),
-                    if (!(state is SuccessState<UserModel> && state.data.isCompany)) ...[
+                    if (!(state is SuccessState<UserModel> &&
+                        state.data.isCompany)) ...[
                       const SizedBox(height: AppSpacing.lg),
                       AppTextField(
                         label: 'Experience',

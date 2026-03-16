@@ -5,6 +5,7 @@ import '../../../../core/common/usecase.dart';
 import '../../domain/usecases/add_bookmark_usecase.dart';
 import '../../domain/usecases/get_bookmarks_usecase.dart';
 import '../../domain/usecases/remove_bookmark_usecase.dart';
+
 class BookmarksCubit extends Cubit<BaseState<List<JobModel>>> {
   final GetBookmarksUseCase getBookmarksUseCase;
   final AddBookmarkUseCase addBookmarkUseCase;
@@ -22,6 +23,7 @@ class BookmarksCubit extends Cubit<BaseState<List<JobModel>>> {
       (jobs) => emit(jobs.isEmpty ? const EmptyState() : SuccessState(jobs)),
     );
   }
+
   Future<void> addBookmark(String jobId) async {
     final result = await addBookmarkUseCase(AddBookmarkParams(jobId));
     result.fold(
@@ -29,6 +31,7 @@ class BookmarksCubit extends Cubit<BaseState<List<JobModel>>> {
       (_) => loadBookmarks(),
     );
   }
+
   Future<void> removeBookmark(String jobId) async {
     final result = await removeBookmarkUseCase(RemoveBookmarkParams(jobId));
     result.fold(

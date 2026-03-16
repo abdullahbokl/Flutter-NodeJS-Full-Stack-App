@@ -21,4 +21,3 @@ class MyApplicationsCubit extends Cubit<BaseState<List<JobApplicationModel>>> {
     );
   }
 }
-

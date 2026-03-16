@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -70,7 +69,9 @@ class _RegisterViewState extends State<_RegisterView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          isCompany ? 'Set up your hiring command center' : 'Create your next career move',
+                          isCompany
+                              ? 'Set up your hiring command center'
+                              : 'Create your next career move',
                           style: Theme.of(context).textTheme.displayMedium,
                         ),
                         const SizedBox(height: AppSpacing.md),
@@ -86,25 +87,33 @@ class _RegisterViewState extends State<_RegisterView> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               _ChecklistRow(
-                                icon: isCompany ? Icons.dashboard_customize_outlined : Icons.person_search_outlined,
-                                title: isCompany ? 'Post and manage roles faster' : 'Discover tailored opportunities',
+                                icon: isCompany
+                                    ? Icons.dashboard_customize_outlined
+                                    : Icons.person_search_outlined,
+                                title: isCompany
+                                    ? 'Post and manage roles faster'
+                                    : 'Discover tailored opportunities',
                               ),
                               const SizedBox(height: AppSpacing.sm),
                               _ChecklistRow(
                                 icon: Icons.verified_user_outlined,
-                                title: isCompany ? 'Review applicants clearly' : 'Track every application state',
+                                title: isCompany
+                                    ? 'Review applicants clearly'
+                                    : 'Track every application state',
                               ),
                               const SizedBox(height: AppSpacing.sm),
                               _ChecklistRow(
                                 icon: Icons.forum_outlined,
-                                title: isCompany ? 'Message candidates directly' : 'Connect with recruiters in one place',
+                                title: isCompany
+                                    ? 'Message candidates directly'
+                                    : 'Connect with recruiters in one place',
                               ),
                             ],
                           ),
                         ),
                       ],
                     ),
-                  ).animate().fadeIn().slideX(begin: -0.04);
+                  );
 
                   final form = GlassPanel(
                     padding: const EdgeInsets.all(AppSpacing.lg),
@@ -122,8 +131,12 @@ class _RegisterViewState extends State<_RegisterView> {
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
-                                  isCompany ? 'Company registration' : 'Create account',
-                                  style: Theme.of(context).textTheme.headlineMedium,
+                                  isCompany
+                                      ? 'Company registration'
+                                      : 'Create account',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium,
                                 ),
                               ),
                             ],
@@ -142,7 +155,9 @@ class _RegisterViewState extends State<_RegisterView> {
                               hint: 'Acme Studio',
                               controller: _companyName,
                               prefixIcon: Icons.apartment_rounded,
-                              validator: (v) => (v?.trim().length ?? 0) >= 2 ? null : 'Enter company name',
+                              validator: (v) => (v?.trim().length ?? 0) >= 2
+                                  ? null
+                                  : 'Enter company name',
                             ),
                             const SizedBox(height: AppSpacing.md),
                           ],
@@ -151,7 +166,9 @@ class _RegisterViewState extends State<_RegisterView> {
                             hint: 'john_doe',
                             controller: _username,
                             prefixIcon: Icons.person_outline_rounded,
-                            validator: (v) => (v?.trim().length ?? 0) >= 3 ? null : 'Min 3 characters',
+                            validator: (v) => (v?.trim().length ?? 0) >= 3
+                                ? null
+                                : 'Min 3 characters',
                           ),
                           const SizedBox(height: AppSpacing.md),
                           AppTextField(
@@ -160,7 +177,9 @@ class _RegisterViewState extends State<_RegisterView> {
                             controller: _email,
                             prefixIcon: Icons.mail_outline_rounded,
                             keyboardType: TextInputType.emailAddress,
-                            validator: (v) => v?.contains('@') == true ? null : 'Enter a valid email',
+                            validator: (v) => v?.contains('@') == true
+                                ? null
+                                : 'Enter a valid email',
                           ),
                           const SizedBox(height: AppSpacing.md),
                           AppTextField(
@@ -169,12 +188,16 @@ class _RegisterViewState extends State<_RegisterView> {
                             controller: _password,
                             prefixIcon: Icons.lock_outline_rounded,
                             obscureText: true,
-                            validator: (v) => (v?.length ?? 0) >= 6 ? null : 'Min 6 characters',
+                            validator: (v) => (v?.length ?? 0) >= 6
+                                ? null
+                                : 'Min 6 characters',
                           ),
                           const SizedBox(height: AppSpacing.lg),
                           BlocBuilder<RegisterCubit, BaseState<UserEntity>>(
                             builder: (ctx, state) => AppButton(
-                              label: isCompany ? 'Create Company Account' : 'Create Account',
+                              label: isCompany
+                                  ? 'Create Company Account'
+                                  : 'Create Account',
                               isLoading: state is LoadingState,
                               icon: Icons.arrow_forward_rounded,
                               onTap: () {
@@ -185,7 +208,9 @@ class _RegisterViewState extends State<_RegisterView> {
                                         _email.text.trim(),
                                         _password.text,
                                         role: widget.role,
-                                        companyName: isCompany ? _companyName.text.trim() : null,
+                                        companyName: isCompany
+                                            ? _companyName.text.trim()
+                                            : null,
                                       );
                                 }
                               },
@@ -197,7 +222,8 @@ class _RegisterViewState extends State<_RegisterView> {
                           Center(
                             child: TextButton(
                               onPressed: () => context.go('/login'),
-                              child: const Text('Already have an account? Sign in'),
+                              child: const Text(
+                                  'Already have an account? Sign in'),
                             ),
                           ),
                         ],
@@ -208,7 +234,12 @@ class _RegisterViewState extends State<_RegisterView> {
                   if (wide) {
                     return Row(
                       children: [
-                        Expanded(flex: 6, child: Padding(padding: const EdgeInsets.only(right: AppSpacing.xl), child: intro)),
+                        Expanded(
+                            flex: 6,
+                            child: Padding(
+                                padding:
+                                    const EdgeInsets.only(right: AppSpacing.xl),
+                                child: intro)),
                         Expanded(flex: 5, child: form),
                       ],
                     );
@@ -255,7 +286,8 @@ class _ChecklistRow extends StatelessWidget {
       children: [
         Icon(icon, size: 18, color: Theme.of(context).colorScheme.primary),
         const SizedBox(width: AppSpacing.sm),
-        Expanded(child: Text(title, style: Theme.of(context).textTheme.bodyMedium)),
+        Expanded(
+            child: Text(title, style: Theme.of(context).textTheme.bodyMedium)),
       ],
     );
   }

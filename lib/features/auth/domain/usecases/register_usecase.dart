@@ -39,4 +39,3 @@ class RegisterUseCase implements UseCase<UserEntity, RegisterParams> {
     );
   }
 }
-

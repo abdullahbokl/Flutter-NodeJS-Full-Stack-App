@@ -5,7 +5,8 @@ import '../../../../core/common/usecase.dart';
 import '../../data/models/job_application_model.dart';
 import '../../domain/usecases/get_received_applications_usecase.dart';
 
-class ReceivedApplicationsCubit extends Cubit<BaseState<List<JobApplicationModel>>> {
+class ReceivedApplicationsCubit
+    extends Cubit<BaseState<List<JobApplicationModel>>> {
   final GetReceivedApplicationsUseCase _getReceivedApplications;
 
   ReceivedApplicationsCubit(this._getReceivedApplications)
@@ -22,4 +23,3 @@ class ReceivedApplicationsCubit extends Cubit<BaseState<List<JobApplicationModel
     );
   }
 }
-

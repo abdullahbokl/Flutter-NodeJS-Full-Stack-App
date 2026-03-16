@@ -24,6 +24,7 @@ class RegisterCubit extends Cubit<BaseState<UserEntity>> {
     UserRole role = UserRole.seeker,
     String? companyName,
   }) async {
+    if (isClosed) return;
     emit(const LoadingState());
     final result = await _registerUseCase(
       RegisterParams(
@@ -34,10 +35,16 @@ class RegisterCubit extends Cubit<BaseState<UserEntity>> {
         companyName: companyName,
       ),
     );
+    if (isClosed) return;
     result.fold(
-      (failure) => emit(ErrorState(failure.message)),
+      (failure) {
+        if (isClosed) return;
+        emit(ErrorState(failure.message));
+      },
       (user) {
-        AppSession.setSession(token: user.token, userId: user.id, role: user.role.name);
+        if (isClosed) return;
+        AppSession.setSession(
+            token: user.token, userId: user.id, role: user.role.name);
         _prefs.setString('token', user.token);
         _prefs.setString('role', user.role.name);
         emit(SuccessState(user));
@@ -45,6 +52,8 @@ class RegisterCubit extends Cubit<BaseState<UserEntity>> {
     );
   }
 
-  void reset() => emit(const InitialState());
+  void reset() {
+    if (isClosed) return;
+    emit(const InitialState());
+  }
 }
-

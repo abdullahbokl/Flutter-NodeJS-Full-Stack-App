@@ -44,8 +44,9 @@ class UserEntity extends Equatable {
     this.token = '',
   });
 
-  String get displayName =>
-      companyName?.isNotEmpty == true ? companyName! : (fullName?.isNotEmpty == true ? fullName! : userName);
+  String get displayName => companyName?.isNotEmpty == true
+      ? companyName!
+      : (fullName?.isNotEmpty == true ? fullName! : userName);
 
   String? get avatarUrl => profilePic.isNotEmpty ? profilePic.last : null;
 

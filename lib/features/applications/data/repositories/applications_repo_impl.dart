@@ -29,11 +29,13 @@ class ApplicationsRepoImpl implements ApplicationsRepo {
   @override
   Future<List<JobApplicationModel>> getMyApplications() async {
     try {
-      final raw = await _apiServices.get(endPoint: '${ApiEndpoints.applications}/mine');
+      final raw =
+          await _apiServices.get(endPoint: '${ApiEndpoints.applications}/mine');
       final data = raw is Map ? raw['data'] : raw;
       if (data is! List) return [];
       return data
-          .map((item) => JobApplicationModel.fromMap(Map<String, dynamic>.from(item)))
+          .map((item) =>
+              JobApplicationModel.fromMap(Map<String, dynamic>.from(item)))
           .toList();
     } catch (e) {
       throw handleServerError(e);
@@ -43,11 +45,13 @@ class ApplicationsRepoImpl implements ApplicationsRepo {
   @override
   Future<List<JobApplicationModel>> getReceivedApplications() async {
     try {
-      final raw = await _apiServices.get(endPoint: '${ApiEndpoints.applications}/received');
+      final raw = await _apiServices.get(
+          endPoint: '${ApiEndpoints.applications}/received');
       final data = raw is Map ? raw['data'] : raw;
       if (data is! List) return [];
       return data
-          .map((item) => JobApplicationModel.fromMap(Map<String, dynamic>.from(item)))
+          .map((item) =>
+              JobApplicationModel.fromMap(Map<String, dynamic>.from(item)))
           .toList();
     } catch (e) {
       throw handleServerError(e);
@@ -71,4 +75,3 @@ class ApplicationsRepoImpl implements ApplicationsRepo {
     }
   }
 }
-

@@ -48,4 +48,3 @@ class ProfileCubit extends Cubit<BaseState<UserModel>> {
 
   void updateLocally(UserModel user) => emit(SuccessState(user));
 }
-

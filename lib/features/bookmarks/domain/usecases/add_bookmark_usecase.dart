@@ -26,4 +26,3 @@ class AddBookmarkUseCase implements UseCase<void, AddBookmarkParams> {
     }
   }
 }
-

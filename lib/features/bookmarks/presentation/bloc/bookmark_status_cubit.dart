@@ -75,13 +75,15 @@ class BookmarkStatusCubit extends Cubit<BookmarkStatusState> {
       final result = await _removeBookmark(RemoveBookmarkParams(jobId));
       result.fold(
         (failure) => emit(BookmarkStatusError(failure.message)),
-        (_) => emit(const BookmarkStatusToggled(false, 'Job removed from bookmarks')),
+        (_) => emit(
+            const BookmarkStatusToggled(false, 'Job removed from bookmarks')),
       );
     } else {
       final result = await _addBookmark(AddBookmarkParams(jobId));
       result.fold(
         (failure) => emit(BookmarkStatusError(failure.message)),
-        (_) => emit(const BookmarkStatusToggled(true, 'Job bookmarked successfully')),
+        (_) => emit(
+            const BookmarkStatusToggled(true, 'Job bookmarked successfully')),
       );
     }
   }

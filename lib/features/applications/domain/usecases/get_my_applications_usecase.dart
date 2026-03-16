@@ -11,7 +11,8 @@ class GetMyApplicationsUseCase {
 
   const GetMyApplicationsUseCase(this._repo);
 
-  Future<Either<Failure, List<JobApplicationModel>>> call(NoParams params) async {
+  Future<Either<Failure, List<JobApplicationModel>>> call(
+      NoParams params) async {
     try {
       final applications = await _repo.getMyApplications();
       return Right(applications);
@@ -20,4 +21,3 @@ class GetMyApplicationsUseCase {
     }
   }
 }
-

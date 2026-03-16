@@ -21,4 +21,3 @@ class GetBookmarksUseCase implements UseCase<List<JobModel>, NoParams> {
     }
   }
 }
-

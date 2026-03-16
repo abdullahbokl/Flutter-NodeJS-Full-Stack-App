@@ -42,7 +42,8 @@ class ApplicationActionCubit extends Cubit<BaseState<JobApplicationModel>> {
   }) async {
     emit(const LoadingState());
     final result = await _updateStatus(
-      UpdateApplicationStatusParams(applicationId: applicationId, status: status),
+      UpdateApplicationStatusParams(
+          applicationId: applicationId, status: status),
     );
     return result.fold(
       (failure) {
@@ -56,4 +57,3 @@ class ApplicationActionCubit extends Cubit<BaseState<JobApplicationModel>> {
     );
   }
 }
-

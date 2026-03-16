@@ -17,34 +17,48 @@ class LoginCubit extends Cubit<BaseState<UserEntity>> {
         super(const InitialState());
 
   Future<void> login(String email, String password) async {
+    if (isClosed) return;
     emit(const LoadingState());
     final result = await _loginUseCase(
       LoginParams(email: email, password: password),
     );
+    if (isClosed) return;
     result.fold(
-      (failure) => emit(ErrorState(failure.message)),
+      (failure) {
+        if (isClosed) return;
+        emit(ErrorState(failure.message));
+      },
       (user) => _handleSuccess(user),
     );
   }
 
   Future<void> loginWithUsername(String userName, String password) async {
+    if (isClosed) return;
     emit(const LoadingState());
     final result = await _loginUseCase(
       LoginParams(userName: userName, password: password),
     );
+    if (isClosed) return;
     result.fold(
-      (failure) => emit(ErrorState(failure.message)),
+      (failure) {
+        if (isClosed) return;
+        emit(ErrorState(failure.message));
+      },
       (user) => _handleSuccess(user),
     );
   }
 
   void _handleSuccess(UserEntity user) {
-    AppSession.setSession(token: user.token, userId: user.id, role: user.role.name);
+    if (isClosed) return;
+    AppSession.setSession(
+        token: user.token, userId: user.id, role: user.role.name);
     _prefs.setString('token', user.token);
     _prefs.setString('role', user.role.name);
     emit(SuccessState(user));
   }
 
-  void reset() => emit(const InitialState());
+  void reset() {
+    if (isClosed) return;
+    emit(const InitialState());
+  }
 }
-

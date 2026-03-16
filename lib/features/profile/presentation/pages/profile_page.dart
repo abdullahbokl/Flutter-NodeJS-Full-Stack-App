@@ -40,7 +40,8 @@ class ProfilePage extends StatelessWidget {
                       alignment: Alignment.topLeft,
                       child: IconButton(
                         onPressed: () => context.pop(),
-                        icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                        icon: const Icon(Icons.arrow_back_rounded,
+                            color: Colors.white),
                       ),
                     ),
                     AppAvatar(
@@ -51,12 +52,16 @@ class ProfilePage extends StatelessWidget {
                     const SizedBox(height: AppSpacing.md),
                     Text(
                       user.fullName ?? user.userName,
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white),
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium
+                          ?.copyWith(color: Colors.white),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       user.email,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white.withValues(alpha: 0.82)),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.white.withValues(alpha: 0.82)),
                     ),
                     if (user.isCompany) ...[
                       const SizedBox(height: AppSpacing.sm),
@@ -69,7 +74,8 @@ class ProfilePage extends StatelessWidget {
               PremiumSectionHeader(
                 eyebrow: 'Profile',
                 title: 'Your details',
-                subtitle: 'Everything below still reads from the existing profile state.',
+                subtitle:
+                    'Everything below still reads from the existing profile state.',
                 actionLabel: 'Edit',
                 onAction: () => context.push('/profile/edit'),
               ),
@@ -81,12 +87,16 @@ class ProfilePage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Skills', style: Theme.of(context).textTheme.titleLarge),
+                      Text('Skills',
+                          style: Theme.of(context).textTheme.titleLarge),
                       const SizedBox(height: AppSpacing.md),
                       Wrap(
                         spacing: AppSpacing.sm,
                         runSpacing: AppSpacing.sm,
-                        children: user.skills.map((skill) => AppChip(label: skill, isSelected: true)).toList(),
+                        children: user.skills
+                            .map((skill) =>
+                                AppChip(label: skill, isSelected: true))
+                            .toList(),
                       ),
                     ],
                   ),
@@ -150,9 +160,12 @@ class _InfoCard extends StatelessWidget {
                   children: [
                     SizedBox(
                       width: 88,
-                      child: Text(item.$1, style: Theme.of(context).textTheme.labelMedium),
+                      child: Text(item.$1,
+                          style: Theme.of(context).textTheme.labelMedium),
                     ),
-                    Expanded(child: Text(item.$2, style: Theme.of(context).textTheme.bodyLarge)),
+                    Expanded(
+                        child: Text(item.$2,
+                            style: Theme.of(context).textTheme.bodyLarge)),
                   ],
                 ),
               ),

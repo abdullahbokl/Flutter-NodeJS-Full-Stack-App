@@ -26,4 +26,3 @@ class RemoveBookmarkUseCase implements UseCase<void, RemoveBookmarkParams> {
     }
   }
 }
-

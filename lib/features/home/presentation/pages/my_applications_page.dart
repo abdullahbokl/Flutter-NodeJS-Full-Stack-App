@@ -24,26 +24,32 @@ class MyApplicationsPage extends StatelessWidget {
     }
 
     context.go(
-      AppSession.isCompany ? AppRouter.companyDashboardPage : AppRouter.homePage,
+      AppSession.isCompany
+          ? AppRouter.companyDashboardPage
+          : AppRouter.homePage,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return PremiumScaffold(
-      child: BlocBuilder<MyApplicationsCubit, BaseState<List<JobApplicationModel>>>(
+      child: BlocBuilder<MyApplicationsCubit,
+          BaseState<List<JobApplicationModel>>>(
         builder: (context, state) => BlocStateWidget<List<JobApplicationModel>>(
           state: state,
           emptyTitle: 'No applications yet',
-          emptySubtitle: 'Start exploring roles and submit your first application.',
+          emptySubtitle:
+              'Start exploring roles and submit your first application.',
           emptyIcon: Icons.assignment_outlined,
           onRetry: () => context.read<MyApplicationsCubit>().loadApplications(),
           onSuccess: (applications) => RefreshIndicator(
-            onRefresh: () async => context.read<MyApplicationsCubit>().loadApplications(),
+            onRefresh: () async =>
+                context.read<MyApplicationsCubit>().loadApplications(),
             child: ListView.separated(
               padding: const EdgeInsets.all(AppSpacing.md),
               itemCount: applications.length + 1,
-              separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
+              separatorBuilder: (_, __) =>
+                  const SizedBox(height: AppSpacing.md),
               itemBuilder: (context, index) {
                 if (index == 0) {
                   return PageHeader(
@@ -66,22 +72,31 @@ class MyApplicationsPage extends StatelessWidget {
 
                 final app = applications[index - 1];
                 return AppCard(
-                  onTap: () => context.push('${AppRouter.jobsListPage}/${app.job.id}', extra: app.job),
+                  onTap: () => context.push(
+                      '${AppRouter.jobsListPage}/${app.job.id}',
+                      extra: app.job),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          AppAvatar(radius: 22, fallbackInitials: app.job.company, imageUrl: app.job.imageUrl),
+                          AppAvatar(
+                              radius: 22,
+                              fallbackInitials: app.job.company,
+                              imageUrl: app.job.imageUrl),
                           const SizedBox(width: AppSpacing.md),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(app.job.title, style: Theme.of(context).textTheme.titleMedium),
+                                Text(app.job.title,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium),
                                 const SizedBox(height: 4),
                                 Text('${app.job.company} • ${app.job.location}',
-                                    style: Theme.of(context).textTheme.bodyMedium),
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium),
                               ],
                             ),
                           ),

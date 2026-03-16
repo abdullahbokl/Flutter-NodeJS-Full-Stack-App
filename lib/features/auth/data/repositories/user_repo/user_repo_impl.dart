@@ -19,7 +19,9 @@ class UserRepoImpl implements UserRepo {
   Future<dynamic> getUser({required String id}) async {
     try {
       final user = await _apiServices.get(
-        endPoint: id == 'me' ? '${ApiEndpoints.users}/me' : '${ApiEndpoints.users}/$id',
+        endPoint: id == 'me'
+            ? '${ApiEndpoints.users}/me'
+            : '${ApiEndpoints.users}/$id',
       );
       return user;
     } catch (e) {

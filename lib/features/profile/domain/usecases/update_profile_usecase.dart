@@ -28,4 +28,3 @@ class UpdateProfileUseCase implements UseCase<UserModel, UpdateProfileParams> {
     }
   }
 }
-

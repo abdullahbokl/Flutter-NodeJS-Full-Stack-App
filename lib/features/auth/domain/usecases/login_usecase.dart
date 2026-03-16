@@ -30,4 +30,3 @@ class LoginUseCase implements UseCase<UserEntity, LoginParams> {
     return _repository.login(params.email!, params.password);
   }
 }
-

@@ -27,19 +27,22 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   static const _pages = [
     _OnboardingData(
       title: 'Discover roles that feel curated for you',
-      subtitle: 'Search, shortlist, and compare opportunities in a cleaner way.',
+      subtitle:
+          'Search, shortlist, and compare opportunities in a cleaner way.',
       icon: Icons.travel_explore_rounded,
       accent: AppColors.accent,
     ),
     _OnboardingData(
       title: 'Build one profile that opens more doors',
-      subtitle: 'Showcase your skills, experience, and story with a sharper first impression.',
+      subtitle:
+          'Showcase your skills, experience, and story with a sharper first impression.',
       icon: Icons.badge_outlined,
       accent: AppColors.primary,
     ),
     _OnboardingData(
       title: 'Track every application with clarity',
-      subtitle: 'Stay on top of review stages, interviews, and hiring conversations.',
+      subtitle:
+          'Stay on top of review stages, interviews, and hiring conversations.',
       icon: Icons.track_changes_rounded,
       accent: AppColors.info,
     ),
@@ -62,13 +65,15 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   Widget build(BuildContext context) {
     return PremiumScaffold(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.lg),
+        padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.lg),
         child: Column(
           children: [
             Row(
               children: [
                 GlassPanel(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -79,10 +84,12 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                           gradient: AppColors.heroGradient,
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Icon(Icons.work_outline_rounded, size: 18, color: Colors.white),
+                        child: const Icon(Icons.work_outline_rounded,
+                            size: 18, color: Colors.white),
                       ),
                       const SizedBox(width: AppSpacing.sm),
-                      Text('Job Hub', style: Theme.of(context).textTheme.titleMedium),
+                      Text('Job Hub',
+                          style: Theme.of(context).textTheme.titleMedium),
                     ],
                   ),
                 ),
@@ -204,7 +211,9 @@ class _OnboardingPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(34),
                     ),
                     child: Icon(data.icon, size: 58, color: Colors.white),
-                  ).animate().scale(duration: 450.ms, curve: Curves.easeOutBack),
+                  )
+                      .animate()
+                      .scale(duration: 450.ms, curve: Curves.easeOutBack),
                 ),
                 Positioned(
                   left: 18,
@@ -215,7 +224,8 @@ class _OnboardingPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Designed for modern hiring', style: Theme.of(context).textTheme.titleMedium),
+                        Text('Designed for modern hiring',
+                            style: Theme.of(context).textTheme.titleMedium),
                         const SizedBox(height: AppSpacing.xs),
                         Text(
                           'A polished workflow for seekers and companies, without changing the core logic underneath.',
@@ -235,7 +245,10 @@ class _OnboardingPage extends StatelessWidget {
           children: [
             Text(
               'A refined hiring experience',
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(color: AppColors.primary),
+              style: Theme.of(context)
+                  .textTheme
+                  .labelLarge
+                  ?.copyWith(color: AppColors.primary),
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(data.title, style: Theme.of(context).textTheme.displayMedium),
@@ -280,7 +293,8 @@ class _MiniCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppCard(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 10),
+      padding:
+          const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 10),
       color: Colors.white.withValues(alpha: 0.84),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -313,7 +327,11 @@ class _MetricBubble extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: color)),
+          Text(title,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(color: color)),
           Text(subtitle, style: Theme.of(context).textTheme.labelSmall),
         ],
       ),

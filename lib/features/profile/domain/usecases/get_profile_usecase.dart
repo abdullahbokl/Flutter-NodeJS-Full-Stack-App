@@ -22,4 +22,3 @@ class GetProfileUseCase implements UseCase<UserModel, NoParams> {
     }
   }
 }
-

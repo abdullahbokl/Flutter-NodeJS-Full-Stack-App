@@ -20,7 +20,8 @@ class ApplyForJobUseCase {
 
   const ApplyForJobUseCase(this._repo);
 
-  Future<Either<Failure, JobApplicationModel>> call(ApplyForJobParams params) async {
+  Future<Either<Failure, JobApplicationModel>> call(
+      ApplyForJobParams params) async {
     try {
       final result = await _repo.applyForJob(
         jobId: params.jobId,
@@ -32,4 +33,3 @@ class ApplyForJobUseCase {
     }
   }
 }
-
